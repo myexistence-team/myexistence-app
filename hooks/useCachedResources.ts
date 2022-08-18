@@ -16,6 +16,8 @@ export default function useCachedResources() {
         await Font.loadAsync({
           ...FontAwesome.font,
           'space-mono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'manrope': require('../assets/fonts/Manrope-VariableFont_wght.ttf'),
+          'quicksand': require('../assets/fonts/Quicksand-VariableFont_wght.ttf'),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service
