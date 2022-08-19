@@ -12,9 +12,7 @@ import NextSchedules from './NextSchedules'
 import METextField from '../../components/METextInput'
 import { RootTabScreenProps } from '../../types'
 
-export default function HomePage(props: {
-  navigation: RootTabScreenProps<'HomePage'>
-}) {
+export default function HomePage(props: RootTabScreenProps<"Home">) {
 
   const {
     navigation

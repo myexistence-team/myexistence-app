@@ -9,6 +9,7 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
 import Colors from '../constants/Colors';
 import { METheme } from '../constants/Themes';
@@ -18,9 +19,9 @@ import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import ProfilePage from '../screens/ProfilePage';
 import SchedulePage from '../screens/SchedulePage';
-import TabTwoScreen from '../screens/TabTwoScreen';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
+import WelcomePage from '../screens/WelcomePage';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -39,6 +40,21 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const [initializing, setInitializing] = React.useState(true);
+  const [user, setUser] = React.useState(true);
+
+  function onAuthStateChanged(user: any) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  React.useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  // if (initializing) return null;
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -47,7 +63,13 @@ function RootNavigator() {
         },
       }}
     >
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      {
+        user ? (
+          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen name="Welcome" component={WelcomePage}/>
+        )
+      }
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />
@@ -67,35 +89,35 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="HomePage"
+      initialRouteName="Home"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
       }}>
       <BottomTab.Screen
-        name="HomePage"
+        name="Home"
         component={HomePage}
-        options={({ navigation }: RootTabScreenProps<'HomePage'>) => ({
+        options={({ navigation }: RootTabScreenProps<'Home'>) => ({
           title: 'Home',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
-          header: () => (null),
+          headerShown: false,
         })}
       />
       <BottomTab.Screen
-        name="SchedulePage"
+        name="Schedule"
         component={SchedulePage}
-        options={({ navigation }: RootTabScreenProps<'SchedulePage'>) => ({
+        options={({ navigation }: RootTabScreenProps<'Schedule'>) => ({
           title: 'Schedule',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
-          header: () => (null),
+          headerShown: false,
         })}
       />
       <BottomTab.Screen
-        name="ProfilePage"
+        name="Profile"
         component={ProfilePage}
-        options={({ navigation }: RootTabScreenProps<'ProfilePage'>) => ({
+        options={({ navigation }: RootTabScreenProps<'Profile'>) => ({
           title: 'Profile',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
-          header: () => (null),
+          headerShown: false,
         })}
       />
     </BottomTab.Navigator>

@@ -15,14 +15,13 @@ export default function NextSchedules() {
   const schedules = scheduleMocks;
 
   return (
-    <View>{}
+    <View
+      style={{
+        paddingBottom: 64
+      }}
+    >
       <Text 
-        style={[
-          textStyles.heading3,
-          {
-            marginBottom: 16
-          }
-        ]}
+        style={[textStyles.heading3, { marginBottom: 16 }]}
       >
         Berikutnya
       </Text>
@@ -34,7 +33,12 @@ export default function NextSchedules() {
       <MEButton
         variant='outline'
         onPress={() => {
-          navigation.navigate('SchedulePage')
+          navigation.navigate('Root', {
+            screen: "Schedule", 
+            params: {
+              screen: "Schedules"
+            }
+          })
         }}
       >
         Tampilkan Lebih Banyak
