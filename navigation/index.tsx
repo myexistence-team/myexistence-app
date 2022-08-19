@@ -4,13 +4,17 @@
  *
  */
 import { FontAwesome } from '@expo/vector-icons';
+import {
+  getAuth,
+  onAuthStateChanged,
+  // FacebookAuthProvider,
+  // signInWithCredential,
+} from 'firebase/auth';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
-import auth from '@react-native-firebase/auth';
-
 import Colors from '../constants/Colors';
 import { METheme } from '../constants/Themes';
 import useColorScheme from '../hooks/useColorScheme';
@@ -22,6 +26,13 @@ import SchedulePage from '../screens/SchedulePage';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig } from '../firebase';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
+
+initializeApp(firebaseConfig);
+const auth = getAuth();
+const firestore = getFirestore();
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -43,15 +54,19 @@ function RootNavigator() {
   const [initializing, setInitializing] = React.useState(true);
   const [user, setUser] = React.useState(true);
 
-  function onAuthStateChanged(user: any) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
+  onAuthStateChanged(auth, user => {
+    console.log("USER", user);
+    if (user !== null) {
+      console.log('We are authenticated now!');
+    }
+  });
 
-  React.useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
+  firestore.ap
+
+  // React.useEffect(() => {
+  //   const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+  //   return subscriber; // unsubscribe on unmount
+  // }, []);
 
   // if (initializing) return null;
 

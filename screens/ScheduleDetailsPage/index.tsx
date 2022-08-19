@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import MEContainer from '../../components/MEContainer'
-import MEHeader from '../../components/MEHeader'
 import { ScheduleParamList, ScheduleScreenProps } from '../../types'
 import scheduleMocks from '../../mocks/scheduleMocks'
 import { textStyles } from '../../constants/Styles'
 import moment from 'moment'
+import MEHeader from '../../components/MEHeader'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId } = route.params;
