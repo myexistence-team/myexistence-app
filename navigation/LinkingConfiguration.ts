@@ -20,6 +20,12 @@ const linking: LinkingOptions<RootStackParamList> = {
               Home: 'home'
             }
           },
+          Schedule: {
+            screens: {
+              Schedules: 'schedules',
+              ScheduleDetails: 'schedules/:scheduleId'
+            }
+          }
         },
       },
       Modal: 'modal',

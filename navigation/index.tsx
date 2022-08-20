@@ -5,8 +5,10 @@
  */
 import { FontAwesome } from '@expo/vector-icons';
 import {
+  Auth,
   getAuth,
   onAuthStateChanged,
+  User,
   // FacebookAuthProvider,
   // signInWithCredential,
 } from 'firebase/auth';
@@ -27,12 +29,15 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
 import { initializeApp } from 'firebase/app';
-import { firebaseConfig } from '../firebase';
-import { getFirestore, setDoc, doc } from 'firebase/firestore';
+import { app, firebaseConfig } from '../firebase';
+import { UserContext } from '../contexts';
+import { useContext } from 'react';
+import { getFirestore, setDoc, doc, Firestore, getDoc, DocumentSnapshot } from 'firebase/firestore';
 
 initializeApp(firebaseConfig);
-const auth = getAuth();
-const firestore = getFirestore();
+
+const firestore: Firestore = getFirestore(app);
+const auth: Auth = getAuth(app);
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -52,44 +57,49 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const [initializing, setInitializing] = React.useState(true);
-  const [user, setUser] = React.useState(true);
+  const [user, setUser] = React.useState<User>();
 
   onAuthStateChanged(auth, user => {
-    console.log("USER", user);
     if (user !== null) {
-      console.log('We are authenticated now!');
+      console.log("HELLO");
+      setUser(user);
+      getDoc(doc(firestore, 'users', user.uid))
+        .then((docSnap: DocumentSnapshot) => {
+          console.log(docSnap.data());
+        })
+      setDoc(doc(firestore, 'users', "HELLO"), {
+        displayName: "Hello There"
+      })
+        .then(() => {
+          console.log("DATA SAVED");
+        })
     }
   });
-
-  firestore.ap
-
-  // React.useEffect(() => {
-  //   const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-  //   return subscriber; // unsubscribe on unmount
-  // }, []);
 
   // if (initializing) return null;
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        contentStyle: {
-          backgroundColor: "#fff"
-        },
-      }}
-    >
-      {
-        user ? (
-          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-        ) : (
-          <Stack.Screen name="Welcome" component={WelcomePage}/>
-        )
-      }
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
+    <UserContext.Provider value={user}>
+      <Stack.Navigator
+        screenOptions={{
+          contentStyle: {
+            backgroundColor: "#fff"
+          },
+        }}
+      >
+        {
+          user ? (
+            <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+          ) : (
+            <Stack.Screen name="Welcome" component={WelcomePage} options={{ headerShown: false }}/>
+          )
+        }
+        <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+        <Stack.Group screenOptions={{ presentation: 'modal' }}>
+          <Stack.Screen name="Modal" component={ModalScreen} />
+        </Stack.Group>
+      </Stack.Navigator>
+    </UserContext.Provider>
   );
 }
 

@@ -21,7 +21,7 @@ export type RootStackParamList = {
 };
 
 export type WelcomeParamList = {
-  Welcome: undefined,
+  WelcomeScreen: undefined,
   Register: { role: string },
   Login: undefined
 }

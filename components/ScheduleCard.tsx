@@ -24,7 +24,19 @@ export default function ScheduleCard({
       // style={({ pressed }) => ({
       //   opacity: pressed && 0.75
       // })}
-      onPressOut={() => {
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.75 : 1
+      })}
+      onPress={() => {
+        navigation.navigate("Root", {
+          screen: "Schedule",
+          // params: {
+          //   screen: "ScheduleDetails",
+          //   params: {
+          //     scheduleId: schedule.id
+          //   }
+          // }
+        });
         navigation.navigate("Root", {
           screen: "Schedule",
           params: {
