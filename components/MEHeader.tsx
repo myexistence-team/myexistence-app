@@ -5,9 +5,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { textStyles } from '../constants/Styles';
 
 export default function MEHeader({
-  title
+  title,
+  onBackPress,
 }: {
-  title: string
+  title: string,
+  onBackPress?: Function
 }) {
   const navigation = useNavigation();
   return (
@@ -23,7 +25,7 @@ export default function MEHeader({
           style={{
             marginRight: 16
           }}
-          onPress={() => navigation.goBack()}
+          onPress={() => onBackPress ? onBackPress(): navigation.goBack()}
         >
           <FontAwesome5 name='chevron-left' size={18}/>
         </Pressable>

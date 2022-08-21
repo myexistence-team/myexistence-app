@@ -10,7 +10,7 @@ import moment from 'moment'
 import { FontAwesome5 } from '@expo/vector-icons'
 import NextSchedules from './NextSchedules'
 import METextField from '../../components/METextInput'
-import { RootTabScreenProps } from '../../types'
+import { RootTabScreenProps } from '../../navTypes'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
 

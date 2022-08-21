@@ -41,7 +41,7 @@ export type ScheduleParamList = {
 export type RootTabParamList = {
   Home: undefined;
   Schedule: NavigatorScreenParams<ScheduleParamList> | undefined,
-  Profile: { userId: string },
+  Profile: { userId?: string },
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

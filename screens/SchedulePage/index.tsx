@@ -6,7 +6,7 @@ import ScheduleCard from '../../components/ScheduleCard';
 import { textStyles } from '../../constants/Styles';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import ScheduleDetailsPage from '../ScheduleDetailsPage';
-import { ScheduleParamList } from '../../types';
+import { ScheduleParamList } from '../../navTypes';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 

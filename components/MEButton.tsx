@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, PressableProps, ViewStyle, Text, TextStyle, View } from 'react-native'
+import { StyleSheet, Pressable, PressableProps, ViewStyle, Text, TextStyle, View, ActivityIndicator } from 'react-native'
 import React from 'react'
 import Colors from '../constants/Colors';
 import { textStyles } from '../constants/Styles';
@@ -11,7 +11,7 @@ function getColorHex(color: string) {
     case 'secondary':
       return Colors.light.yellow;
     case 'danger':
-      return Colors.light.blue;
+      return Colors.light.red;
     case 'success':
       return Colors.light.blue;
     default:
@@ -27,6 +27,17 @@ function getTextStyleBySize(size: string) {
       return textStyles.buttonSm
     default:
       return textStyles.buttonMd
+  }
+}
+
+function getSpinnerSize(size: string) {
+  switch (size) {
+    case 'lg':
+      return 33
+    case 'sm':
+      return 19
+    default:
+      return 25
   }
 }
 
@@ -56,6 +67,7 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
     color: '#fff',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
     borderRadius: 8,
     shadowColor: '#000',
@@ -73,6 +85,7 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
     backgroundColor: '#fff',
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: getColorHex(color),
     borderRadius: 8,
@@ -96,7 +109,8 @@ export default function MEButton(props: PressableProps & {
   style?: ViewStyle,
   textStyle?: TextStyle,
   iconStart?: string,
-  children?: string
+  children?: string,
+  isLoading?: boolean
 }) {
   const {
     variant = 'contained',
@@ -105,6 +119,7 @@ export default function MEButton(props: PressableProps & {
     style,
     children,
     textStyle,
+    isLoading,
     iconStart,
     ...rest
   } = props;
@@ -121,26 +136,36 @@ export default function MEButton(props: PressableProps & {
       ])}
       {...rest} 
     >
-      <Text 
-        style={[
-          getTextStyleBySize(size), 
-          { color: getButtonStyles(size, color)[variant].color },
-          textStyle
-        ]}
-      >
-        <View
-          style={{
-            marginRight: 8,
-          }}
-        >
-          <FontAwesome5
-            name={iconStart}
-            size={18}
+      {
+        isLoading ? (
+          <ActivityIndicator
             color={getButtonStyles(size, color)[variant].color}
+            // size={33}
+            size={getSpinnerSize(size)}
           />
-        </View>
-        {children}
-      </Text>
+        ) : (
+          <Text 
+            style={[
+              getTextStyleBySize(size), 
+              { color: getButtonStyles(size, color)[variant].color },
+              textStyle
+            ]}
+          >
+            <View
+              style={{
+                marginRight: 8,
+              }}
+            >
+              <FontAwesome5
+                name={iconStart}
+                size={18}
+                color={getButtonStyles(size, color)[variant].color}
+              />
+            </View>
+            {children}
+          </Text>
+        )
+      }
     </Pressable>
   )
 }

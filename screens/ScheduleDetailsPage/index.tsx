@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import MEContainer from '../../components/MEContainer'
-import { ScheduleParamList, ScheduleScreenProps } from '../../types'
+import { ScheduleParamList, ScheduleScreenProps } from '../../navTypes'
 import scheduleMocks from '../../mocks/scheduleMocks'
 import { textStyles } from '../../constants/Styles'
 import moment from 'moment'

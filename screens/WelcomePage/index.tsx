@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { WelcomeParamList } from '../../types';
+import { WelcomeParamList } from '../../navTypes';
 import LoginPage from './LoginPage';
 import Colors from '../../constants/Colors';
 import { textStyles } from '../../constants/Styles';
@@ -82,6 +82,7 @@ function Welcome() {
         >
           <MEButton
             variant='outline'
+            color='white'
           >
             Daftar
           </MEButton>
