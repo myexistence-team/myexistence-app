@@ -41,6 +41,7 @@ export type ScheduleParamList = {
 export type RootTabParamList = {
   Home: undefined;
   Schedule: NavigatorScreenParams<ScheduleParamList> | undefined,
+  Scanner: { scheduleId: string },
   Profile: { userId?: string },
 };
 
