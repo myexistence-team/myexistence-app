@@ -88,13 +88,14 @@ export default function ScheduleCard({
           style={[
             textStyles.body1,
             {
-              marginVertical: 8
+              marginVertical: 8,
+              fontWeight: '700',
             }
           ]}
         >
           {schedule.name}
         </Text>
-        <Text style={[textStyles.body2]}>
+        <Text style={[textStyles.body3]}>
           {schedule.location}
         </Text>
         {

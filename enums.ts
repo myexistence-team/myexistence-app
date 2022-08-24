@@ -4,3 +4,10 @@ export enum RoleEnum {
   TEACHER = "Pengajar",
   STUDENT = "Pelajar",
 }
+
+export enum AbsentEnum {
+  PRESENT = "Hadir",
+  ABSENT = "Absen",
+  LATE = "Terlambat",
+  EXCUSED = "Izin",
+}

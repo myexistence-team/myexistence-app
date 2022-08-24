@@ -1,7 +1,7 @@
 const tintColorLight = '#4684E7';
 const tintColorDark = '#fff';
 
-var tints: any = {
+const tints: any = {
   red: '#FB7D7D',
   blue: '#4684E7',
   blues: {
@@ -15,9 +15,13 @@ var tints: any = {
     yellow1: "#FFF38A",
     yellow2: "#FFE872",
     yellow3: "#FFDE67",
-    yellow4: "#D4A549",
+    yellow4: "#D4A549" ,
   },
   grey: "#8EA5C9",
+  orange: "#FFAE34",
+  green: "#93E291",
+  black: "#333333",
+
 }
 
 export default {

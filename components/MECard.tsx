@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Platform } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
 
@@ -13,7 +13,9 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     padding: 16,
-    backgroundColor: "#fff",
+    marginHorizontal: Platform.OS === 'android'? 8 : 0,
+    elevation: 7,
+    backgroundColor: 'white',
   }
 })
 

@@ -144,12 +144,11 @@ export default function MEButton(props: PressableProps & {
             size={getSpinnerSize(size)}
           />
         ) : (
-          <Text 
-            style={[
-              getTextStyleBySize(size), 
-              { color: getButtonStyles(size, color)[variant].color },
-              textStyle
-            ]}
+          <View 
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
           >
             <View
               style={{
@@ -162,8 +161,20 @@ export default function MEButton(props: PressableProps & {
                 color={getButtonStyles(size, color)[variant].color}
               />
             </View>
-            {children}
-          </Text>
+            <Text 
+              style={[
+                getTextStyleBySize(size), 
+                { 
+                  color: getButtonStyles(size, color)[variant].color,
+                  fontWeight: '700', 
+                  flexDirection: 'row',
+                },
+                textStyle
+              ]}
+            >
+              {children}
+            </Text>
+          </View>
         )
       }
     </Pressable>

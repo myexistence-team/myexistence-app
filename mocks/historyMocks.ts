@@ -1,0 +1,51 @@
+export default [
+    {
+      id: "1",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "PRESENT",
+    },
+    { 
+      id: "2",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "ABSENT",
+    },
+    {
+      id: "3",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "LATE",
+    },
+    {
+      id: "4",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "EXCUSED",
+    },
+    {
+      id: "5",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "EXCUSED",
+    },
+    {
+      id: "6",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "PRESENT",
+    },
+    {
+      id: "7",
+      name: "Rocket Science",
+      location: "Room 3004",
+      dateTime: new Date(1660841540000),
+      status: "PRESENT",
+    },
+  ]
