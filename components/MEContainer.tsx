@@ -15,7 +15,13 @@ export default function MEContainer(props: ViewProps) {
   const { children, style, ...rest } = props;
   return (
     <ScrollView style={[styles.container, style]} { ...rest }>
-      {children}
+      <View
+        style={{
+          paddingBottom: 64
+        }}
+      >
+        {children}
+      </View>
     </ScrollView>
   )
 }
