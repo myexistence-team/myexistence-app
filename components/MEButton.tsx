@@ -150,17 +150,21 @@ export default function MEButton(props: PressableProps & {
               alignItems: 'center',
             }}
           >
-            <View
-              style={{
-                marginRight: 8,
-              }}
-            >
-              <FontAwesome5
-                name={iconStart}
-                size={18}
-                color={getButtonStyles(size, color)[variant].color}
-              />
-            </View>
+            {
+              iconStart ? (
+                <View
+                  style={{
+                    marginRight: 8,
+                  }}
+                >
+                  <FontAwesome5
+                    name={iconStart}
+                    size={18}
+                    color={getButtonStyles(size, color)[variant].color}
+                  />
+                </View>
+              ) : null
+            }
             <Text 
               style={[
                 getTextStyleBySize(size), 
