@@ -7,11 +7,13 @@ export default function MEControlledTextInput(props: {
   control: any,
   name: string,
   helperText?: string,
+  label?: string
 } & TextInputProps) {
   const {
     control,
     name,
     helperText,
+    label,
     ...rest
   } = props;
 
@@ -32,6 +34,7 @@ export default function MEControlledTextInput(props: {
         }) => {
         return (
           <METextInput
+            label={label}
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
