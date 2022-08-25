@@ -59,7 +59,7 @@ export default function MEControlledSelect({
           return (
             <>
               {
-                (typeof label === 'string' && label) || name ? (
+                typeof label === 'string' && (label || name) ? (
                   <Text 
                     style={[
                       textStyles.body1,
