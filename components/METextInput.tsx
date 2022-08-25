@@ -36,7 +36,7 @@ export default function METextInput(props: {
       }}
     >
       {
-        typeof label === 'string' && (label || name) ? (
+        !(typeof label === "boolean" && !label) ? (
           <Text 
             style={[
               textStyles.body1,
