@@ -70,7 +70,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
             .then((schoolSnap: DocumentSnapshot) => {
               setIsInitializing(false);
               setProfile(profile);
-              setAuth(auth);
               setSchool(schoolSnap.data());
             })
         }
