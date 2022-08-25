@@ -7,17 +7,22 @@ import Colors from '../constants/Colors';
 import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
+import { nowSchedule } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule
 }: {
-  schedule: any,
+  schedule: any & {
+    start: Date
+  },
 }) {
   const navigation = useNavigation();
 
-  const now: Date = new Date();
-  const diffInMs = schedule.start - now.getTime();
-  const diffToNowInMins = Math.floor(((diffInMs % 86400000) % 3600000) / 60000);
+  const now: Date = nowSchedule;
+  const diffInMs = schedule.start.getTime() - now.getTime();
+
+  const diffToNowInMins = Math.floor(diffInMs/60000);
+  const diffToNowInHours = Math.floor(diffInMs/3600000);
 
   return (
     <Pressable
@@ -80,9 +85,13 @@ export default function ScheduleCard({
               Toleransi {schedule.tolerance} menit
             </Text>
           </Text>
-          <Text style={textStyles.body3}>
-            Dalam {diffToNowInMins} Menit
-          </Text>
+          {
+            diffToNowInHours < 24 ? (
+              <Text style={textStyles.body3}>
+                Dalam {diffToNowInMins > 60 ? diffToNowInHours : diffToNowInMins} {diffToNowInMins > 60 ? 'Jam' : 'Menit'}
+              </Text>
+            ) : null
+          }
         </View>
         <Text 
           style={[
