@@ -7,6 +7,7 @@ import Colors from '../../constants/Colors';
 import { textStyles } from '../../constants/Styles';
 import MEButton from '../../components/MEButton';
 import { useNavigation } from '@react-navigation/native';
+import RegisterPage from './RegisterPage';
 
 const Stack = createNativeStackNavigator<WelcomeParamList>();
 
@@ -25,6 +26,13 @@ export default function WelcomePage() {
       <Stack.Screen
         name='Login'
         component={LoginPage}
+        options={{
+          headerShown: false
+        }}
+      />
+      <Stack.Screen
+        name='Register'
+        component={RegisterPage}
         options={{
           headerShown: false
         }}
@@ -82,7 +90,12 @@ function Welcome() {
         >
           <MEButton
             variant='outline'
-            color='white'
+            onPress={() => navigation.navigate('Welcome', {
+              screen: 'Register', 
+              params: {
+                role: "STUDENT"
+              }
+            })}
           >
             Daftar
           </MEButton>
