@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WelcomeParamList } from '../../navTypes';
@@ -8,6 +8,7 @@ import { textStyles } from '../../constants/Styles';
 import MEButton from '../../components/MEButton';
 import { useNavigation } from '@react-navigation/native';
 import RegisterPage from './RegisterPage';
+import iconWhite from '../../assets/images/icon-white.png';
 
 const Stack = createNativeStackNavigator<WelcomeParamList>();
 
@@ -52,6 +53,13 @@ function Welcome() {
         backgroundColor: Colors.light.tint
       }}
     >
+      <Image
+        source={iconWhite}
+        style={{
+          width: 180,
+          height: 180,
+        }}
+      />
       <Text
         style={[
           textStyles.heading1,
