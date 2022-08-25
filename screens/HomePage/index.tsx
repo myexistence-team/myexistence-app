@@ -18,17 +18,8 @@ import { signOut } from '../../actions/authActions'
 import History from './History'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
-
-  const {
-    navigation
-  } = props;
-  const schedules = scheduleMocks;
-
-  const [value, setValue] = useState('');
-
-  const user = useContext(UserContext)
   const profile: Profile = useContext(ProfileContext);
-  
+
   return (
     <MEContainer>
       <Text style={textStyles.heading4} >Selamat datang!</Text>
