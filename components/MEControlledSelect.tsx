@@ -8,25 +8,28 @@ import { capitalCase } from 'change-case'
 import { textStyles } from '../constants/Styles'
 import Colors from '../constants/Colors'
 
-export type MEControlledSelectProps = DropDownPickerProps<any> & {
-  options: ItemType<string | number>[],
+export type MEControlledSelectProps =  {
+  options?: ItemType<string | number>[],
   control: any,
   key?: any,
   name: string,
   defaultValue?: string | number,
   label?: string | boolean,
   helperText?: string,
-  isLoading?: boolean
+  isLoading?: boolean,
+  multiple?: boolean
 }
 
 export default function MEControlledSelect({
-  options,
+  options = [],
   control,
   name,
   isLoading,
   defaultValue,
   label,
-  helperText
+  helperText,
+  multiple,
+  ...rest
 }: MEControlledSelectProps) {
   const [open, setOpen] = useState(false);
   const [_val, setVal] = useState(null);
@@ -72,6 +75,7 @@ export default function MEControlledSelect({
                   <ActivityIndicator/>
                 ) : (
                   <MESelect
+                    {...rest}
                     items={options}
                     open={open}
                     setOpen={setOpen}
