@@ -9,6 +9,9 @@ import { ScheduleParamList } from '../../navTypes';
 import { collection, collectionGroup, documentId, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from '../../utils/firebaseGetters';
 import { ProfileContext } from '../../contexts';
+import MESpinner from '../../components/MESpinner';
+import { DAYS_ARRAY, nowSchedule } from '../../constants/constants';
+import { groupBy } from '../../utils/utilFunctions';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -49,7 +52,8 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
-    where('classId', 'in', profile.classIds)
+    where('classId', 'in', profile.classIds),
+    where('start', '>', nowSchedule),
   );
 
   function loadData() {    
@@ -89,6 +93,9 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
     }
   })
 
+  const schedulesGroupedByDay = groupBy(schedulesClasses, 'day');
+  const schedulesGroupedByDayArr = Object.entries(schedulesGroupedByDay);
+
   return (
     <MEContainer
       onRefresh={loadData}
@@ -101,10 +108,24 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
       </Text>
       {
         isLoading ? (
-          <ActivityIndicator/>
-        ) : schedulesClasses.map((s, idx) => (
-          <ScheduleCard schedule={s} key={idx}/>
+          <MESpinner/>
+        ) : schedulesGroupedByDayArr.map((sd: any[]) => (
+          <>
+            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
+              {
+                nowSchedule.getDay() === parseInt(sd[0]) ? 
+                  'Hari Ini' : parseInt(sd[0]) - nowSchedule.getDay() === 1 ?
+                  'Besok' : DAYS_ARRAY[sd[0]]
+              }
+            </Text>
+            {
+              sd[1].map((s: any, idx: number) => (
+                <ScheduleCard schedule={s} key={idx}/>
+              ))
+            }
+          </>
         ))
+        
       }
     </MEContainer>
   )
