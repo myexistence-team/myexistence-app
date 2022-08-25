@@ -24,7 +24,6 @@ export default function RegisterAccount() {
   });
 
   function onSubmit(data: any) {
-    console.log(auth, data)
     setIsSubmitting(true)
     signUpFromGoogle(auth, data.schoolId)
       .then((profile) => {

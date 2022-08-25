@@ -55,8 +55,6 @@ function Welcome() {
   const { auth, setAuth } = useContext(AuthContext);
   const [accessToken, setAccessToken] = React.useState<any>();
 
-  console.log(auth);
-
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: googleClientIds.androidClientId,
     iosClientId: googleClientIds.iosClientId,
@@ -64,7 +62,6 @@ function Welcome() {
   });
 
   React.useEffect(() => {
-    console.log("RESPONSE CHANGE")
     if (response?.type === "success" && response.authentication?.accessToken) {
       setAccessToken(response.authentication.accessToken);
       const credential = GoogleAuthProvider.credential(

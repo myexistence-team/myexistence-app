@@ -34,7 +34,6 @@ export default function RegisterPage() {
   })
 
   function onSubmit(data: any) {
-    console.log(data);
     setIsSubmitting(true);
     signUp(data)
       .catch((error: FirebaseError) => {
