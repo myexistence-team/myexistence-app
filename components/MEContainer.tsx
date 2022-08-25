@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, StatusBar, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, StatusBar, ScrollView, RefreshControl } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
 
@@ -10,17 +10,28 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function MEContainer(props: ViewProps) {
-  const { children, style, ...rest } = props;
+export default function MEContainer(props: ViewProps & {
+  onRefresh?: () => void,
+  refreshing?: boolean
+}) {
+  const { children, style, onRefresh, refreshing, ...rest } = props;
   return (
-    <ScrollView style={[styles.container, style]} { ...rest }>
-      <View
-        style={{
-          paddingBottom: 64
-        }}
-      >
-        {children}
-      </View>
+    <ScrollView 
+      style={{
+        flex: 1
+      }}
+      contentContainerStyle={[styles.container, style]}
+      refreshControl={
+        onRefresh && refreshing !== undefined ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        ) : undefined
+      }
+      { ...rest }
+    >
+      {children}
     </ScrollView>
   )
 }
