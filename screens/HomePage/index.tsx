@@ -1,4 +1,4 @@
-import { Text, View } from 'react-native'
+import { Image, Text, View } from 'react-native'
 import React, { Component, useContext, useState } from 'react'
 import { ScreenContainer } from 'react-native-screens'
 import MEContainer from '../../components/MEContainer'
@@ -16,9 +16,10 @@ import { Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
+import { RoleEnum } from '../../enums'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
-  const { profile } = useContext(ProfileContext);
+  const { profile }: { profile: Profile } = useContext(ProfileContext);
 
   return (
     <MEContainer>
@@ -30,19 +31,25 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         <View style={{
           flexDirection: 'row',         
         }}>
-          <View style={{
-            backgroundColor: 'aqua',
-            width: 64,
-            height: 64,
-            marginRight: 16,
-            borderRadius: 100,
-          }}></View>
+          {
+            profile.photoUrl ? (
+              <Image
+                source={{uri: profile.photoUrl}}
+                style={{
+                  width: 64,
+                  height: 64,
+                  marginRight: 16,
+                  borderRadius: 32
+                }}
+              />
+            ) : null
+          }
           <View>
             <Text style={[
               textStyles.body1, 
               {marginBottom: 4}
               ]}>{profile.displayName}</Text>
-            <Text style={textStyles.body3}>{profile.role}</Text>
+            <Text style={textStyles.body3}>{RoleEnum[profile.role]}</Text>
           </View>
         </View>
         <View style={{
