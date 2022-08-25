@@ -36,6 +36,7 @@ import { getFirestore, setDoc, doc, Firestore, getDoc, DocumentSnapshot, Firesto
 import { textStyles } from '../constants/Styles';
 import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
+import MESpinner from '../components/MESpinner';
 
 initializeApp(firebaseConfig);
 
@@ -103,8 +104,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           justifyContent: 'center'
         }}
       >
-        <ActivityIndicator size={'large'} color={Colors.light.tint}/>
-        <Text style={[textStyles.body2, { marginTop: 16 }]}>Sedang Memuat...</Text>
+        <MESpinner/>
       </View>
     )
   }
