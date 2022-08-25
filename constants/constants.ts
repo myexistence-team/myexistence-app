@@ -1,7 +1,8 @@
 export const SCHEDULE_START_DATE_MS = 259200000;
 
+const now = new Date();
 const nowSchedule = new Date();
-nowSchedule.setDate(4);
+nowSchedule.setDate(now.getDay() + 4);
 nowSchedule.setFullYear(1970);
 nowSchedule.setMonth(0);
 
