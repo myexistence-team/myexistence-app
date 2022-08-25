@@ -12,6 +12,7 @@ export type Profile = BaseType & {
   displayName: string,
   email: string,
   role: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT',
+  photoUrl?: string
 }
 
 export type Teacher = BaseType & Profile & {

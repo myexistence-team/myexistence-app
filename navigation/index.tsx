@@ -143,7 +143,7 @@ function RootNavigator(props: any) {
         auth && profile ? (
           <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
         ) : auth && !profile ? (
-          <Stack.Screen name="RegisterAccount" component={RegisterAccount} options={{ headerShown: true }}/>
+          <Stack.Screen name="RegisterAccount" component={RegisterAccount} options={{ headerShown: false }}/>
         ) : (
           <Stack.Screen name="Welcome" component={WelcomePage} options={{ headerShown: false }}/>
         )

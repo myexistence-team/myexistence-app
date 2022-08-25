@@ -17,12 +17,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { AuthContext } from '../../contexts';
 import googleClientIds from '../../googleClientIds';
 
-export default function RegisterPage(props: {
-  role: "TEACHER" | "STUDENT"
-}) {
-  const {
-    role
-  } = props;
+export default function RegisterPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 

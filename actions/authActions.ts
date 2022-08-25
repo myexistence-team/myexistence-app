@@ -1,6 +1,7 @@
 import { FirebaseError } from "firebase/app"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, UserCredential } from "firebase/auth"
-import { collection, deleteDoc, doc, getDocs, query, setDoc, where } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"
+import { Profile } from "../types"
 import { auth, firestore } from "../utils/firebaseGetters"
 
 export const signIn = async (
@@ -41,8 +42,41 @@ export const signUp = async (
 
   await setDoc(doc(firestore, 'users', newAuth.user.uid), {
     ...existingUsers.docs[0].data(),
-    hasRegistered: true
+    hasRegistered: true,
+    createdBy: newAuth.user.uid,
+    updatedBy: newAuth.user.uid,
+    createdAt: new Date(),
+    updatedAt: new Date()
   });
 
   return;
+}
+
+export const signUpFromGoogle = async (user: any, schoolId: string): Promise<any> => {
+  const usersRef = collection(firestore, 'users');
+  const existingUserQuery = query(
+    usersRef, 
+    where('email', "==", user.email), 
+    where('role', "in", ["TEACHER", "STUDENT"]), 
+    where('schoolId', "==", schoolId), 
+  );
+  const existingUsers = await getDocs(existingUserQuery);
+
+  if (existingUsers.empty) {
+    throw new FirebaseError('not-exists', 'Anda belum terdaftar di sekolah yang anda pilih');
+  }
+
+  await deleteDoc(doc(firestore, 'users', existingUsers.docs[0].id));
+  await setDoc(doc(firestore, 'users', user.uid), {
+    ...existingUsers.docs[0].data(),
+    displayName: user.displayName,
+    photoUrl: user?.photoURL,
+    hasRegistered: true,
+    createdBy: user.uid,
+    updatedBy: user.uid,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+  const newProfileSnapshot = await getDoc(doc(firestore, 'users', user.uid));
+  return newProfileSnapshot.data();
 }
