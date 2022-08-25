@@ -8,7 +8,7 @@ import {
   Auth,
   getAuth,
   onAuthStateChanged,
-  User,
+  UserCredential,
   // FacebookAuthProvider,
   // signInWithCredential,
 } from 'firebase/auth';
@@ -34,60 +34,62 @@ import { ProfileContext, SchoolContext, AuthContext } from '../contexts';
 import { useContext } from 'react';
 import { getFirestore, setDoc, doc, Firestore, getDoc, DocumentSnapshot, FirestoreError } from 'firebase/firestore';
 import { textStyles } from '../constants/Styles';
+import { Profile } from '../types';
+import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 
 initializeApp(firebaseConfig);
 
 const firestore: Firestore = getFirestore(app);
-const auth: Auth = getAuth(app);
+const fbAuth: Auth = getAuth(app);
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const [isInitializing, setIsInitializing] = React.useState(true);
   const [authError, setAuthError] = React.useState(null);
-  const [user, setUser] = React.useState<{
-    user: User | null, profile: any, school: any
-  }>();
+  const [auth, setAuth] = React.useState<any>(null);
+  const [profile, setProfile] = React.useState<any>(null);
+  const [school, setSchool] = React.useState<any>(null);
   
   React.useEffect(() => {
-    onAuthStateChanged(auth, user => {
+    onAuthStateChanged(fbAuth, user => {
       if (user !== null) {
-        getDoc(doc(firestore, 'users', user.uid))
-          .then((docSnap: DocumentSnapshot) => {
-            if (docSnap.exists()) {
-              const profile = docSnap.data();
-              getDoc(doc(firestore, 'schools', profile.schoolId))
-                .then((schoolSnap: DocumentSnapshot) => {
-                  setIsInitializing(false);
-                  setUser({
-                    user,
-                    profile,
-                    school: schoolSnap.data()
-                  })
-                })
-            }
-          })
-          .catch((e: FirestoreError) => {
-            var message: string = '';
-            switch (e.code) {
-              case 'resource-exhausted':
-                message = 'Kuota Anda sudah habis. Mohon coba lagi nanti.'
-              default:
-                message = 'Terjadi kesalahan. Mohon coba lagi nanti.'
-            }
-            Alert.alert(
-              "Oops!",
-              message
-            )
-          })
-        } else {
-          setUser({
-            user: null,
-            profile: null,
-            school: null
-          })
-        }
-        setIsInitializing(false);
+        setAuth(user);
+      } else {
+        setAuth(null);
+      }
+      setIsInitializing(false);
     });
   }, [])
+
+  React.useEffect(() => {
+    if (auth && auth.uid) {
+      getDoc(doc(firestore, 'users', auth.uid))
+      .then((docSnap: DocumentSnapshot) => {
+        if (docSnap.exists()) {
+          const profile = docSnap.data();
+          getDoc(doc(firestore, 'schools', profile.schoolId))
+            .then((schoolSnap: DocumentSnapshot) => {
+              setIsInitializing(false);
+              setProfile(profile);
+              setAuth(auth);
+              setSchool(schoolSnap.data());
+            })
+        }
+      })
+      .catch((e: FirestoreError) => {
+        var message: string = '';
+        switch (e.code) {
+          case 'resource-exhausted':
+            message = 'Kuota Anda sudah habis. Mohon coba lagi nanti.'
+          default:
+            message = 'Terjadi kesalahan. Mohon coba lagi nanti.'
+        }
+        Alert.alert(
+          "Oops!",
+          message
+        )
+      })
+    }
+  }, [auth])
 
   if (isInitializing) {
     return (
@@ -105,9 +107,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   }
 
   return (
-    <AuthContext.Provider value={user?.user}>
-      <ProfileContext.Provider value={user?.profile}>
-        <SchoolContext.Provider value={user?.school}>
+    <AuthContext.Provider value={{ auth, setAuth }}>
+      <ProfileContext.Provider value={{ profile, setProfile }}>
+        <SchoolContext.Provider value={{ school, setSchool }}>
           <NavigationContainer
             linking={LinkingConfiguration}
             theme={colorScheme === 'dark' ? DarkTheme : METheme}>
@@ -126,10 +128,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator(props: any) {
-  const [initializing, setInitializing] = React.useState(true);
-  const user = useContext(AuthContext);
-
-  // if (initializing) return null;
+  const { auth }: { auth: UserCredential } = useContext(AuthContext);
+  const { profile }: { profile: Profile } = useContext(ProfileContext);
 
   return (
     <Stack.Navigator
@@ -140,8 +140,10 @@ function RootNavigator(props: any) {
       }}
     >
       {
-        user ? (
+        auth && profile ? (
           <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+        ) : auth && !profile ? (
+          <Stack.Screen name="RegisterAccount" component={RegisterAccount} options={{ headerShown: true }}/>
         ) : (
           <Stack.Screen name="Welcome" component={WelcomePage} options={{ headerShown: false }}/>
         )
