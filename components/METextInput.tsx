@@ -36,7 +36,7 @@ export default function METextInput(props: {
       }}
     >
       {
-        (typeof label === 'string' && label) || name && (
+        (typeof label === 'string' && label) || name ? (
           <Text 
             style={[
               textStyles.body1,
@@ -44,7 +44,7 @@ export default function METextInput(props: {
           >
             {label || capitalCase(name || '')}
           </Text>
-        )
+        ) : null
       }
       <TextInput style={[styles(Boolean(error)).input]} {...rest}/>
       {
