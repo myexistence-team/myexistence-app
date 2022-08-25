@@ -38,8 +38,6 @@ export default function SchedulePage() {
 function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) {
   const { profile } = useContext(ProfileContext);
 
-  console.log(profile)
-
   const [classes, setClasses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
