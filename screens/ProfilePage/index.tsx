@@ -31,6 +31,7 @@ export default function ProfilePage() {
             screen: 'Schedule'
           })
         }}
+        disableBackButton
       />
       <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Profil Anda</Text>
       <Text style={[textStyles.body2]}>Name</Text>

@@ -7,9 +7,11 @@ import { textStyles } from '../constants/Styles';
 export default function MEHeader({
   title,
   onBackPress,
+  disableBackButton = false
 }: {
   title: string,
-  onBackPress?: Function
+  onBackPress?: Function,
+  disableBackButton?: boolean
 }) {
   const navigation = useNavigation();
   return (
@@ -20,7 +22,7 @@ export default function MEHeader({
         marginBottom: 24
       }}
     >
-      {navigation.canGoBack() && (
+      {!disableBackButton && navigation.canGoBack() && (
         <Pressable
           style={{
             marginRight: 16
