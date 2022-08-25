@@ -62,6 +62,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 
   React.useEffect(() => {
     if (auth && auth.uid) {
+      setIsInitializing(true);
       getDoc(doc(firestore, 'users', auth.uid))
       .then((docSnap: DocumentSnapshot) => {
         if (docSnap.exists()) {
@@ -87,6 +88,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           message
         )
       })
+    } else {
+      setProfile(null);
+      setSchool(null);
     }
   }, [auth])
 
