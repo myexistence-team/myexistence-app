@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, StatusBar, ScrollView } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {
