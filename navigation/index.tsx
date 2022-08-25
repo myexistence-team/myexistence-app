@@ -30,7 +30,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
 import { initializeApp } from 'firebase/app';
 import { app, firebaseConfig } from '../firebase';
-import { ProfileContext, SchoolContext, UserContext } from '../contexts';
+import { ProfileContext, SchoolContext, AuthContext } from '../contexts';
 import { useContext } from 'react';
 import { getFirestore, setDoc, doc, Firestore, getDoc, DocumentSnapshot, FirestoreError } from 'firebase/firestore';
 import { textStyles } from '../constants/Styles';
@@ -105,7 +105,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   }
 
   return (
-    <UserContext.Provider value={user?.user}>
+    <AuthContext.Provider value={user?.user}>
       <ProfileContext.Provider value={user?.profile}>
         <SchoolContext.Provider value={user?.school}>
           <NavigationContainer
@@ -115,7 +115,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           </NavigationContainer>
         </SchoolContext.Provider>
       </ProfileContext.Provider>
-    </UserContext.Provider>
+    </AuthContext.Provider>
   );
 }
 
@@ -127,7 +127,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator(props: any) {
   const [initializing, setInitializing] = React.useState(true);
-  const user = useContext(UserContext);
+  const user = useContext(AuthContext);
 
   // if (initializing) return null;
 
