@@ -27,8 +27,8 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
   const [value, setValue] = useState('');
 
   const user = useContext(UserContext)
-  const profile: Profile = useContext(ProfileContext)
-  console.log("Ini user", profile)
+  const profile: Profile = useContext(ProfileContext);
+  
   return (
     <MEContainer>
       <Text style={textStyles.heading4} >Selamat datang!</Text>
@@ -80,8 +80,8 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           </View>
         </View>
       </MECard>
-      <History/>
       <NextSchedules/>
+      <History/>
     </MEContainer>
   )
 }

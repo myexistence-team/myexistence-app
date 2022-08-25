@@ -129,7 +129,6 @@ function RootNavigator(props: any) {
   const [initializing, setInitializing] = React.useState(true);
   const user = useContext(UserContext);
 
-  console.log(user);
   // if (initializing) return null;
 
   return (

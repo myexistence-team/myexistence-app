@@ -27,7 +27,6 @@ export default function ProfilePage() {
       <MEHeader
         title='Profile'
         onBackPress={() => {
-          console.log("HELLO")
           navigation.navigate('Root', {
             screen: 'Schedule'
           })
