@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'react-native'
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WelcomeParamList } from '../../navTypes';
 import LoginPage from './LoginPage';
@@ -9,6 +9,14 @@ import MEButton from '../../components/MEButton';
 import { useNavigation } from '@react-navigation/native';
 import RegisterPage from './RegisterPage';
 import iconWhite from '../../assets/images/icon-white.png';
+import { AuthContext } from '../../contexts';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import googleClientIds from '../../googleClientIds';
+import { auth as fbAuth } from '../../utils/firebaseGetters';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const Stack = createNativeStackNavigator<WelcomeParamList>();
 
@@ -44,6 +52,28 @@ export default function WelcomePage() {
 
 function Welcome() {
   const navigation = useNavigation();
+  const { auth, setAuth } = useContext(AuthContext);
+  const [accessToken, setAccessToken] = React.useState<any>();
+
+  console.log(auth);
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: googleClientIds.androidClientId,
+    iosClientId: googleClientIds.iosClientId,
+    expoClientId: googleClientIds.expoClientId
+  });
+
+  React.useEffect(() => {
+    console.log("RESPONSE CHANGE")
+    if (response?.type === "success" && response.authentication?.accessToken) {
+      setAccessToken(response.authentication.accessToken);
+      const credential = GoogleAuthProvider.credential(
+        null, response.authentication.accessToken
+      )
+      signInWithCredential(fbAuth, credential);
+    }
+  }, [response]);
+
   return (
     <View
       style={{
@@ -79,7 +109,8 @@ function Welcome() {
       >
         <View
           style={{
-            flex: 1
+            flex: 1,
+            marginRight: 16
           }}
         >
           <MEButton
@@ -108,6 +139,32 @@ function Welcome() {
             Daftar
           </MEButton>
         </View>
+      </View>
+      <Text style={[textStyles.body2, { 
+        color: 'white',
+        marginBottom: 8,
+        marginTop: 24,
+      }]}>
+        Atau gunakan
+      </Text>
+      <View
+        style={{
+          paddingHorizontal: 24,
+          flexDirection: 'row'
+        }}
+      >
+        <MEButton
+          color='#DB4437'
+          iconStart='google'
+          onPress={() => {
+            promptAsync({
+              // useProxy: false,
+              // showInRecents: true
+            })
+          }}
+        >
+          Google
+        </MEButton>
       </View>
     </View>
   )

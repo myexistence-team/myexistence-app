@@ -18,7 +18,7 @@ import { signOut } from '../../actions/authActions'
 import History from './History'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
-  const profile: Profile = useContext(ProfileContext);
+  const { profile } = useContext(ProfileContext);
 
   return (
     <MEContainer>

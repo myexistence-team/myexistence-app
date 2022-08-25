@@ -12,8 +12,8 @@ import { signOut } from '../../actions/authActions';
 import { useNavigation } from '@react-navigation/native';
 
 export default function ProfilePage() {
-  const profile: Profile = useContext(ProfileContext);
-  const school: School = useContext(SchoolContext);
+  const { profile }: { profile: Profile } = useContext(ProfileContext);
+  const { school }: { school: School } = useContext(SchoolContext);
   const navigation = useNavigation();
   const [isSigningOut, setIsSigningOut] = useState(false);
 

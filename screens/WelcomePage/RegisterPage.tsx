@@ -1,5 +1,5 @@
 import { View, Text, KeyboardAvoidingView, FlatList } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import MEContainer from '../../components/MEContainer';
 import MEHeader from '../../components/MEHeader';
 import { object, string } from 'yup';
@@ -11,6 +11,11 @@ import { FirebaseError } from 'firebase/app';
 import MEControlledSelect from '../../components/MEControlledSelect';
 import MEFirestoreSelect from '../../components/MEFirestoreSelect';
 import { signUp } from '../../actions/authActions';
+
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { AuthContext } from '../../contexts';
+import googleClientIds from '../../googleClientIds';
 
 export default function RegisterPage(props: {
   role: "TEACHER" | "STUDENT"
