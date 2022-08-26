@@ -24,7 +24,6 @@ import { nowScheduleDate } from '../../constants/constants'
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
-  const [classes, setClasses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,15 +46,22 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
     if (profile.classIds.length) {
       setIsLoading(true);
       getDocs(classesQuery).then((docs) => {
-        const docsArr: any[] = [];
+        const classArr: any[] = [];
         docs.forEach((doc) => {
-          docsArr.push({ ...doc.data(), id: doc.id });
+          classArr.push({ ...doc.data(), id: doc.id });
         })
-        setClasses(docsArr);
         getDocs(schedulesQuery).then((docs) => {
           const docsArr: any[] = [];
           docs.forEach((doc) => {
-            docsArr.push({ ...doc.data()});
+            const classObj = classArr
+              .find(({ id }) => id === doc.data().classId);
+            docsArr.push({ 
+              ...doc.data(),
+              className: classObj?.name,
+              description: classObj?.description,
+              start: doc.data().start.toDate(),
+              end: doc.data().end.toDate(),
+            });
           })
           setSchedules(docsArr);
           setIsLoading(false);
@@ -69,17 +75,6 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
   useEffect(() => {
     loadHomePageData();
   }, [])
-
-  const schedulesClasses = schedules.map((s) => {
-    const classObj = classes?.find(({ id }) => id === s.classId);
-    return {
-      ...s,
-      className: classObj?.name,
-      description: classObj?.description,
-      start: s.start.toDate(),
-      end: s.end.toDate(),
-    }
-  })
 
   return (
     <MEContainer
@@ -149,7 +144,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           </Text>
         ) : (
           <>
-            <NextSchedules schedules={schedulesClasses} isLoading={isLoading}/>
+            <NextSchedules schedules={schedules} isLoading={isLoading}/>
             <History/>
           </>
         )
