@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
-const headerFontFamily = 'quicksand';
+const headerFontFamily = 'quicksand-bold';
 const bodyFontFamily = 'manrope';
 export const textStyles = StyleSheet.create({
   heading1: {
