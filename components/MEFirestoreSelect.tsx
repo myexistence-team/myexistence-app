@@ -40,7 +40,13 @@ export default function MEFirestoreSelect({
   }
 
   useEffect(() => {
-    getData()
+    var isMounted = true;
+    if (isMounted) {
+      getData()
+    }
+    return () => {
+      isMounted = false;
+    };
   }, [])
 
   return (

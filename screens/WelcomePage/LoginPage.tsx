@@ -16,7 +16,6 @@ import { RootStackParamList, RootTabScreenProps } from '../../navTypes'
 import { signIn } from '../../actions/authActions'
 
 export default function LoginPage(props: any) {
-  const navigation = useNavigation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loginSchema = object().shape({
