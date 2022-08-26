@@ -14,6 +14,8 @@ function getColorHex(color: string) {
       return Colors.light.red;
     case 'success':
       return Colors.light.blue;
+    case 'disabled':
+      return Colors.light.grey;
     default:
       return color;
   }
@@ -111,7 +113,7 @@ export default function MEButton(props: PressableProps & {
   children?: string,
   isLoading?: boolean
 }) {
-  const {
+  var {
     variant = 'contained',
     color = 'primary',
     size = 'md',
@@ -120,8 +122,13 @@ export default function MEButton(props: PressableProps & {
     textStyle,
     isLoading,
     iconStart,
+    disabled,
     ...rest
   } = props;
+
+  if (disabled !== undefined && disabled) {
+    color = 'disabled';
+  }
 
   return (
     <Pressable 
@@ -133,6 +140,7 @@ export default function MEButton(props: PressableProps & {
         } : {},
         style,
       ])}
+      disabled={disabled}
       {...rest} 
     >
       {
