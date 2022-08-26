@@ -12,6 +12,7 @@ import { signOut } from '../../actions/authActions';
 import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileParamList } from '../../navTypes';
+import EditProfile from './EditProfile';
 
 const Stack = createNativeStackNavigator<ProfileParamList>();
 
@@ -23,6 +24,13 @@ export default function ProfilePage() {
       <Stack.Screen
         name='ProfileScreen'
         component={ProfileScreen}
+        options={{
+          header: () => null
+        }}
+      />
+      <Stack.Screen
+        name='EditProfile'
+        component={EditProfile}
         options={{
           header: () => null
         }}
