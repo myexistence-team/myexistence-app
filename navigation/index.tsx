@@ -13,10 +13,10 @@ import {
   // signInWithCredential,
 } from 'firebase/auth';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ActivityIndicator, Alert, ColorSchemeName, Pressable, Text, View } from 'react-native';
+import { ColorSchemeName, View } from 'react-native';
 import Colors from '../constants/Colors';
 import { METheme } from '../constants/Themes';
 import useColorScheme from '../hooks/useColorScheme';
@@ -32,8 +32,7 @@ import { initializeApp } from 'firebase/app';
 import { app, firebaseConfig } from '../firebase';
 import { ProfileContext, SchoolContext, AuthContext } from '../contexts';
 import { useContext } from 'react';
-import { getFirestore, setDoc, doc, Firestore, getDoc, DocumentSnapshot, FirestoreError } from 'firebase/firestore';
-import { textStyles } from '../constants/Styles';
+import { getFirestore, doc, Firestore, onSnapshot } from 'firebase/firestore';
 import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
@@ -52,48 +51,71 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   
   React.useEffect(() => {
     onAuthStateChanged(fbAuth, user => {
+      setIsInitializing(true);
       if (user !== null) {
         setAuth(user);
       } else {
         setAuth(null);
       }
-      setIsInitializing(false);
     });
   }, [])
 
   React.useEffect(() => {
     if (auth && auth.uid) {
-      setIsInitializing(true);
-      getDoc(doc(firestore, 'users', auth.uid))
-      .then((docSnap: DocumentSnapshot) => {
+      onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
         if (docSnap.exists()) {
           const profile = docSnap.data();
-          getDoc(doc(firestore, 'schools', profile.schoolId))
-            .then((schoolSnap: DocumentSnapshot) => {
-              setIsInitializing(false);
-              setProfile(profile);
-              setSchool(schoolSnap.data());
-            })
+          setProfile(profile);
+        } else {
+          setProfile(null);
         }
       })
-      .catch((e: FirestoreError) => {
-        var message: string = '';
-        switch (e.code) {
-          case 'resource-exhausted':
-            message = 'Kuota Anda sudah habis. Mohon coba lagi nanti.'
-          default:
-            message = 'Terjadi kesalahan. Mohon coba lagi nanti.'
-        }
-        Alert.alert(
-          "Oops!",
-          message
-        )
-      })
+      // getDoc(doc(firestore, 'users', auth.uid))
+      // .then((docSnap: DocumentSnapshot) => {
+      //   if (docSnap.exists()) {
+      //     const profile = docSnap.data();
+      //     getDoc(doc(firestore, 'schools', profile.schoolId))
+      //       .then((schoolSnap: DocumentSnapshot) => {
+      //         setProfile(profile);
+      //         setSchool(schoolSnap.data());
+      //       })
+      //   }
+      // })
+      // .catch((e: FirestoreError) => {
+      //   var message: string = '';
+      //   switch (e.code) {
+      //     case 'resource-exhausted':
+      //       message = 'Kuota Anda sudah habis. Mohon coba lagi nanti.'
+      //     default:
+      //       message = 'Terjadi kesalahan. Mohon coba lagi nanti.'
+      //   }
+      //   Alert.alert(
+      //     "Oops!",
+      //     message
+      //   )
+      // })
     } else {
       setProfile(null);
-      setSchool(null);
     }
   }, [auth])
+
+  React.useEffect(() => {
+    console.log("PROFILE CHANHGE")
+    if (profile && profile.schoolId) {
+      onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
+        console.log(docSnap.data())
+        if (docSnap.exists()) {
+          const school = docSnap.data();
+          setSchool(school);
+          setIsInitializing(false);
+        } else {
+          setSchool(null);
+        }
+      })
+    } else {
+      setSchool(null);
+    }
+  }, [profile])
 
   if (isInitializing) {
     return (
@@ -115,7 +137,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         <SchoolContext.Provider value={{ school, setSchool }}>
           <NavigationContainer
             linking={LinkingConfiguration}
-            theme={colorScheme === 'dark' ? DarkTheme : METheme}>
+            theme={METheme}>
             <RootNavigator/>
           </NavigationContainer>
         </SchoolContext.Provider>
@@ -172,7 +194,7 @@ function BottomTabNavigator() {
     <BottomTab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: Colors.light.tint,
       }}>
       <BottomTab.Screen
         name="Home"

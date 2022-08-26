@@ -83,11 +83,11 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   }, [])
 
   const schedulesClasses = schedules.map((s) => {
-    const { name, description } = classes.find(({ id }) => id === s.classId);
+    const classObj = classes?.find(({ id }) => id === s.classId);
     return {
       ...s,
-      className: name,
-      description,
+      className: classObj?.name,
+      description: classObj?.description,
       start: s.start.toDate(),
       end: s.end.toDate(),
     }
@@ -109,9 +109,9 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
       {
         isLoading ? (
           <MESpinner/>
-        ) : schedulesGroupedByDayArr.map((sd: any[]) => (
+        ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
           <>
-            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
+            <Text key={dIdx} style={[textStyles.heading4, { marginBottom: 16 }]}>
               {
                 nowSchedule.getDay() === parseInt(sd[0]) ? 
                   'Hari Ini' : parseInt(sd[0]) - nowSchedule.getDay() === 1 ?
