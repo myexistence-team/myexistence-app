@@ -7,7 +7,7 @@ import Colors from '../constants/Colors';
 import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
-import { nowScheduleDate } from '../constants/constants';
+import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
 
 export default function ScheduleCard({
   schedule
@@ -18,7 +18,7 @@ export default function ScheduleCard({
 }) {
   const navigation = useNavigation();
 
-  const now: Date = nowScheduleDate;
+  const now: Date = useCurrentScheduleTime();
   const diffInMs = schedule.start.getTime() - now.getTime();
 
   const diffToNowInMins = Math.floor(diffInMs/60000);
@@ -26,9 +26,6 @@ export default function ScheduleCard({
 
   return (
     <Pressable
-      // style={({ pressed }) => ({
-      //   opacity: pressed && 0.75
-      // })}
       style={({ pressed }) => ({
         opacity: pressed ? 0.75 : 1
       })}
@@ -108,7 +105,7 @@ export default function ScheduleCard({
           {schedule.description}
         </Text>
         {
-          diffToNowInMins < 10 && (
+          diffToNowInMins <= 10 && diffToNowInMins < 0 ? (
             <MEButton
               iconStart="qrcode"
               style={{
@@ -117,7 +114,7 @@ export default function ScheduleCard({
             >
               Pindai QR Code
             </MEButton>
-          )
+          ) : null
         }
       </MECard>
     </Pressable>
