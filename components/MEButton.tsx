@@ -1,4 +1,4 @@
-import { StyleSheet, Pressable, PressableProps, ViewStyle, Text, TextStyle, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, Pressable, PressableProps, ViewStyle, Text, TextStyle, View, ActivityIndicator, Platform } from 'react-native'
 import React from 'react'
 import Colors from '../constants/Colors';
 import { textStyles } from '../constants/Styles';
@@ -35,11 +35,11 @@ function getTextStyleBySize(size: string) {
 function getSpinnerSize(size: string) {
   switch (size) {
     case 'lg':
-      return 33
+      return Platform.OS === 'android' ? 28 : 33
     case 'sm':
-      return 19
+      return Platform.OS === 'android' ? 16 : 19
     default:
-      return 25
+      return Platform.OS === 'android' ? 21 : 25
   }
 }
 
