@@ -54,6 +54,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         setAuth(user);
       } else {
         setAuth(null);
+        setIsInitializing(false);
       }
     }, (e) => {
       alert(e.message);
