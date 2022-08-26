@@ -69,6 +69,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           setProfile(profile);
         } else {
           setProfile(null);
+          setIsInitializing(false);
         }
       })
       // getDoc(doc(firestore, 'users', auth.uid))
