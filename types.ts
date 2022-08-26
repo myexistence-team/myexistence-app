@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore"
+import { DocumentReference, Timestamp } from "firebase/firestore"
 
 export type BaseType = {
   id: string,
@@ -10,9 +10,12 @@ export type BaseType = {
 
 export type Profile = BaseType & {
   displayName: string,
+  schoolId?: string,
   email: string,
   role: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT',
-  photoUrl?: string
+  photoUrl?: string,
+  classIds: string[],
+  classes: DocumentReference[]
 }
 
 export type Teacher = BaseType & Profile & {
