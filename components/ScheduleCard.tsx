@@ -98,7 +98,7 @@ export default function ScheduleCard({
             textStyles.body1,
             {
               marginVertical: 8,
-              fontWeight: '700',
+              fontFamily: 'manrope-bold'
             }
           ]}
         >

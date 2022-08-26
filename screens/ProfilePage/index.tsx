@@ -63,24 +63,24 @@ export function ProfileScreen() {
       />
       <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Profil Anda</Text>
       <Text style={[textStyles.body2]}>Name</Text>
-      <Text style={[textStyles.body1, { marginBottom: 16 }]}>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {profile.displayName}
       </Text>
       <Text style={[textStyles.body2]}>Email</Text>
-      <Text style={[textStyles.body1, { marginBottom: 16 }]}>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {profile.email}
       </Text>
       <Text style={[textStyles.body2]}>Peran</Text>
-      <Text style={[textStyles.body1, { marginBottom: 24 }]}>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 24 }]}>
         {RoleEnum[profile.role]}
       </Text>
       <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sekolah</Text>
       <Text style={[textStyles.body2]}>Nama Sekolah</Text>
-      <Text style={[textStyles.body1, { marginBottom: 16 }]}>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {school.name}
       </Text>
       <Text style={[textStyles.body2]}>Lokasi Sekolah</Text>
-      <Text style={[textStyles.body1, { marginBottom: 16 }]}>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {school.location}
       </Text>
       <MEButton

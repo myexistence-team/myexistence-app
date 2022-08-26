@@ -83,7 +83,7 @@ export default function HistoryCard(props: {
                     <Text 
                     style={[textStyles.body3, {
                         marginLeft: 4,
-                        fontWeight: '800',
+                        fontFamily: 'manrope-bold',
                         color: getStatusColor(history.status)
                       }]} 
                     >
@@ -93,7 +93,7 @@ export default function HistoryCard(props: {
             </View>
             <Text
             style={[textStyles.body1, {
-                fontWeight: '700',
+                fontFamily: 'manrope-bold'
              }]}
             >{history.name}</Text>
         </MECard>
