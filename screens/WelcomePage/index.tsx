@@ -113,7 +113,7 @@ function Welcome() {
           }}
         >
           <MEButton
-            variant='outline'
+            color='white'
             onPress={() => navigation.navigate('Welcome', {
               screen: 'Login'
             })}
@@ -128,6 +128,7 @@ function Welcome() {
         >
           <MEButton
             variant='outline'
+            color='white'
             onPress={() => navigation.navigate('Welcome', {
               screen: 'Register', 
               params: {

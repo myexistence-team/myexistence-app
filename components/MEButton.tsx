@@ -64,7 +64,7 @@ function getButtonStyleBySize(size: string) {
 const getButtonStyles = (size: string, color: string) => StyleSheet.create({
   contained: {
     backgroundColor: getColorHex(color),
-    color: '#fff',
+    color: color === 'white' ? Colors.light.tint : '#fff',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -82,7 +82,6 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
   outline: {
     color: getColorHex(color),
     width: '100%',
-    backgroundColor: '#fff',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -105,7 +104,7 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
 export default function MEButton(props: PressableProps & {
   variant?: 'contained' | 'outline' | 'ghost',
   size?: 'sm' | 'md' | 'lg',
-  color?: 'primary' | 'secondary' | 'danger' | 'success' | string,
+  color?: 'primary' | 'secondary' | 'danger' | 'success' | 'white' | string,
   style?: ViewStyle,
   textStyle?: TextStyle,
   iconStart?: string,
