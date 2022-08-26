@@ -50,6 +50,8 @@ export default function LoginPage(props: any) {
             name='email'
             control={control}
             autoCapitalize='none'
+            autoComplete='email'
+            keyboardType='email-address'
           />
           <MEControlledTextInput
             control={control}
