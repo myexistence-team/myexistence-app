@@ -39,11 +39,16 @@ export type ScheduleParamList = {
   ScheduleDetails: { scheduleId: string },
 }
 
+export type ProfileParamList = {
+  ProfileScreen: undefined,
+  EditProfile: undefined,
+}
+
 export type RootTabParamList = {
   Home: undefined;
   Schedule: NavigatorScreenParams<ScheduleParamList> | undefined,
   Scanner: { scheduleId: string },
-  Profile: { userId?: string },
+  Profile: NavigatorScreenParams<ProfileParamList> | undefined,
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<

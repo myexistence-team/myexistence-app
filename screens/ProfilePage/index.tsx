@@ -10,8 +10,28 @@ import MELink from '../../components/MELink';
 import MEButton from '../../components/MEButton';
 import { signOut } from '../../actions/authActions';
 import { useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ProfileParamList } from '../../navTypes';
+
+const Stack = createNativeStackNavigator<ProfileParamList>();
 
 export default function ProfilePage() {
+  return (
+    <Stack.Navigator
+      initialRouteName='ProfileScreen'
+    >
+      <Stack.Screen
+        name='ProfileScreen'
+        component={ProfileScreen}
+        options={{
+          header: () => null
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+export function ProfileScreen() {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const { school }: { school: School } = useContext(SchoolContext);
   const navigation = useNavigation();
