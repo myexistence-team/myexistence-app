@@ -46,10 +46,10 @@ export default function RegisterPage() {
 
   return (
     <MEContainer>
-      <MEHeader title='Daftar'/>
       <KeyboardAvoidingView
-        behavior='padding'
+        behavior='position'
       >
+        <MEHeader title='Daftar'/>
         <View>
           <MEControlledSelect
             control={control}
@@ -90,16 +90,16 @@ export default function RegisterPage() {
             autoCapitalize='none'
             secureTextEntry
           />
-          <MEButton 
-            size='lg' 
-            // disabled={watch("password") !== watch("repassword")}
-            isLoading={isSubmitting} 
-            onPress={handleSubmit(onSubmit)}
-          >
-            Daftar
-          </MEButton>
         </View>
       </KeyboardAvoidingView>
+      <MEButton 
+        size='lg' 
+        disabled={watch("password") !== watch("repassword")}
+        isLoading={isSubmitting} 
+        onPress={handleSubmit(onSubmit)}
+      >
+        Daftar
+      </MEButton>
     </MEContainer>
   )
 }
