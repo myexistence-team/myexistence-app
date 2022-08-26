@@ -34,7 +34,7 @@ export default function ScheduleCard({
       })}
       onPress={() => {
         navigation.navigate("Root", {
-          screen: "Schedule",
+          screen: "SchedulesPage",
           // params: {
           //   screen: "ScheduleDetails",
           //   params: {
@@ -43,7 +43,7 @@ export default function ScheduleCard({
           // }
         });
         navigation.navigate("Root", {
-          screen: "Schedule",
+          screen: "SchedulesPage",
           params: {
             screen: "ScheduleDetails",
             params: {

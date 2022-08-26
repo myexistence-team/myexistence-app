@@ -170,7 +170,7 @@ function RootNavigator(props: any) {
         ) : auth && !profile ? (
           <Stack.Screen name="RegisterAccount" component={RegisterAccount} options={{ headerShown: false }}/>
         ) : (
-          <Stack.Screen name="Welcome" component={WelcomePage} options={{ headerShown: false }}/>
+          <Stack.Screen name="WelcomePage" component={WelcomePage} options={{ headerShown: false }}/>
         )
       }
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
@@ -206,18 +206,18 @@ function BottomTabNavigator() {
         })}
       />
       <BottomTab.Screen
-        name="Schedule"
+        name="SchedulesPage"
         component={SchedulePage}
-        options={({ navigation }: RootTabScreenProps<'Schedule'>) => ({
+        options={({ navigation }: RootTabScreenProps<'SchedulesPage'>) => ({
           title: 'Schedule',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
           headerShown: false,
         })}
       />
       <BottomTab.Screen
-        name="Profile"
+        name="ProfilePage"
         component={ProfilePage}
-        options={({ navigation }: RootTabScreenProps<'Profile'>) => ({
+        options={({ navigation }: RootTabScreenProps<'ProfilePage'>) => ({
           title: 'Profile',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           headerShown: false,

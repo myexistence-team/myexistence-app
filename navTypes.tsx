@@ -15,14 +15,14 @@ declare global {
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
-  Welcome: NavigatorScreenParams<WelcomeParamList> | undefined,
+  WelcomePage: NavigatorScreenParams<WelcomeParamList> | undefined,
   RegisterAccount: undefined,
   Modal: undefined;
   NotFound: undefined;
 };
 
 export type WelcomeParamList = {
-  WelcomeScreen: undefined,
+  Welcome: undefined,
   Register: { role: string },
   Login: undefined
 }
@@ -40,15 +40,15 @@ export type ScheduleParamList = {
 }
 
 export type ProfileParamList = {
-  ProfileScreen: undefined,
+  Profile: undefined,
   EditProfile: undefined,
 }
 
 export type RootTabParamList = {
   Home: undefined;
-  Schedule: NavigatorScreenParams<ScheduleParamList> | undefined,
+  SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
   Scanner: { scheduleId: string },
-  Profile: NavigatorScreenParams<ProfileParamList> | undefined,
+  ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
