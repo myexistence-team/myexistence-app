@@ -37,8 +37,6 @@ import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
 
-initializeApp(firebaseConfig);
-
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
 
@@ -57,6 +55,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       } else {
         setAuth(null);
       }
+    }, (e) => {
+      alert(e.message);
     });
   }, [])
 

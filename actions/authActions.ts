@@ -2,7 +2,7 @@ import { FirebaseError } from "firebase/app"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, UserCredential } from "firebase/auth"
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore"
 import { Profile } from "../types"
-import { auth, firestore } from "../utils/firebaseGetters"
+import { auth, firestore } from "../firebase"
 
 export const signIn = async (
   email: string, 

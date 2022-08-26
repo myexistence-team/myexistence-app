@@ -1,5 +1,5 @@
 import { Text, ActivityIndicator } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import ScheduleCard from '../../components/ScheduleCard';
 import { textStyles } from '../../constants/Styles';
@@ -7,11 +7,11 @@ import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navig
 import ScheduleDetailsPage from '../ScheduleDetailsPage';
 import { ScheduleParamList } from '../../navTypes';
 import { collection, collectionGroup, documentId, getDocs, query, where } from 'firebase/firestore';
-import { firestore } from '../../utils/firebaseGetters';
 import { ProfileContext } from '../../contexts';
 import MESpinner from '../../components/MESpinner';
 import { DAYS_ARRAY, nowSchedule } from '../../constants/constants';
 import { groupBy } from '../../utils/utilFunctions';
+import { firestore } from '../../firebase';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -110,8 +110,8 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
         isLoading ? (
           <MESpinner/>
         ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
-          <>
-            <Text key={dIdx} style={[textStyles.heading4, { marginBottom: 16 }]}>
+          <Fragment key={dIdx}>
+            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
               {
                 nowSchedule.getDay() === parseInt(sd[0]) ? 
                   'Hari Ini' : parseInt(sd[0]) - nowSchedule.getDay() === 1 ?
@@ -123,7 +123,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
                 <ScheduleCard schedule={s} key={idx}/>
               ))
             }
-          </>
+          </Fragment>
         ))
         
       }

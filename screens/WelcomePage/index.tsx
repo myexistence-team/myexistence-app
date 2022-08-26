@@ -13,7 +13,7 @@ import { AuthContext } from '../../contexts';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import googleClientIds from '../../googleClientIds';
-import { auth as fbAuth } from '../../utils/firebaseGetters';
+import { auth as fbAuth } from '../../firebase';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 
 WebBrowser.maybeCompleteAuthSession();

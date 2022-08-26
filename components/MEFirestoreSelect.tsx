@@ -1,7 +1,7 @@
 import { View, Text, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MEControlledSelect, { MEControlledSelectProps } from './MEControlledSelect'
-import { firestore } from '../utils/firebaseGetters';
+import { firestore } from '../firebase';
 import { collection, getDocs, query, where, WhereFilterOp } from 'firebase/firestore';
 
 export default function MEFirestoreSelect({
