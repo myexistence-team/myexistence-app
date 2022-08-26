@@ -131,63 +131,74 @@ export default function MEButton(props: PressableProps & {
   }
 
   return (
-    <Pressable 
-      style={({ pressed }) => ([
-        getButtonStyles(size, color)[variant], 
-        pressed ? {
-          opacity: 0.75,
-          transform: [{ scale: 0.99 }]
-        } : {},
-        style,
-      ])}
-      disabled={disabled}
-      {...rest} 
+    <View
+      style={{
+        borderRadius: 8,
+        overflow: 'hidden',
+        width: '100%'
+      }}
     >
-      {
-        isLoading ? (
-          <ActivityIndicator
-            color={getButtonStyles(size, color)[variant].color}
-            // size={33}
-            size={getSpinnerSize(size)}
-          />
-        ) : (
-          <View 
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            {
-              iconStart ? (
-                <View
-                  style={{
-                    marginRight: 8,
-                  }}
-                >
-                  <FontAwesome5
-                    name={iconStart}
-                    size={18}
-                    color={getButtonStyles(size, color)[variant].color}
-                  />
-                </View>
-              ) : null
-            }
-            <Text 
-              style={[
-                getTextStyleBySize(size), 
-                { 
-                  color: getButtonStyles(size, color)[variant].color,
-                  fontWeight: '700', 
-                  flexDirection: 'row',
-                },
-                textStyle
-              ]}
+      <Pressable 
+        style={({ pressed }) => ([
+          getButtonStyles(size, color)[variant], 
+          pressed ? {
+            opacity: 0.75,
+            transform: [{ scale: 0.99 }]
+          } : {},
+          style,
+        ])}
+        disabled={disabled}
+        android_ripple={{
+          color: 'white'
+        }}
+        {...rest} 
+      >
+        {
+          isLoading ? (
+            <ActivityIndicator
+              color={getButtonStyles(size, color)[variant].color}
+              // size={33}
+              size={getSpinnerSize(size)}
+            />
+          ) : (
+            <View 
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
             >
-              {children}
-            </Text>
-          </View>
-        )
-      }
-    </Pressable>
+              {
+                iconStart ? (
+                  <View
+                    style={{
+                      marginRight: 8,
+                    }}
+                  >
+                    <FontAwesome5
+                      name={iconStart}
+                      size={18}
+                      color={getButtonStyles(size, color)[variant].color}
+                    />
+                  </View>
+                ) : null
+              }
+              <Text 
+                style={[
+                  getTextStyleBySize(size), 
+                  { 
+                    color: getButtonStyles(size, color)[variant].color,
+                    fontWeight: '700', 
+                    flexDirection: 'row',
+                  },
+                  textStyle
+                ]}
+              >
+                {children}
+              </Text>
+            </View>
+          )
+        }
+      </Pressable>
+    </View>
   )
 }
