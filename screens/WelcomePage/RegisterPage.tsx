@@ -64,7 +64,6 @@ export default function RegisterPage() {
             control={control}
             name='schoolId'
             listName='schools'
-            singularName='school'
             label='Pilih Sekolah'
           />
           <MEControlledTextInput

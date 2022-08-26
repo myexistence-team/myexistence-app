@@ -14,10 +14,9 @@ export default function MEFirestoreSelect({
   ...rest
 }: MEControlledSelectProps & {
   listName: string,
-  singularName: string,
   where?: [field: string, operator: WhereFilterOp, value: string][],
-  valueKey: string,
-  labelKey: string,
+  valueKey?: string,
+  labelKey?: string,
 }) {
   const [options, setOptions] = useState<{ value: string| number, label: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);

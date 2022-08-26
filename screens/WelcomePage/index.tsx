@@ -1,5 +1,5 @@
 import { View, Text, Image, ImageBackground } from 'react-native'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WelcomeParamList } from '../../navTypes';
 import LoginPage from './LoginPage';
@@ -24,10 +24,10 @@ const Stack = createNativeStackNavigator<WelcomeParamList>();
 export default function WelcomePage() {
   return (
     <Stack.Navigator
-      initialRouteName='WelcomeScreen'
+      initialRouteName='Welcome'
     >
       <Stack.Screen
-        name='WelcomeScreen'
+        name='Welcome'
         component={Welcome}
         options={{
           headerShown: false
@@ -114,7 +114,7 @@ function Welcome() {
         >
           <MEButton
             color='white'
-            onPress={() => navigation.navigate('Welcome', {
+            onPress={() => navigation.navigate('WelcomePage', {
               screen: 'Login'
             })}
           >
@@ -129,7 +129,7 @@ function Welcome() {
           <MEButton
             variant='outline'
             color='white'
-            onPress={() => navigation.navigate('Welcome', {
+            onPress={() => navigation.navigate('WelcomePage', {
               screen: 'Register', 
               params: {
                 role: "STUDENT"

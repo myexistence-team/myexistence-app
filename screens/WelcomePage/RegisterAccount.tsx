@@ -45,7 +45,6 @@ export default function RegisterAccount() {
         control={control}
         name='schoolId'
         listName='schools'
-        singularName='school'
         label={false}
       />
       <MEButton
