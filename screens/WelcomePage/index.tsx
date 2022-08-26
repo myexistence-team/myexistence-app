@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, ImageBackground } from 'react-native'
 import React, { useContext, useEffect } from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { WelcomeParamList } from '../../navTypes';
@@ -9,6 +9,7 @@ import MEButton from '../../components/MEButton';
 import { useNavigation } from '@react-navigation/native';
 import RegisterPage from './RegisterPage';
 import iconWhite from '../../assets/images/icon-white.png';
+import background from '../../assets/images/splash-screen-background.png';
 import { AuthContext } from '../../contexts';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
@@ -72,12 +73,13 @@ function Welcome() {
   }, [response]);
 
   return (
-    <View
+    <ImageBackground
+      source={background}
       style={{
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: Colors.light.tint
+        backgroundColor: Colors.light.blues.blue4,
       }}
     >
       <Image
@@ -163,6 +165,6 @@ function Welcome() {
           Google
         </MEButton>
       </View>
-    </View>
+    </ImageBackground>
   )
 }
