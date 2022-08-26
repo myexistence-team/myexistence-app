@@ -100,10 +100,8 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   }, [auth])
 
   React.useEffect(() => {
-    console.log("PROFILE CHANHGE")
     if (profile && profile.schoolId) {
       onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
-        console.log(docSnap.data())
         if (docSnap.exists()) {
           const school = docSnap.data();
           setSchool(school);
