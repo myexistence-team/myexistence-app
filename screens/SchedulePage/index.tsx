@@ -93,6 +93,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
 
   const schedulesGroupedByDay = groupBy(schedules, 'day');
   const schedulesGroupedByDayArr = Object.entries(schedulesGroupedByDay);
+  schedulesGroupedByDayArr.push(schedulesGroupedByDayArr.shift() || ['any', null]);
 
   return (
     <MEContainer
