@@ -53,25 +53,30 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
-    ...[
-      ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
-      where('start', '>', nowScheduleDate),
-    ]
+    ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
+    where('start', '>', nowScheduleDate),
   );
 
   function loadData() {    
     if (profile.classIds.length) {
       setIsLoading(true);
       getDocs(classesQuery).then((docs) => {
-        const docsArr: any[] = [];
+        const classArr: any[] = [];
         docs.forEach((doc) => {
-          docsArr.push({ ...doc.data(), id: doc.id });
+          classArr.push({ ...doc.data(), id: doc.id });
         })
-        setClasses(docsArr);
         getDocs(schedulesQuery).then((docs) => {
           const docsArr: any[] = [];
           docs.forEach((doc) => {
-            docsArr.push({ ...doc.data(), id: doc.id });
+            const classObj = classArr
+              .find(({ id }) => id === doc.data().classId);
+            docsArr.push({ 
+              ...doc.data(),
+              className: classObj?.name,
+              description: classObj?.description,
+              start: doc.data().start.toDate(),
+              end: doc.data().end.toDate(),
+            });
           })
           setSchedules(docsArr);
           setIsLoading(false);
@@ -86,23 +91,12 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
     loadData();
   }, [])
 
-  const schedulesClasses = schedules.map((s) => {
-    const classObj = classes?.find(({ id }) => id === s.classId);
-    return {
-      ...s,
-      className: classObj?.name,
-      description: classObj?.description,
-      start: s.start.toDate(),
-      end: s.end.toDate(),
-    }
-  })
-
-  const schedulesGroupedByDay = groupBy(schedulesClasses, 'day');
+  const schedulesGroupedByDay = groupBy(schedules, 'day');
   const schedulesGroupedByDayArr = Object.entries(schedulesGroupedByDay);
 
   return (
     <MEContainer
-      onRefresh={loadData}
+      onRefresh={profile.classIds.length ? loadData : undefined}
       refreshing={isLoading}
     >
       <Text 
@@ -111,13 +105,13 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
         Jadwal
       </Text>
       {
-        isLoading ? (
-          <MESpinner/>
-        ) : !classes.length ? (
+        !profile.classIds.length ? (          
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
-        ) : classes.length && !schedules.length ? (
+        ) : isLoading ? (
+          <MESpinner/>
+        ) : !schedules.length ? (
           <Text style={[textStyles.body2]}>
             Anda sudah tidak ada kelas lagi untuk minggu ini.
           </Text>

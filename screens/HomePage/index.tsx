@@ -34,10 +34,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
-    ...[
-      ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
-      // limit(5)
-    ],
+    ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
     where('start', '>', nowScheduleDate),
     limit(5),
   );
