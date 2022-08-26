@@ -12,6 +12,7 @@ import MESpinner from '../../components/MESpinner';
 import { DAYS_ARRAY, nowSchedule } from '../../constants/constants';
 import { groupBy } from '../../utils/utilFunctions';
 import { firestore } from '../../firebase';
+import { Profile } from '../../types';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -39,7 +40,7 @@ export default function SchedulePage() {
 }
 
 function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) {
-  const { profile } = useContext(ProfileContext);
+  const { profile } : { profile: Profile } = useContext(ProfileContext);
 
   const [classes, setClasses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -48,34 +49,41 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   const classesQuery = query(collection(
     firestore, 
     `schools/${profile.schoolId}/classes`),
-    where(documentId(), 'in', profile.classIds)
+    ...profile.classIds.length ? [where(documentId(), 'in', profile.classIds)] : [],
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
-    where('classId', 'in', profile.classIds),
-    where('start', '>', nowSchedule),
+    ...[
+      ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
+      where('start', '>', nowSchedule),
+    ]
   );
 
   function loadData() {    
-    setIsLoading(true);
-    getDocs(classesQuery)
-    .then((docs) => {
-      const docsArr: any[] = [];
-      docs.forEach((doc) => {
-        docsArr.push({ ...doc.data(), id: doc.id });
-      })
-      setClasses(docsArr);
-      getDocs(schedulesQuery).then((docs) => {
+    if (profile.classIds.length) {
+      setIsLoading(true);
+      getDocs(classesQuery).then((docs) => {
+        const docsArr: any[] = [];
         docs.forEach((doc) => {
-          const docsArr: any[] = [];
-          docs.forEach((doc) => {
-            docsArr.push({ ...doc.data(), id: doc.id });
-          })
-          setSchedules(docsArr);
-          setIsLoading(false);
+          docsArr.push({ ...doc.data(), id: doc.id });
         })
-      })
-    })
+        setClasses(docsArr);
+        if (docsArr.length) {
+          getDocs(schedulesQuery).then((docs) => {
+            docs.forEach((doc) => {
+              const docsArr: any[] = [];
+              docs.forEach((doc) => {
+                docsArr.push({ ...doc.data(), id: doc.id });
+              })
+              setSchedules(docsArr);
+              setIsLoading(false);
+            })
+          })
+        }
+      }) 
+    } else {
+    setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -109,6 +117,10 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
       {
         isLoading ? (
           <MESpinner/>
+        ) : !classes.length ? (
+          <Text style={[textStyles.body2]}>
+            Anda belum terdaftar di kelas apapun.
+          </Text>
         ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
           <Fragment key={dIdx}>
             <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
