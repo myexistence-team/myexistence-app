@@ -105,7 +105,7 @@ export default function ScheduleCard({
           {schedule.description}
         </Text>
         {
-          diffToNowInMins <= 10 && diffToNowInMins < 0 ? (
+          diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
             <MEButton
               iconStart="qrcode"
               style={{
