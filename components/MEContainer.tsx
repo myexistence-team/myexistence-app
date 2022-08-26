@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, StatusBar, ScrollView, RefreshControl } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
+import Colors from '../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,6 +27,8 @@ export default function MEContainer(props: ViewProps & {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
+            progressViewOffset={64}
+            colors={[Colors.light.tint]}
           />
         ) : undefined
       }
