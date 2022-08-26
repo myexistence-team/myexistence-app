@@ -19,10 +19,10 @@ const Stack = createNativeStackNavigator<ProfileParamList>();
 export default function ProfilePage() {
   return (
     <Stack.Navigator
-      initialRouteName='ProfileScreen'
+      initialRouteName='Profile'
     >
       <Stack.Screen
-        name='ProfileScreen'
+        name='Profile'
         component={ProfileScreen}
         options={{
           header: () => null
@@ -56,7 +56,7 @@ export function ProfileScreen() {
         title='Profile'
         onBackPress={() => {
           navigation.navigate('Root', {
-            screen: 'Schedule'
+            screen: 'SchedulesPage'
           })
         }}
         disableBackButton
@@ -84,8 +84,9 @@ export function ProfileScreen() {
         {school.location}
       </Text>
       <MEButton
+        // size='sm'
         onPress={handleLogOut}
-        isLoading={isSigningOut}
+        // isLoading={true} 
         color='danger'
         variant='outline'
       >
