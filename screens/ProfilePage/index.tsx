@@ -90,7 +90,7 @@ export function ProfileScreen() {
         color='danger'
         variant='outline'
       >
-        Log Out
+        Keluar
       </MEButton>
     </MEContainer>
   )

@@ -209,7 +209,7 @@ function BottomTabNavigator() {
         name="SchedulesPage"
         component={SchedulePage}
         options={({ navigation }: RootTabScreenProps<'SchedulesPage'>) => ({
-          title: 'Schedule',
+          title: 'Jadwal',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
           headerShown: false,
         })}
@@ -218,7 +218,7 @@ function BottomTabNavigator() {
         name="ProfilePage"
         component={ProfilePage}
         options={({ navigation }: RootTabScreenProps<'ProfilePage'>) => ({
-          title: 'Profile',
+          title: 'Profil',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
           headerShown: false,
         })}
