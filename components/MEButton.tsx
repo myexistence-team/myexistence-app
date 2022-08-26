@@ -37,9 +37,9 @@ function getSpinnerSize(size: string) {
     case 'lg':
       return Platform.OS === 'android' ? 28 : 33
     case 'sm':
-      return Platform.OS === 'android' ? 16 : 19
+      return Platform.OS === 'android' ? 17 : 19.5
     default:
-      return Platform.OS === 'android' ? 21 : 25
+      return Platform.OS === 'android' ? 21 : 24.5
   }
 }
 
@@ -187,7 +187,6 @@ export default function MEButton(props: PressableProps & {
                   getTextStyleBySize(size), 
                   { 
                     color: getButtonStyles(size, color)[variant].color,
-                    fontWeight: '700', 
                     flexDirection: 'row',
                   },
                   textStyle
