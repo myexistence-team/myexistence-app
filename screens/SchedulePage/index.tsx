@@ -6,10 +6,10 @@ import { textStyles } from '../../constants/Styles';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import ScheduleDetailsPage from '../ScheduleDetailsPage';
 import { ScheduleParamList } from '../../navTypes';
-import { collection, collectionGroup, documentId, getDocs, query, where } from 'firebase/firestore';
+import { collection, collectionGroup, documentId, getDocs, query, Timestamp, where } from 'firebase/firestore';
 import { ProfileContext } from '../../contexts';
 import MESpinner from '../../components/MESpinner';
-import { DAYS_ARRAY, nowSchedule } from '../../constants/constants';
+import { DAYS_ARRAY, nowScheduleDate } from '../../constants/constants';
 import { groupBy } from '../../utils/utilFunctions';
 import { firestore } from '../../firebase';
 import { Profile } from '../../types';
@@ -55,7 +55,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
     collectionGroup(firestore, 'schedules'), 
     ...[
       ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
-      where('start', '>', nowSchedule),
+      where('start', '>', nowScheduleDate),
     ]
   );
 
@@ -68,18 +68,14 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
           docsArr.push({ ...doc.data(), id: doc.id });
         })
         setClasses(docsArr);
-        if (docsArr.length) {
-          getDocs(schedulesQuery).then((docs) => {
-            docs.forEach((doc) => {
-              const docsArr: any[] = [];
-              docs.forEach((doc) => {
-                docsArr.push({ ...doc.data(), id: doc.id });
-              })
-              setSchedules(docsArr);
-              setIsLoading(false);
-            })
+        getDocs(schedulesQuery).then((docs) => {
+          const docsArr: any[] = [];
+          docs.forEach((doc) => {
+            docsArr.push({ ...doc.data(), id: doc.id });
           })
-        }
+          setSchedules(docsArr);
+          setIsLoading(false);
+        })
       }) 
     } else {
     setIsLoading(false);
@@ -121,12 +117,16 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
+        ) : !schedules.length ? (
+          <Text style={[textStyles.body2]}>
+            Anda sudah tidak ada kelas lagi untuk minggu ini.
+          </Text>
         ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
           <Fragment key={dIdx}>
             <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
               {
-                nowSchedule.getDay() === parseInt(sd[0]) ? 
-                  'Hari Ini' : parseInt(sd[0]) - nowSchedule.getDay() === 1 ?
+                nowScheduleDate.getDay() === parseInt(sd[0]) ? 
+                  'Hari Ini' : parseInt(sd[0]) - nowScheduleDate.getDay() === 1 ?
                   'Besok' : DAYS_ARRAY[sd[0]]
               }
             </Text>

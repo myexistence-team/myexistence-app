@@ -7,7 +7,7 @@ import Colors from '../constants/Colors';
 import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
-import { nowSchedule } from '../constants/constants';
+import { nowScheduleDate } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule
@@ -18,7 +18,7 @@ export default function ScheduleCard({
 }) {
   const navigation = useNavigation();
 
-  const now: Date = nowSchedule;
+  const now: Date = nowScheduleDate;
   const diffInMs = schedule.start.getTime() - now.getTime();
 
   const diffToNowInMins = Math.floor(diffInMs/60000);

@@ -1,12 +1,12 @@
 export const SCHEDULE_START_DATE_MS = 259200000;
 
 const now = new Date();
-const nowSchedule = new Date();
-nowSchedule.setDate(now.getDay() + 4);
-nowSchedule.setFullYear(1970);
-nowSchedule.setMonth(0);
+const nowScheduleDate = new Date();
+nowScheduleDate.setDate(now.getDay() + 4);
+nowScheduleDate.setFullYear(1970);
+nowScheduleDate.setMonth(0);
 
-export { nowSchedule };
+export { nowScheduleDate };
 
 export const DAY_NUMBERS = {
   0: "Minggu",
