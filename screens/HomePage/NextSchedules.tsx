@@ -1,18 +1,20 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { textStyles } from '../../constants/Styles'
-import scheduleMocks from '../../mocks/scheduleMocks';
-import MECard from '../../components/MECard';
-import { FontAwesome5 } from '@expo/vector-icons';
-import moment from 'moment';
-import Colors from '../../constants/Colors';
 import MEButton from '../../components/MEButton';
 import ScheduleCard from '../../components/ScheduleCard';
 import { useNavigation } from '@react-navigation/native';
+import { Schedule } from '../../types';
+import MESpinner from '../../components/MESpinner';
 
-export default function NextSchedules() {
+export default function NextSchedules({
+  schedules,
+  isLoading
+}: {
+  schedules: Schedule[],
+  isLoading: boolean
+}) {
   const navigation = useNavigation();
-  const schedules = scheduleMocks;
 
   return (
     <View
@@ -26,7 +28,9 @@ export default function NextSchedules() {
         Berikutnya
       </Text>
       {
-        schedules.map((s, idx) => (
+        isLoading ? (
+          <MESpinner/>
+        ) : schedules.map((s, idx) => (
           <ScheduleCard schedule={s} key={idx}/>
         ))
       }
@@ -34,7 +38,7 @@ export default function NextSchedules() {
         variant='outline'
         onPress={() => {
           navigation.navigate('Root', {
-            screen: "Schedule", 
+            screen: "SchedulesPage", 
             params: {
               screen: "Schedules"
             }

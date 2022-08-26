@@ -1,5 +1,5 @@
 import { Image, Text, View } from 'react-native'
-import React, { Component, useContext, useState } from 'react'
+import React, { Component, useContext, useEffect, useState } from 'react'
 import { ScreenContainer } from 'react-native-screens'
 import MEContainer from '../../components/MEContainer'
 import { textStyles } from '../../constants/Styles'
@@ -17,12 +17,75 @@ import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
 import { RoleEnum } from '../../enums'
+import { collection, collectionGroup, documentId, getDocs, limit, query, where } from 'firebase/firestore'
+import { firestore } from '../../firebase'
+import { nowScheduleDate } from '../../constants/constants'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
+  const [classes, setClasses] = useState<any[]>([]);
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const classesQuery = query(collection(
+    firestore, 
+    `schools/${profile.schoolId}/classes`),
+    ...profile.classIds.length ? [where(documentId(), 'in', profile.classIds)] : [],
+  );
+  const schedulesQuery = query(
+    collectionGroup(firestore, 'schedules'), 
+    ...[
+      ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
+      // limit(5)
+    ],
+    where('start', '>', nowScheduleDate),
+    limit(5),
+  );
+
+  function loadHomePageData() {    
+    if (profile.classIds.length) {
+      setIsLoading(true);
+      getDocs(classesQuery).then((docs) => {
+        const docsArr: any[] = [];
+        docs.forEach((doc) => {
+          docsArr.push({ ...doc.data(), id: doc.id });
+        })
+        setClasses(docsArr);
+        getDocs(schedulesQuery).then((docs) => {
+          const docsArr: any[] = [];
+          docs.forEach((doc) => {
+            docsArr.push({ ...doc.data()});
+          })
+          setSchedules(docsArr);
+          setIsLoading(false);
+        })
+      }) 
+    } else {
+    setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadHomePageData();
+  }, [])
+
+  const schedulesClasses = schedules.map((s) => {
+    const classObj = classes?.find(({ id }) => id === s.classId);
+    return {
+      ...s,
+      className: classObj?.name,
+      description: classObj?.description,
+      start: s.start.toDate(),
+      end: s.end.toDate(),
+    }
+  })
+
   return (
-    <MEContainer>
+    <MEContainer
+      onRefresh={loadHomePageData}
+      refreshing={isLoading}
+    >
       <Text style={textStyles.heading4} >Selamat datang!</Text>
       <MECard style={{
         marginTop: 16,
@@ -78,8 +141,19 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           </View>
         </View>
       </MECard>
-      <NextSchedules/>
-      <History/>
+      {
+        !profile.classIds.length ? (
+          <Text style={[textStyles.body2, { textAlign: 'center' }]}>
+            Anda belum terdaftar di kelas apapun. {'\n'}
+            Mohon hubungi administrator sekolah Anda.
+          </Text>
+        ) : (
+          <>
+            <NextSchedules schedules={schedulesClasses} isLoading={isLoading}/>
+            <History/>
+          </>
+        )
+      }
     </MEContainer>
   )
 }
