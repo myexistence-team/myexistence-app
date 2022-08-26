@@ -98,7 +98,7 @@ function Welcome() {
           }
         ]}
       >
-        HADIR
+        Hadir
       </Text>
       <View
         style={{
