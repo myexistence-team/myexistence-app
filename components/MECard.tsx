@@ -2,7 +2,7 @@ import { View, StyleSheet, Platform } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
 
-const styles = StyleSheet.create({
+export const cardStyle = StyleSheet.create({
   card: {
     borderRadius: 16,
     shadowRadius: 8,
@@ -23,7 +23,7 @@ export default function MECard(props: ViewProps) {
   const { children, style, ...rest } = props;
 
   return (
-    <View style={[styles.card, style]} {...rest}>
+    <View style={[cardStyle.card, style]} {...rest}>
       {children}
     </View>
   )
