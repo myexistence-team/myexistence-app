@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.1,
     padding: 16,
-    marginHorizontal: Platform.OS === 'android'? 8 : 0,
+    // marginHorizontal: Platform.OS === 'android'? 8 : 0,
     elevation: 7,
     backgroundColor: 'white',
   }
