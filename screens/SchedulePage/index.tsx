@@ -117,7 +117,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
-        ) : !schedules.length ? (
+        ) : classes.length && !schedules.length ? (
           <Text style={[textStyles.body2]}>
             Anda sudah tidak ada kelas lagi untuk minggu ini.
           </Text>
