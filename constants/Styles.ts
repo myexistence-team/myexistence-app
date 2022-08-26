@@ -1,7 +1,8 @@
 import { Platform, StyleSheet } from "react-native";
 
-const headerFontFamily = 'quicksand-bold';
+const headerFontFamily = 'quicksand';
 const bodyFontFamily = 'manrope';
+const buttonFontFamily = 'manrope-bold';
 export const textStyles = StyleSheet.create({
   heading1: {
     fontSize: 64,
@@ -42,17 +43,17 @@ export const textStyles = StyleSheet.create({
   },
   buttonLg: {
     fontSize: 24,
-    fontFamily: bodyFontFamily,
+    fontFamily: buttonFontFamily,
     fontWeight: "500",
   },
   buttonMd: {
     fontSize: 18,
-    fontFamily: bodyFontFamily,
+    fontFamily: buttonFontFamily,
     fontWeight: "500",
   },
   buttonSm: {
     fontSize: 14,
-    fontFamily: bodyFontFamily,
+    fontFamily: buttonFontFamily,
     fontWeight: "500",
   },
 })
