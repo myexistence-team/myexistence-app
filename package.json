@@ -26,6 +26,7 @@
     "expo": "~45.0.0",
     "expo-asset": "~8.5.0",
     "expo-auth-session": "~3.6.1",
+    "expo-barcode-scanner": "~11.3.0",
     "expo-constants": "~13.1.1",
     "expo-dev-client": "~1.0.1",
     "expo-font": "~10.1.0",
