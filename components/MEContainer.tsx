@@ -13,22 +13,21 @@ const styles = StyleSheet.create({
 
 export default function MEContainer(props: ViewProps & {
   onRefresh?: () => void,
-  refreshing?: boolean
+  refreshing?: boolean,
+  refreshEnabled?: boolean
 }) {
-  const { children, style, onRefresh, refreshing, ...rest } = props;
+  const { children, style, onRefresh, refreshing, refreshEnabled, ...rest } = props;
   return (
     <ScrollView 
-      style={{
-        flex: 1
-      }}
       contentContainerStyle={[styles.container, style]}
       refreshControl={
         onRefresh && refreshing !== undefined ? (
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            progressViewOffset={64}
+            progressViewOffset={32}
             colors={[Colors.light.tint]}
+            enabled={refreshEnabled}
           />
         ) : undefined
       }
