@@ -8,8 +8,6 @@ import { textStyles } from '../../constants/Styles';
 import MEButton from '../../components/MEButton';
 import { useNavigation } from '@react-navigation/native';
 import RegisterPage from './RegisterPage';
-import iconWhite from '../../assets/images/icon-white.png';
-import background from '../../assets/images/splash-screen-background.png';
 import { AuthContext } from '../../contexts';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
@@ -74,7 +72,7 @@ function Welcome() {
 
   return (
     <ImageBackground
-      source={background}
+      source={require('../../assets/images/splash-screen-background.png')}
       style={{
         flex: 1,
         alignItems: 'center',
@@ -83,7 +81,7 @@ function Welcome() {
       }}
     >
       <Image
-        source={iconWhite}
+        source={require('../../assets/images/icon-white.png')}
         style={{
           width: 180,
           height: 180,
