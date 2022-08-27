@@ -25,7 +25,8 @@ export default function MEHeader({
       {!disableBackButton && navigation.canGoBack() && (
         <Pressable
           style={{
-            marginRight: 16
+            paddingRight: 16,
+            paddingVertical: 7,
           }}
           onPress={() => onBackPress ? onBackPress(): navigation.goBack()}
         >
