@@ -36,7 +36,10 @@ export type ScheduleScreenProps = NativeStackScreenProps<ScheduleParamList, "Sch
 
 export type ScheduleParamList = {
   Schedules: undefined,
-  ScheduleDetails: { scheduleId: string },
+  ScheduleDetails: { 
+    classId: string,
+    scheduleId: string 
+  },
 }
 
 export type ProfileParamList = {
