@@ -45,8 +45,9 @@ export default function ScheduleCard({
             screen: "ScheduleDetails",
             params: {
               scheduleId: schedule.id
-            }
-          }
+            },
+            initial: false
+          },
         })
       }}
     >
