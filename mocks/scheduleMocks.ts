@@ -2,7 +2,7 @@ export default [
   {
     id: "1",
     className: "Rocket Science",
-    description: "Room 3004",
+    classDescription: "Room 3004",
     start: new Date(1660841540000),
     end: new Date(1660941540000),
     tolerance: 15,
@@ -10,7 +10,7 @@ export default [
   {
     id: "2",
     className: "Rocket Science",
-    description: "Room 3004",
+    classDescription: "Room 3004",
     start: new Date(1660841540000),
     end: new Date(1660941540000),
     tolerance: 15,
@@ -18,7 +18,7 @@ export default [
   {
     id: "3",
     className: "Rocket Science",
-    description: "Room 3004",
+    classDescription: "Room 3004",
     start: new Date(1660841540000),
     end: new Date(1660941540000),
     tolerance: 15,
@@ -26,7 +26,7 @@ export default [
   {
     id: "4",
     className: "Rocket Science",
-    description: "Room 3004",
+    classDescription: "Room 3004",
     start: new Date(1660841540000),
     end: new Date(1660941540000),
     tolerance: 15,
@@ -34,7 +34,7 @@ export default [
   {
     id: "5",
     className: "Rocket Science",
-    description: "Room 3004",
+    classDescription: "Room 3004",
     start: new Date(1660841540000),
     end: new Date(1660941540000),
     tolerance: 15,

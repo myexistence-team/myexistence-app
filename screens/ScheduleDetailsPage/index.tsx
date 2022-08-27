@@ -43,7 +43,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             setSchedule({
               ...scheduleSnap.data(),
               className: classSnap.data().name,
-              description: classSnap.data().description,
+              classDescription: classSnap.data().description,
               start: scheduleSnap.data().start.toDate(),
               end: scheduleSnap.data().end.toDate(),
             });
@@ -78,22 +78,22 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             />
             <Text style={textStyles.body2}>Nama Kelas</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {schedule?.className}
+              {schedule.className}
             </Text>
 
             <Text style={textStyles.body2}>Deskripsi</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {schedule?.description}
+              {schedule.classDescription}
             </Text>
 
             <Text style={textStyles.body2}>Jam Mulai</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {moment(schedule?.start).format("HH:mm")}
+              {moment(schedule.start).format("HH:mm")}
             </Text>
 
             <Text style={textStyles.body2}>Jam Selesai</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {moment(schedule?.end).format("HH:mm")}
+              {moment(schedule.end).format("HH:mm")}
             </Text>
 
             <Text style={textStyles.body2}>Toleransi</Text>

@@ -95,7 +95,7 @@ export default function ScheduleCard({
           {schedule.className}
         </Text>
         <Text style={[textStyles.body3]}>
-          {schedule.description}
+          {schedule.classDescription}
         </Text>
         {
           diffToNowInMins <= 10 && diffToNowInMins > 0 ? (

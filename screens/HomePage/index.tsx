@@ -51,7 +51,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
               ...doc.data(),
               id: doc.id,
               className: classObj?.name,
-              description: classObj?.description,
+              classDescription: classObj?.description,
               start: doc.data().start.toDate(),
               end: doc.data().end.toDate(),
             });

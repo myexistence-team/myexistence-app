@@ -35,7 +35,7 @@ export type LoginUser = {
 
 export type Schedule = BaseType & {
   className: string,
-  description: string,
+  classDescription: string,
   start: Date,
   end: Date,
   tolerance: number
