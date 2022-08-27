@@ -13,9 +13,11 @@ import { firestore } from '../../firebase'
 import { ProfileContext } from '../../contexts'
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 import MEButton from '../../components/MEButton'
+import { useNavigation } from '@react-navigation/native'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId } = route.params;
+  const navigation = useNavigation();
 
   const { profile } = useContext(ProfileContext);
   const [schedule, setSchedule] = useState<Schedule | any>(null);
@@ -108,6 +110,10 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                   style={{
                     marginTop: 8
                   }}
+                  onPress={() => navigation.navigate('Scanner', {
+                    scheduleId: schedule.id,
+                    schedule
+                  })}
                 >
                   Pindai QR Code
                 </MEButton>

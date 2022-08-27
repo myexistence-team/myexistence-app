@@ -6,6 +6,7 @@
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Schedule } from './types';
 
 declare global {
   namespace ReactNavigation {
@@ -16,6 +17,10 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined;
   WelcomePage: NavigatorScreenParams<WelcomeParamList> | undefined,
+  Scanner: { 
+    scheduleId: string,
+    schedule: Schedule
+   },
   RegisterAccount: undefined,
   Modal: undefined;
   NotFound: undefined;
@@ -50,7 +55,6 @@ export type ProfileParamList = {
 export type RootTabParamList = {
   Home: undefined;
   SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
-  Scanner: { scheduleId: string },
   ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
 };
 

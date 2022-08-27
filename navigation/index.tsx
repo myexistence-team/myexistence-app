@@ -36,6 +36,7 @@ import { getFirestore, doc, Firestore, onSnapshot } from 'firebase/firestore';
 import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
+import QRScanner from '../screens/QRScanner';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
@@ -173,6 +174,7 @@ function RootNavigator(props: any) {
           <Stack.Screen name="WelcomePage" component={WelcomePage} options={{ headerShown: false }}/>
         )
       }
+      <Stack.Screen name="Scanner" component={QRScanner} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />

@@ -10,11 +10,13 @@ import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
 
 export default function ScheduleCard({
-  schedule
+  schedule,
+  disableScanButton
 }: {
   schedule: any & {
     start: Date
   },
+  disableScanButton?: boolean
 }) {
   const navigation = useNavigation();
 
@@ -98,12 +100,16 @@ export default function ScheduleCard({
           {schedule.classDescription}
         </Text>
         {
-          diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
+          (disableScanButton === undefined || disableScanButton === false) && diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
             <MEButton
               iconStart="qrcode"
               style={{
                 marginTop: 8
               }}
+              onPress={() => navigation.navigate('Scanner', {
+                scheduleId: schedule.id,
+                schedule
+              })}
             >
               Pindai QR Code
             </MEButton>
