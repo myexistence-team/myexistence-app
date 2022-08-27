@@ -1,4 +1,4 @@
-import { FontAwesome5 } from '@expo/vector-icons'
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons'
 import moment from 'moment'
 import React from 'react'
 import { Text } from 'react-native'
@@ -15,7 +15,7 @@ function getStatusColor(status:string) {
         case "ABSENT":
             return Colors.light.red
         case "LATE":
-            return Colors.light.yellow
+            return Colors.light.yellows.yellow3
         case "EXCUSED":
             return Colors.light.orange
         default:
@@ -75,7 +75,7 @@ export default function HistoryCard(props: {
                     flex: 1,
                   }}
                 >
-                    <FontAwesome5 
+                    <FontAwesome
                         size={12} 
                         name='circle' 
                         color={getStatusColor(history.status)}
