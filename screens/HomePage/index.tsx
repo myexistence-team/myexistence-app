@@ -1,4 +1,4 @@
-import { Image, Text, View } from 'react-native'
+import { Image, ImageBackground, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { textStyles } from '../../constants/Styles'
@@ -14,6 +14,7 @@ import { RoleEnum } from '../../enums'
 import { collection, collectionGroup, documentId, getDocs, limit, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import { nowScheduleDate } from '../../constants/constants'
+import Colors from '../../constants/Colors'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
@@ -68,78 +69,103 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
   }, [])
 
   return (
-    <MEContainer
-      onRefresh={loadHomePageData}
-      refreshing={isLoading}
-    >
-      <Text style={textStyles.heading4} >Selamat datang!</Text>
-      <MECard style={{
-        marginTop: 16,
-        marginBottom: 32,
-      }}>
-        <View style={{
-          flexDirection: 'row',         
-        }}>
-          {
-            profile.photoUrl ? (
-              <Image
-                source={{uri: profile.photoUrl}}
-                style={{
-                  width: 64,
-                  height: 64,
-                  marginRight: 16,
-                  borderRadius: 32
-                }}
-              />
-            ) : null
-          }
-          <View>
-            <Text style={[
-              textStyles.body1, 
-              {marginBottom: 4}
-              ]}>{profile.displayName}</Text>
-            <Text style={textStyles.body3}>{RoleEnum[profile.role]}</Text>
-          </View>
-        </View>
-        <View style={{
-          flexDirection: 'row',  
-          marginTop: 12,        
-        }}>
-          <View style={{
-            flex: 1,
-            marginRight: 12
-          }}>
-            <MEButton 
-              variant="outline"
-              onPress={() => {
-                signOut()
-              } }
-            >
-              Keluar
-            </MEButton>
-          </View>
-          <View style={{
-            flex: 1,
-          }}>
-          <MEButton>
-            Pengaturan
-          </MEButton>
-          </View>
-        </View>
-      </MECard>
-      {
-        !profile.classIds.length ? (
-          <Text style={[textStyles.body2, { textAlign: 'center' }]}>
-            Anda belum terdaftar di kelas apapun. {'\n'}
-            Mohon hubungi administrator sekolah Anda.
-          </Text>
-        ) : (
-          <>
-            <NextSchedules schedules={schedules} isLoading={isLoading}/>
-            <History/>
-          </>
-        )
+    <ScrollView
+      contentContainerStyle={{
+        paddingBottom: 16,
+      }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isLoading}
+          onRefresh={loadHomePageData}
+          progressViewOffset={32}
+          colors={[Colors.light.tint]}
+          enabled={Boolean(profile.classIds.length)}
+        />
       }
-    </MEContainer>
+    >
+      <ImageBackground
+        source={require('../../assets/images/homepage-hero-background.png')}
+        resizeMode='cover'
+        resizeMethod='resize'
+        style={{
+          paddingHorizontal: 24,
+          paddingTop: (StatusBar.currentHeight !== undefined ? StatusBar.currentHeight : 0) + 64,
+        }}
+        imageStyle={{
+          alignSelf: 'flex-start',
+          height:Platform.OS === 'ios' ? 540 : 200,
+          top: Platform.OS === 'ios' ? -360 : 0
+        }}
+      >
+        <Text style={[textStyles.heading4, { color: 'white' }]} >Selamat Datang!</Text>
+        <MECard style={{
+          marginTop: 16,
+          marginBottom: 32,
+        }}>
+          <View style={{
+            flexDirection: 'row',         
+          }}>
+            {
+              profile.photoUrl ? (
+                <Image
+                  source={{uri: profile.photoUrl}}
+                  style={{
+                    width: 64,
+                    height: 64,
+                    marginRight: 16,
+                    borderRadius: 32
+                  }}
+                />
+              ) : null
+            }
+            <View>
+              <Text style={[
+                textStyles.body1, 
+                {marginBottom: 4}
+                ]}>{profile.displayName}</Text>
+              <Text style={textStyles.body3}>{RoleEnum[profile.role]}</Text>
+            </View>
+          </View>
+          <View style={{
+            flexDirection: 'row',  
+            marginTop: 12,        
+          }}>
+            <View style={{
+              flex: 1,
+              marginRight: 12
+            }}>
+              <MEButton 
+                variant="outline"
+                onPress={() => {
+                  signOut()
+                } }
+              >
+                Keluar
+              </MEButton>
+            </View>
+            <View style={{
+              flex: 1,
+            }}>
+            <MEButton>
+              Pengaturan
+            </MEButton>
+            </View>
+          </View>
+        </MECard>
+        {
+          !profile.classIds.length ? (
+            <Text style={[textStyles.body2, { textAlign: 'center' }]}>
+              Anda belum terdaftar di kelas apapun. {'\n'}
+              Mohon hubungi administrator sekolah Anda.
+            </Text>
+          ) : (
+            <>
+              <NextSchedules schedules={schedules} isLoading={isLoading}/>
+              <History/>
+            </>
+          )
+        }
+      </ImageBackground>
+    </ScrollView>
   )
 }
