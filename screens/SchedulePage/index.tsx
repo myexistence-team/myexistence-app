@@ -32,7 +32,7 @@ export default function SchedulePage() {
         name='ScheduleDetails' 
         component={ScheduleDetailsPage}
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
@@ -71,6 +71,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
             const classObj = classObjs[doc.data().classId];
             docsArr.push({ 
               ...doc.data(),
+              id: doc.id,
               className: classObj?.name,
               description: classObj?.description,
               start: doc.data().start.toDate(),

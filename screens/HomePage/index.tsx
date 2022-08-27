@@ -48,6 +48,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
             const classObj = classObjs[doc.data().classId];
             docsArr.push({ 
               ...doc.data(),
+              id: doc.id,
               className: classObj?.name,
               description: classObj?.description,
               start: doc.data().start.toDate(),
