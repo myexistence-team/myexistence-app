@@ -13,12 +13,13 @@ import History from './History'
 import { RoleEnum } from '../../enums'
 import { collection, collectionGroup, documentId, getDocs, limit, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { nowScheduleDate } from '../../constants/constants'
 import Colors from '../../constants/Colors'
+import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
+  const nowScheduleDate = useCurrentScheduleTime();
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

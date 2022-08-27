@@ -4,6 +4,7 @@ import { textStyles } from "../../constants/Styles";
 import historyMocks from "../../mocks/historyMocks";
 import React from 'react'
 import HistoryCard from "../../components/HistoryCard";
+import Colors from "../../constants/Colors";
 
 export default function History() {
   const histories = historyMocks;
@@ -15,7 +16,7 @@ export default function History() {
       }}
     >
       <Text
-        style={[textStyles.heading3, { marginBottom: 16 }]}
+        style={[textStyles.heading3, { marginBottom: 16, color: Colors.light.tint }]}
       >
         Riwayat
       </Text>

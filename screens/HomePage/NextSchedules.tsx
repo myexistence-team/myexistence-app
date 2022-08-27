@@ -6,6 +6,7 @@ import ScheduleCard from '../../components/ScheduleCard';
 import { useNavigation } from '@react-navigation/native';
 import { Schedule } from '../../types';
 import MESpinner from '../../components/MESpinner';
+import Colors from '../../constants/Colors';
 
 export default function NextSchedules({
   schedules,
@@ -23,7 +24,7 @@ export default function NextSchedules({
       }}
     >
       <Text 
-        style={[textStyles.heading3, { marginBottom: 16 }]}
+        style={[textStyles.heading3, { marginBottom: 16, color: Colors.light.tint }]}
       >
         Berikutnya
       </Text>

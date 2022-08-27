@@ -32,21 +32,13 @@ export default function ScheduleCard({
       onPress={() => {
         navigation.navigate("Root", {
           screen: "SchedulesPage",
-          // params: {
-          //   screen: "ScheduleDetails",
-          //   params: {
-          //     scheduleId: schedule.id
-          //   }
-          // }
-        });
-        navigation.navigate("Root", {
-          screen: "SchedulesPage",
           params: {
             screen: "ScheduleDetails",
             params: {
+              classId: schedule.classId,
               scheduleId: schedule.id
             },
-            initial: false
+            initial: false,
           },
         })
       }}

@@ -9,10 +9,12 @@ import { ScheduleParamList } from '../../navTypes';
 import { collection, collectionGroup, documentId, getDocs, query, Timestamp, where } from 'firebase/firestore';
 import { ProfileContext } from '../../contexts';
 import MESpinner from '../../components/MESpinner';
-import { DAYS_ARRAY, nowScheduleDate } from '../../constants/constants';
+import { DAYS_ARRAY } from '../../constants/constants';
 import { groupBy } from '../../utils/utilFunctions';
 import { firestore } from '../../firebase';
 import { Profile } from '../../types';
+import Colors from '../../constants/Colors';
+import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -42,6 +44,7 @@ export default function SchedulePage() {
 function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) {
   const { profile } : { profile: Profile } = useContext(ProfileContext);
 
+  const nowScheduleDate = useCurrentScheduleTime();
   const [classes, setClasses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -118,7 +121,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
           </Text>
         ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
           <Fragment key={dIdx}>
-            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
+            <Text style={[textStyles.heading4, { marginBottom: 16, color: Colors.light.tint }]}>
               {
                 nowScheduleDate.getDay() === parseInt(sd[0]) ? 
                   'Hari Ini' : parseInt(sd[0]) - nowScheduleDate.getDay() === 1 ?
