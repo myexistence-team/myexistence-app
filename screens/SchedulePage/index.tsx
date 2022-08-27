@@ -61,15 +61,14 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
     if (profile.classIds.length) {
       setIsLoading(true);
       getDocs(classesQuery).then((docs) => {
-        const classArr: any[] = [];
+        const classObjs: any = {};
         docs.forEach((doc) => {
-          classArr.push({ ...doc.data(), id: doc.id });
+          classObjs[doc.id] = doc.data();
         })
         getDocs(schedulesQuery).then((docs) => {
           const docsArr: any[] = [];
           docs.forEach((doc) => {
-            const classObj = classArr
-              .find(({ id }) => id === doc.data().classId);
+            const classObj = classObjs[doc.data().classId];
             docsArr.push({ 
               ...doc.data(),
               className: classObj?.name,
