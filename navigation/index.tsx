@@ -37,6 +37,7 @@ import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
 import QRScanner from '../screens/QRScanner';
+import ClassPage from '../screens/ClassPage';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
@@ -213,6 +214,15 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'SchedulesPage'>) => ({
           title: 'Jadwal',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+          headerShown: false,
+        })}
+      />
+      <BottomTab.Screen
+        name="ClassPage"
+        component={ClassPage}
+        options={({ navigation }: RootTabScreenProps<'ClassPage'>) => ({
+          title: 'Kelas',
+          tabBarIcon: ({ color }) => <TabBarIcon name="book" color={color} />,
           headerShown: false,
         })}
       />

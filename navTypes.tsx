@@ -56,7 +56,15 @@ export type RootTabParamList = {
   Home: undefined;
   SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
   ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
+  ClassPage: NavigatorScreenParams<ClassParamList> | undefined,
 };
+
+export type ClassParamList ={
+  Classes: undefined,
+  ClassDetails: {
+    classId: string,
+  }
+}
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
