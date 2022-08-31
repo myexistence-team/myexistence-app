@@ -1,9 +1,9 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { isLoading } from "expo-font";
 import { collection, documentId, getDocs, query, where } from "firebase/firestore";
 import React, { useContext, useEffect, useState } from "react";
 import { Text } from "react-native";
-import ClassesCard from "../../components/ClassesCard";
+import ClassesCard from "../../components/ClassCard";
 import MEContainer from "../../components/MEContainer";
 import MESpinner from "../../components/MESpinner";
 import { textStyles } from "../../constants/Styles";
@@ -11,6 +11,7 @@ import { ProfileContext } from "../../contexts";
 import { firestore } from "../../firebase";
 import { ClassParamList } from "../../navTypes";
 import { Profile } from "../../types";
+import ClassDetailsPage from "../ClassDetailsPage";
 
 const Stack = createNativeStackNavigator<ClassParamList>();
 
@@ -26,19 +27,19 @@ export default function ClassPage() {
           header: () => null
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="ClassDetails"
         component={ClassDetailsPage}
         options={{
           headerShown: false,
         }}
-      /> */}
+      />
     </Stack.Navigator>
 
   )
 }
 
-function Classes() {
+function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
   const { profile } : { profile: Profile } = useContext(ProfileContext);
   const [classesState, setClassesState] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,15 +57,15 @@ function Classes() {
       getDocs(classesQuery).then((docs) => {
         const docsArr: any[] = [];
         docs.forEach((doc) => {
-          console.log(doc.id)
+          // console.log(doc.id)
           docsArr.push({
             ...doc.data(),
             id: doc.id,
           })
         })
+        // console.log("DOCSARR", docsArr);
         setClassesState(docsArr)
         setIsLoading(false);
-        // console.log("DOCSARR", docsArr);
       })
     } else {
       setIsLoading(false);
@@ -97,7 +98,7 @@ function Classes() {
             Anda belum terdaftar di kelas apapun.
           </Text>
         ) : 
-        classesState.map((c, idx) => (
+        classesState.map((c: any, idx: number) => (
           <ClassesCard classRoom={c} key={idx}/>
         ))
       }
