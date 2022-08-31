@@ -193,13 +193,13 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
                 }
                 { 
                   classRoom.studentIds.length > 3 ?  (
-                    <Text style={[textStyles.body2, {marginTop: 12, marginBottom: 4}]}
+                    <Text style={[textStyles.body3, {marginTop: 12, marginBottom: 4}]}
                     >{classRoom.studentIds.length - 3} lainnya</Text>
                   ) : null
                 }
               
 
-              <Text style={[textStyles.body3, { marginTop: 16, marginBottom: 4, }]}>Jadwal</Text>
+              <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 4, }]}>Jadwal</Text>
                 {
                   schedules.map((s: any, idx: number) => (
                     <ScheduleCard schedule={s} key={idx}/>
