@@ -15,7 +15,8 @@ export type Profile = BaseType & {
   role: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT',
   photoUrl?: string,
   classIds: string[],
-  classes: DocumentReference[]
+  description?: string,
+  classes: DocumentReference[],
 }
 
 export type Teacher = BaseType & Profile & {

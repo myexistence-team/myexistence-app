@@ -124,7 +124,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                 textStyles.body1, 
                 {marginBottom: 4}
                 ]}>{profile.displayName}</Text>
-              <Text style={textStyles.body3}>{RoleEnum[profile.role]}</Text>
+              <Text style={textStyles.body3}>{profile.description}</Text>
             </View>
           </View>
           <View style={{

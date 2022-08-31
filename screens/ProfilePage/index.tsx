@@ -62,9 +62,13 @@ export function ProfileScreen() {
         disableBackButton
       />
       <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Profil Anda</Text>
-      <Text style={[textStyles.body2]}>Name</Text>
+      <Text style={[textStyles.body2]}>Nama</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {profile.displayName}
+      </Text>
+      <Text style={[textStyles.body2]}>Deskripsi</Text>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+        {profile.description}
       </Text>
       <Text style={[textStyles.body2]}>Email</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
