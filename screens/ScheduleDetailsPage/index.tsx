@@ -14,6 +14,7 @@ import { ProfileContext } from '../../contexts'
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
+import { DAYS_ARRAY } from '../../constants/constants'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId } = route.params;
@@ -88,15 +89,26 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.classDescription}
             </Text>
 
-            <Text style={textStyles.body2}>Jam Mulai</Text>
+            <Text style={textStyles.body2}>Hari</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {moment(schedule.start).format("HH:mm")}
+              {DAYS_ARRAY[schedule.day]}
             </Text>
 
-            <Text style={textStyles.body2}>Jam Selesai</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {moment(schedule.end).format("HH:mm")}
-            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 1 }}>
+                <Text style={textStyles.body2}>Jam Mulai</Text>
+                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                  {moment(schedule.start).format("HH:mm")}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={textStyles.body2}>Jam Selesai</Text>
+                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                  {moment(schedule.end).format("HH:mm")}
+                </Text>
+              </View>
+            </View>
+
 
             <Text style={textStyles.body2}>Toleransi</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
