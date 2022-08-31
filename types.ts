@@ -40,3 +40,12 @@ export type Schedule = BaseType & {
   end: Date,
   tolerance: number
 }
+
+export type Class = BaseType & {
+  className: string,
+  classDescription: string,
+  // teacherIds: string[],
+  // studentsIds: string[],
+  // schedules: DocumentReference[]
+  
+}

@@ -39,6 +39,8 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 
 export type ScheduleScreenProps = NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">
 
+export type ClassScreenProps = NativeStackScreenProps<ClassParamList, "ClassDetails">
+
 export type ScheduleParamList = {
   Schedules: undefined,
   ScheduleDetails: { 
@@ -56,7 +58,15 @@ export type RootTabParamList = {
   Home: undefined;
   SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
   ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
+  ClassPage: NavigatorScreenParams<ClassParamList> | undefined,
 };
+
+export type ClassParamList ={
+  Classes: undefined,
+  ClassDetails: {
+    classId: string,
+  }
+}
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,

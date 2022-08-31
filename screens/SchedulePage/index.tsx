@@ -45,14 +45,12 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   const { profile } : { profile: Profile } = useContext(ProfileContext);
 
   const nowScheduleDate = useCurrentScheduleTime();
-  const [classes, setClasses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const classesQuery = query(collection(
-    firestore, 
-    `schools/${profile.schoolId}/classes`),
-    ...profile.classIds.length ? [where(documentId(), 'in', profile.classIds)] : [],
+  const classesQuery = query(
+    collection(firestore, `schools/${profile.schoolId}/classes`),
+    where(documentId(), 'in', profile.classIds)
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
