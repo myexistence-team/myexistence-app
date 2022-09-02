@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import React, { useContext, useEffect, useState } from "react";
 import { Text } from "react-native";
+import ClassScheduleCard from "../../components/ClassScheduleCard";
 import MEContainer from "../../components/MEContainer";
 import MEHeader from "../../components/MEHeader";
 import MESpinner from "../../components/MESpinner";
@@ -177,7 +178,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
               <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 4, }]}>Jadwal</Text>
                 {
                   schedules.map((s: any, idx: number) => (
-                    <ScheduleCard schedule={s} key={idx}/>
+                    <ClassScheduleCard schedule={s} key={idx}/>
                   ))
                 }
             </>              
