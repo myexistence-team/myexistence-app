@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { collection, doc, documentId, getDoc, getDocs, limit, query, where } from "firebase/firestore";
+import { collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import React, { useContext, useEffect, useState } from "react";
 import { Text } from "react-native";
 import MEContainer from "../../components/MEContainer";
@@ -27,6 +27,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
   const scheduleQuery = query(collection(
     firestore, 
     `schools/${profile.schoolId}/classes/${ classId }/schedules`),
+    orderBy('start')
   )
 
   const classQuery = query(collection(
@@ -40,100 +41,74 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
       setIsLoading(true);     
       setClass(null);
 
-      // Get Schedules
-      getDocs(classQuery).then((docs) => {
-        const classObjs: any = {};
-        docs.forEach((doc) => {
-          classObjs[doc.id] = doc.data();
-        })
-        getDocs(scheduleQuery).then((docs) => {
-          const docsArr: any[] = [];
-          docs.forEach((doc) => {
-            const classObj = classObjs[doc.data().classId];
-            docsArr.push({ 
-              ...doc.data(),
-              id: doc.id,
-              className: classObj?.name,
-              classDescription: classObj?.description,
-              start: doc.data().start.toDate(),
-              end: doc.data().end.toDate(),
-            });
-          })
-          setSchedules(docsArr);
+      getDoc((doc(
+        firestore,
+        'schools', 
+        profile.schoolId,
+        'classes', 
+        classId
+      ))).then((classSnap) => {
+        if (classSnap.exists()) {          
+          const classroom = classSnap.data();
+          setClass(classroom);
           setIsLoading(false);
-        })
-      }) 
 
-      // Get Teachers name
-      getDocs(classQuery).then((docs) => {
-        const classObjs: any = {};
-        const teachIdArr: any = [];
-        docs.forEach((doc) => {
-          classObjs[doc.id] = doc.data();
-          for (let index = 0; index < doc.data().teacherIds.length; index++) {
-            teachIdArr.push(doc.data().teacherIds[index]);              
-          };
-        })
-        getDocs(
-          query(collection(firestore, `users`),
-            where(documentId(), 'in', teachIdArr)
-          )).then((docs) => {
-            const teachArr: any = [];
-          docs.forEach((doc) => {
-            teachArr.push({ 
-              ...doc.data(),
-              id: doc.id
-            });
-          })
-          setTeachers(teachArr);
-        })
-      }) 
+          // Get Students
+          if (classroom.studentIds != 0) {            
+            getDocs(
+              query(collection(firestore,`users`),
+                where(documentId(), 'in', classroom.studentIds), limit(3)
+              )).then((docs) => {
+                const studentArr: any = [];
+                docs.forEach((doc) => {
+                  // console.log(doc.data().displayName);
+                  studentArr.push({ 
+                    ...doc.data(),
+                    id: doc.id
+                  });
+                })
+                setStudents(studentArr);
+            })
+          }
 
-      // Get Student
-      getDocs(classQuery).then((docs) => {
-        const classObjs: any = {};
-        const studentIdArr: any = [];
-        docs.forEach((doc) => {
-          classObjs[doc.id] = doc.data();
-          console.log(doc.data().teacherIds);
-          for (let index = 0; index < doc.data().studentIds.length; index++) {
-            console.log(doc.get("studentIds")[index]);
-            studentIdArr.push(doc.data().studentIds[index]);              
-          };
-          console.log(studentIdArr);
-        })
-        getDocs(
-          query(collection(firestore,`users`),
-            where(documentId(), 'in', studentIdArr), limit(3)
-          )).then((docs) => {
-            const studentArr: any = [];
-          docs.forEach((doc) => {
-            console.log(doc.data().displayName);
-            // const classObj = classObjs[doc.data().classId];
-            studentArr.push({ 
-              ...doc.data(),
-              id: doc.id
-            });
-          })
-          setStudents(studentArr);
-        })
-      }) 
+          // Get Teacher
+          if (classroom.teacherIds != 0) {            
+            getDocs(
+              query(collection(firestore, `users`),
+                where(documentId(), 'in', classroom.teacherIds)
+              )).then((docs) => {
+                const teachArr: any = [];
+                docs.forEach((doc) => {
+                  teachArr.push({ 
+                    ...doc.data(),
+                    id: doc.id
+                  });
+                })
+              setTeachers(teachArr);
+            })
+          }
 
-      // Get Class
-      getDocs(classQuery).then((docs) => {
-        const classArr: any[] = [];
-        const teachIdArr: any[] = [];
-        const studentIdArr: any[] = [];
-        docs.forEach((doc) => {
-          setClass({ 
-            ...doc.data(),
-            id: doc.id,
-            className: doc.data().name,
-            classDescription: doc.data().description,
-          });
-        })          
-        setIsLoading(false);
+          // Get Schedules
+          if (classroom) {
+            getDocs(scheduleQuery).then((docs) => {
+              const docsArr: any[] = [];
+              docs.forEach((doc) => {
+                docsArr.push({ 
+                  ...doc.data(),
+                  id: doc.id,
+                  className: classroom?.name,
+                  classDescription: classroom?.description,
+                  start: doc.data().start.toDate(),
+                  end: doc.data().end.toDate(),
+                });
+              })
+              setSchedules(docsArr);
+              setIsLoading(false);
+            })
+          }
+        }
       })
+      
     } else {
       setIsLoading(false);
     }
