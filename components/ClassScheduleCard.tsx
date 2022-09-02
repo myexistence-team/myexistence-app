@@ -33,19 +33,19 @@ export default function ClassScheduleCard({
         opacity: pressed ? 0.75 : 1
       })}
       
-      // onPress={() => {
-      //   navigation.navigate("Root", {
-      //     screen: "SchedulesPage",
-      //     params: {
-      //       screen: "ScheduleDetails",
-      //       params: {
-      //         classId: schedule.classId,
-      //         scheduleId: schedule.id
-      //       },
-      //       initial: false,
-      //     },
-      //   })
-      // }}
+      onPress={() => {
+        navigation.navigate("Root", {
+          screen: "SchedulesPage",
+          params: {
+            screen: "ScheduleDetails",
+            params: {
+              classId: schedule.classId,
+              scheduleId: schedule.id
+            },
+            initial: false,
+          },
+        })
+      }}
     >
       <MECard
         style={{
