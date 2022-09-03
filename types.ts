@@ -17,6 +17,7 @@ export type Profile = BaseType & {
   classIds: string[],
   description?: string,
   classes: DocumentReference[],
+  currentScheduleId?: string
 }
 
 export type Teacher = BaseType & Profile & {
@@ -39,7 +40,8 @@ export type Schedule = BaseType & {
   classDescription: string,
   start: Date,
   end: Date,
-  tolerance: number
+  tolerance: number,
+  classId: string
 }
 
 export type Class = BaseType & {
@@ -49,4 +51,8 @@ export type Class = BaseType & {
   // studentsIds: string[],
   // schedules: DocumentReference[]
   
+}
+
+export type QRCode =  {
+  scanned: boolean
 }
