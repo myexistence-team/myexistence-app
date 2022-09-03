@@ -8,23 +8,26 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
+import { ScheduleStasuses } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule,
-  disableScanButton
+  disableScanButton,
+  disableCountdown
 }: {
   schedule: any & {
     start: Date
   },
-  disableScanButton?: boolean
+  disableScanButton?: boolean,
+  disableCountdown?: boolean,
 }) {
   const navigation = useNavigation();
 
   const now: Date = useCurrentScheduleTime();
   const diffInMs = schedule.start.getTime() - now.getTime();
 
-  const diffToNowInMins = Math.floor(diffInMs/60000);
-  const diffToNowInHours = Math.floor(diffInMs/3600000);
+  const diffToNowInMins = Math.abs(Math.floor(diffInMs/60000));
+  const diffToNowInHours = Math.floor(diffToNowInMins/60);
 
   return (
     <Pressable
@@ -78,9 +81,9 @@ export default function ScheduleCard({
             </Text>
           </Text>
           {
-            diffToNowInHours < 24 ? (
+            (disableCountdown === undefined || disableCountdown === false) && diffToNowInHours < 24 ? (
               <Text style={textStyles.body3}>
-                Dalam {diffToNowInMins > 60 ? diffToNowInHours : diffToNowInMins} {diffToNowInMins > 60 ? 'Jam' : 'Menit'}
+                {diffInMs > 0 ? 'Dalam' : 'Terlambat'} {diffToNowInMins > 60 ? diffToNowInHours : diffToNowInMins} {diffToNowInMins > 60 ? 'Jam' : 'Menit'}
               </Text>
             ) : null
           }
@@ -100,7 +103,7 @@ export default function ScheduleCard({
           {schedule.classDescription}
         </Text>
         {
-          (disableScanButton === undefined || disableScanButton === false) && diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
+          (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
             <MEButton
               iconStart="qrcode"
               style={{
@@ -108,7 +111,10 @@ export default function ScheduleCard({
               }}
               onPress={() => navigation.navigate('Scanner', {
                 scheduleId: schedule.id,
-                schedule
+                schedule: {
+                  ...schedule,
+                  class: null
+                }
               })}
             >
               Pindai QR Code
