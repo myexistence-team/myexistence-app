@@ -10,10 +10,8 @@ import Colors from '../../constants/Colors';
 
 export default function NextSchedules({
   schedules,
-  isLoading
 }: {
   schedules: Schedule[],
-  isLoading: boolean
 }) {
   const navigation = useNavigation();
 
@@ -29,9 +27,7 @@ export default function NextSchedules({
         Berikutnya
       </Text>
       {
-        isLoading ? (
-          <MESpinner/>
-        ) : schedules.map((s, idx) => (
+        schedules.map((s, idx) => (
           <ScheduleCard schedule={s} key={idx}/>
         ))
       }
