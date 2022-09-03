@@ -26,3 +26,15 @@ export const DAYS_ARRAY = [
   "Jumat",
   "Sabtu",
 ]
+
+export enum AbsentStasuses {
+  PRESENT = "PRESENT",
+  ABSENT = "ABSENT",
+  LATE = "LATE",
+  EXCUSED = "EXCUSED",
+}
+
+export enum ScheduleStasuses {
+  OPENED = "OPENED",
+  CLOSED = "CLOSED",
+}
