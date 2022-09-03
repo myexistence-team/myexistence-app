@@ -1,43 +1,80 @@
 import { Image, ImageBackground, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
-import MEContainer from '../../components/MEContainer'
 import { textStyles } from '../../constants/Styles'
 import MECard from '../../components/MECard'
 import NextSchedules from './NextSchedules'
 import { RootTabScreenProps } from '../../navTypes'
 import { ProfileContext } from '../../contexts'
-import { Profile } from '../../types'
+import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
-import { RoleEnum } from '../../enums'
-import { collection, collectionGroup, documentId, getDocs, limit, query, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, documentId, DocumentReference, getDoc, getDocs, limit, query, updateDoc, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import Colors from '../../constants/Colors'
-import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
+import ScheduleCard from '../../components/ScheduleCard'
+import MESpinner from '../../components/MESpinner'
+import { getCurrentScheduleTime } from '../../utils/getters'
+import { ScheduleStasuses } from '../../constants/constants'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
-  const nowScheduleDate = useCurrentScheduleTime();
+  const [currentSchedule, setCurrentSchedule] = useState<any>(null);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const classesQuery = query(collection(
-    firestore, 
-    `schools/${profile.schoolId}/classes`),
-    ...profile.classIds.length ? [where(documentId(), 'in', profile.classIds)] : [],
-  );
-  const schedulesQuery = query(
-    collectionGroup(firestore, 'schedules'), 
-    ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
-    where('start', '>', nowScheduleDate),
-    limit(5),
-  );
-
+  
+  
   function loadHomePageData() {    
-    if (profile.classIds.length) {
+    const nowScheduleDate = getCurrentScheduleTime();
+    var excludedScheduleId: string | undefined;
+    if (profile.classIds?.length) {
       setIsLoading(true);
+      if (profile.currentScheduleId) {
+        const currentScheduleQuery = query(
+          collectionGroup(firestore, 'schedules'),
+          where('id', '==', profile.currentScheduleId),
+          );
+          getDocs(currentScheduleQuery)
+          .then((docs) => {
+            const schedule: any = docs.docs[0].data();
+            if (
+              schedule.end.toDate().getTime() < nowScheduleDate.getTime()
+              || schedule.status === ScheduleStasuses.CLOSED
+            ) {
+              updateDoc(doc(firestore, 'users', profile.id), {
+                currentScheduleId: null
+              })
+            } else {
+              excludedScheduleId = profile.currentScheduleId;
+              getDoc(doc(firestore, `schools/${profile.schoolId}/classes/${schedule.classId}`)).then((classSnap) => {
+                const classObj: Class | any = classSnap.data();
+                const convertedSchedule = {
+                  ...schedule,
+                  className: classObj.name,
+                  classDescription: classObj.description,
+                  start: schedule.start.toDate(),
+                  end: schedule.end.toDate(),
+                  class: null
+                }
+                setCurrentSchedule(convertedSchedule);
+              })
+            }
+          })
+      } else {
+        setCurrentSchedule(null);
+      }
+      const schedulesQuery = query(
+        collectionGroup(firestore, 'schedules'), 
+        where('classId', 'in', profile.classIds),
+        where('end', '>', nowScheduleDate),
+        limit(excludedScheduleId ? 6 : 5),
+      );
+      const classesQuery = query(collection(
+        firestore, 
+        `schools/${profile.schoolId}/classes`),
+        where(documentId(), 'in', profile.classIds),
+      );
       getDocs(classesQuery).then((docs) => {
         const classObjs: any = {};
         docs.forEach((doc) => {
@@ -54,20 +91,21 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
               classDescription: classObj?.description,
               start: doc.data().start.toDate(),
               end: doc.data().end.toDate(),
+              class: null
             });
           })
-          setSchedules(docsArr);
+          setSchedules(docsArr.filter((s) => s.id !== excludedScheduleId));
           setIsLoading(false);
         })
       }) 
     } else {
-    setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
     loadHomePageData();
-  }, [])
+  }, [profile])
 
   return (
     <ScrollView
@@ -161,8 +199,28 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
             </Text>
           ) : (
             <>
-              <NextSchedules schedules={schedules} isLoading={isLoading}/>
-              <History/>
+              {
+                isLoading ? (
+                  <MESpinner/>
+                ) : (
+                  <>
+                    {
+                      currentSchedule ? (
+                        <>
+                          <Text style={[textStyles.heading3, { marginBottom: 16 }]}>Sedang Berlangsung</Text>
+                          <ScheduleCard
+                            schedule={currentSchedule}
+                            disableScanButton={true}
+                            disableCountdown={true}
+                          />
+                        </>
+                      ) : null
+                    }
+                    <NextSchedules schedules={schedules}/>
+                    <History/>
+                  </>
+                )
+              }
             </>
           )
         }
