@@ -5,7 +5,7 @@ export enum RoleEnum {
   STUDENT = "Pelajar",
 }
 
-export enum AbsentEnum {
+export enum PresenceStatusEnum {
   PRESENT = "Hadir",
   ABSENT = "Absen",
   LATE = "Terlambat",

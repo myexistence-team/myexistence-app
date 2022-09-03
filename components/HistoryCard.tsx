@@ -4,7 +4,7 @@ import React from 'react'
 import { Text } from 'react-native'
 import Colors from '../constants/Colors'
 import { textStyles } from '../constants/Styles'
-import { AbsentEnum } from '../enums'
+import { PresenceStatusEnum } from '../enums'
 import MECard from './MECard'
 import { View } from './Themed'
 
@@ -87,7 +87,7 @@ export default function HistoryCard(props: {
                         color: getStatusColor(history.status)
                       }]} 
                     >
-                        {AbsentEnum[history.status]}
+                        {PresenceStatusEnum[history.status]}
                     </Text>
                 </View>
             </View>
