@@ -68,7 +68,10 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
         if (docSnap.exists()) {
           const profile = docSnap.data();
-          setProfile(profile);
+          setProfile({
+            ...profile,
+            id: auth.uid
+          });
         } else {
           setProfile(null);
           setIsInitializing(false);
@@ -108,7 +111,10 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
         if (docSnap.exists()) {
           const school = docSnap.data();
-          setSchool(school);
+          setSchool({
+            ...school,
+            id: docSnap.id
+          });
           setIsInitializing(false);
         } else {
           setSchool(null);
