@@ -15,9 +15,9 @@ function getStatusColor(status:string) {
         case "ABSENT":
             return Colors.light.red
         case "LATE":
-            return Colors.light.yellows.yellow3
-        case "EXCUSED":
             return Colors.light.orange
+        case "EXCUSED":
+            return Colors.light.yellows.yellow3
         default:
             return Colors.light.black
     }

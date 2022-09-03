@@ -119,7 +119,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
           </Text>
         ) : schedulesGroupedByDayArr.map((sd: any[], dIdx: number) => (
           <Fragment key={dIdx}>
-            <Text style={[textStyles.heading4, { marginBottom: 16, color: Colors.light.tint }]}>
+            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>
               {
                 nowScheduleDate.getDay() === parseInt(sd[0]) ? 
                   'Hari Ini' : parseInt(sd[0]) - nowScheduleDate.getDay() === 1 ?

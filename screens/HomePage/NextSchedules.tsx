@@ -22,7 +22,7 @@ export default function NextSchedules({
       }}
     >
       <Text 
-        style={[textStyles.heading3, { marginBottom: 16, color: Colors.light.tint }]}
+        style={[textStyles.heading3, { marginBottom: 16 }]}
       >
         Berikutnya
       </Text>

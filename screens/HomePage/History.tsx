@@ -16,7 +16,7 @@ export default function History() {
       }}
     >
       <Text
-        style={[textStyles.heading3, { marginBottom: 16, color: Colors.light.tint }]}
+        style={[textStyles.heading3, { marginBottom: 16 }]}
       >
         Riwayat
       </Text>
