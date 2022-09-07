@@ -8,7 +8,7 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
-import { DAYS_ARRAY } from '../constants/constants';
+import { DAYS_ARRAY, ScheduleStasuses } from '../constants/constants';
 
 export default function ClassScheduleCard({
   schedule,
@@ -21,18 +21,11 @@ export default function ClassScheduleCard({
 }) {
   const navigation = useNavigation();
 
-  const now: Date = useCurrentScheduleTime();
-  const diffInMs = schedule.start.getTime() - now.getTime();
-
-  const diffToNowInMins = Math.floor(diffInMs/60000);
-  const diffToNowInHours = Math.floor(diffInMs/3600000);
-
   return (
     <Pressable
       style={({ pressed }) => ({
         opacity: pressed ? 0.75 : 1
       })}
-      
       onPress={() => {
         navigation.navigate("Root", {
           screen: "SchedulesPage",
@@ -99,7 +92,7 @@ export default function ClassScheduleCard({
           {moment(schedule.start).format("HH:mm")} - {moment(schedule.end).format("HH:mm")}
         </Text>
         {
-          (disableScanButton === undefined || disableScanButton === false) && (diffToNowInMins <= 30 && diffToNowInMins >= -15) ? (
+          (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
             <View
             style={{
                 // flex: 1,
