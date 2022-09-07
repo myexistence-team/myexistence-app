@@ -1,20 +1,19 @@
 import { View, Text } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
-import { ScheduleParamList, ScheduleScreenProps } from '../../navTypes'
-import scheduleMocks from '../../mocks/scheduleMocks'
+import { ScheduleScreenProps } from '../../navTypes'
 import { textStyles } from '../../constants/Styles'
 import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { doc, DocumentData, getDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import { ProfileContext } from '../../contexts'
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { DAYS_ARRAY } from '../../constants/constants'
+import { DAYS_ARRAY, ScheduleStasuses } from '../../constants/constants'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId } = route.params;
@@ -115,7 +114,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.tolerance} Menit
             </Text>
             {
-              diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
+              schedule.status === ScheduleStasuses.OPENED ? (
                 <MEButton
                   iconStart="qrcode"
                   size='lg'
