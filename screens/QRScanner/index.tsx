@@ -13,6 +13,8 @@ import { createPresenceInSchedule } from '../../actions/scheduleActions';
 import { AuthContext, SchoolContext } from '../../contexts';
 import { FirebaseError } from 'firebase/app';
 import MESpinner from '../../components/MESpinner';
+import { FontAwesome5 } from '@expo/vector-icons';
+import Colors from '../../constants/Colors';
 
 export function QRScanSuccess({
   schedule
@@ -21,8 +23,20 @@ export function QRScanSuccess({
 }) {
   const navigation = useNavigation();
   return (
-    <MEContainer>
-      <Text style={[textStyles.heading3, { textAlign: 'center', marginBottom: 64 }]}>Berhasil hadir!</Text>
+    <MEContainer
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      <FontAwesome5
+        name='check-circle'
+        size={180}
+        color={Colors.light.tint}
+      />
+      <Text style={[textStyles.heading3, { textAlign: 'center', marginVertical: 32 }]}>
+        Berhasil hadir!
+      </Text>
       <MEButton
         onPress={() => {
           navigation.navigate('Root', {
@@ -44,7 +58,7 @@ export default function QRScanner({ route }: RootStackScreenProps<'Scanner'>) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [scanning, setScanning] = useState(false);
-  const [succeed, setSucceed] = useState(false);
+  const [succeed, setSucceed] = useState(true);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
