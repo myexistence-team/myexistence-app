@@ -75,8 +75,6 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
               id: doc.id,
               className: classObj?.name,
               classDescription: classObj?.description,
-              start: doc.data().start.toDate(),
-              end: doc.data().end.toDate(),
             });
           })
           setSchedules(docsArr);

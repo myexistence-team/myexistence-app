@@ -46,8 +46,6 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               ...scheduleSnap.data(),
               className: classSnap.data().name,
               classDescription: classSnap.data().description,
-              start: scheduleSnap.data().start.toDate(),
-              end: scheduleSnap.data().end.toDate(),
             });
           }
         })

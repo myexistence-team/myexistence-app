@@ -4,7 +4,7 @@ import { textStyles } from '../../constants/Styles'
 import MECard from '../../components/MECard'
 import NextSchedules from './NextSchedules'
 import { RootTabScreenProps } from '../../navTypes'
-import { ProfileContext } from '../../contexts'
+import { AuthContext, ProfileContext } from '../../contexts'
 import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
@@ -19,6 +19,7 @@ import { ScheduleStasuses } from '../../constants/constants'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
+  const { auth } = useContext(AuthContext);
 
   const [currentSchedule, setCurrentSchedule] = useState<any>(null);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -53,8 +54,6 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                   ...schedule,
                   className: classObj.name,
                   classDescription: classObj.description,
-                  start: schedule.start.toDate(),
-                  end: schedule.end.toDate(),
                   class: null
                 }
                 setCurrentSchedule(convertedSchedule);
@@ -75,6 +74,13 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         `schools/${profile.schoolId}/classes`),
         where(documentId(), 'in', profile.classIds),
       );
+      const logsQuery = query(collection(
+        firestore, 
+        `schools/${profile.schoolId}/logs`),
+        where('studentId', '==', auth.uid),
+        limit(5)
+      );
+
       getDocs(classesQuery).then((docs) => {
         const classObjs: any = {};
         docs.forEach((doc) => {
@@ -89,8 +95,6 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
               id: doc.id,
               className: classObj?.name,
               classDescription: classObj?.description,
-              start: doc.data().start.toDate(),
-              end: doc.data().end.toDate(),
               class: null
             });
           })
@@ -98,6 +102,13 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           setIsLoading(false);
         })
       }) 
+      getDocs(logsQuery).then((docSnaps) => {
+        const docsArr: any[] = [];
+        docSnaps.docs.forEach((doc) => {
+          docsArr.push(doc.data());
+        })
+        console.log(docsArr);
+      })
     } else {
       setIsLoading(false);
     }

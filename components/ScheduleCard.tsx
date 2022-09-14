@@ -24,7 +24,7 @@ export default function ScheduleCard({
   const navigation = useNavigation();
 
   const now: Date = useCurrentScheduleTime();
-  const diffInMs = schedule.start.getTime() - now.getTime();
+  const diffInMs = schedule.start.toDate().getTime() - now.getTime();
 
   const diffToNowInMins = Math.abs(Math.floor(diffInMs/60000));
   const diffToNowInHours = Math.floor(diffToNowInMins/60);
@@ -73,7 +73,7 @@ export default function ScheduleCard({
             <FontAwesome5 size={12} name='clock'/>{'  '}
             <Text
             >
-              {moment(schedule.start).format("HH:mm")} - {moment(schedule.end).format("HH:mm")}
+              {moment(schedule.start).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
             </Text>
             {' • '}
             <Text>

@@ -8,6 +8,8 @@ import Colors from "../../constants/Colors";
 
 export default function History() {
   const histories = historyMocks;
+
+  
   
   return (
     <View 
@@ -22,8 +24,7 @@ export default function History() {
       </Text>
       {
         histories.map((h, idx) => (
-          <HistoryCard history={h} key={idx}
-          />
+          <HistoryCard history={h} key={idx}/>
         ))
       }
     </View>

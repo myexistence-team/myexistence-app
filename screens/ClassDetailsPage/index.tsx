@@ -99,8 +99,6 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
                   id: doc.id,
                   className: classroom?.name,
                   classDescription: classroom?.description,
-                  start: doc.data().start.toDate(),
-                  end: doc.data().end.toDate(),
                 });
               })
               setSchedules(docsArr);
