@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React, { useContext, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { ProfileContext, SchoolContext } from '../../contexts';
@@ -53,7 +53,7 @@ export function ProfileScreen() {
   return (
     <MEContainer>
       <MEHeader
-        title='Profile'
+        title='Profil Anda'
         onBackPress={() => {
           navigation.navigate('Root', {
             screen: 'SchedulesPage'
@@ -61,7 +61,22 @@ export function ProfileScreen() {
         }}
         disableBackButton
       />
-      <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Profil Anda</Text>
+      {
+        profile.photoUrl && (
+          <Image
+            source={{
+              uri: profile.photoUrl
+            }}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 500,
+              alignSelf: 'center',
+              marginBottom: 16
+            }}
+          />
+        )
+      }
       <Text style={[textStyles.body2]}>Nama</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {profile.displayName}
