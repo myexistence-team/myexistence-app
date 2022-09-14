@@ -52,7 +52,6 @@ export function QRScanSuccess({
 
 export default function QRScanner({ route }: RootStackScreenProps<'Scanner'>) {
   const { scheduleId, schedule } = route.params;
-  console.log(schedule);
   const {school} = useContext(SchoolContext);
   const {auth} = useContext(AuthContext);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
