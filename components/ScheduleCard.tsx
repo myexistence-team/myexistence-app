@@ -103,22 +103,56 @@ export default function ScheduleCard({
           {schedule.classDescription}
         </Text>
         {
-          (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
-            <MEButton
-              iconStart="qrcode"
-              style={{
-                marginTop: 8
+          (disableScanButton === undefined || disableScanButton === false) && diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
+            <View
+            style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between'
               }}
-              onPress={() => navigation.navigate('Scanner', {
-                scheduleId: schedule.id,
-                schedule: {
-                  ...schedule,
-                  class: null
-                }
-              })}
             >
-              Pindai QR Code
-            </MEButton>
+              <View
+                style={[
+                  { 
+                    width: '40%',
+                  }
+                ]}
+              >
+                <MEButton
+                color='white'
+                style={[
+                    { 
+                      borderWidth: 1,
+                      borderColor: Colors.light.blue,
+                    }
+                  ]}
+                >
+                    Izin
+                </MEButton>
+              </View>
+              <View
+                style={[
+                  { 
+                    width: '60%',
+                  }
+                ]}
+              >
+                <MEButton
+                iconStart="qrcode"
+                style={[
+                  { 
+                    marginLeft: 4
+                  }
+                ]}
+                onPress={() => navigation.navigate('Scanner', {
+                    scheduleId: schedule.id,
+                    schedule
+                })}
+                >
+                Pindai QR Code
+                </MEButton>
+              </View>
+            </View>
           ) : null
         }
       </MECard>
