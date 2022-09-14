@@ -41,7 +41,7 @@ export type Schedule = BaseType & {
   start: Date,
   end: Date,
   tolerance: number,
-  classId: string
+  classId: string,
 }
 
 export type Class = BaseType & {
@@ -51,6 +51,21 @@ export type Class = BaseType & {
   // studentsIds: string[],
   // schedules: DocumentReference[]
   
+}
+
+export type Log = {
+  schedule: {
+    start: Timestamp,
+    end: Timestamp,
+    openedAt: Timestamp,
+    closedAt: Timestamp,
+    tolerance: number,
+  },
+  studentId: string,
+  teacherId: string,
+  classId: string,
+  status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED' | string,
+  time: Timestamp
 }
 
 export type QRCode =  {

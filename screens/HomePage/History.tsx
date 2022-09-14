@@ -5,12 +5,16 @@ import historyMocks from "../../mocks/historyMocks";
 import React from 'react'
 import HistoryCard from "../../components/HistoryCard";
 import Colors from "../../constants/Colors";
+import { Log } from "../../types";
+import MEButton from "../../components/MEButton";
+import { useNavigation } from "@react-navigation/native";
 
-export default function History() {
-  const histories = historyMocks;
-
-  
-  
+export default function History({
+  logs
+}: {
+  logs: Log[]
+}) {
+  const navigation = useNavigation();
   return (
     <View 
       style={{
@@ -23,10 +27,24 @@ export default function History() {
         Riwayat
       </Text>
       {
-        histories.map((h, idx) => (
+        logs.map((h, idx) => (
           <HistoryCard history={h} key={idx}/>
         ))
+
       }
+      <MEButton
+        variant='outline'
+        // onPress={() => {
+        //   navigation.navigate('Root', {
+        //     screen: "SchedulesPage", 
+        //     params: {
+        //       screen: "Schedules"
+        //     }
+        //   })
+        // }}
+      >
+        Tampilkan Lebih Banyak
+      </MEButton>
     </View>
   )
 

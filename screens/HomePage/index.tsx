@@ -23,6 +23,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
 
   const [currentSchedule, setCurrentSchedule] = useState<any>(null);
   const [schedules, setSchedules] = useState<any[]>([]);
+  const [logs, setLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   
@@ -107,7 +108,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         docSnaps.docs.forEach((doc) => {
           docsArr.push(doc.data());
         })
-        console.log(docsArr);
+        setLogs(docsArr);
       })
     } else {
       setIsLoading(false);
@@ -228,7 +229,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                       ) : null
                     }
                     <NextSchedules schedules={schedules}/>
-                    <History/>
+                    <History logs={logs}/>
                   </>
                 )
               }
