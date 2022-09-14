@@ -58,7 +58,7 @@ export default function QRScanner({ route }: RootStackScreenProps<'Scanner'>) {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [scanned, setScanned] = useState(false);
   const [scanning, setScanning] = useState(false);
-  const [succeed, setSucceed] = useState(true);
+  const [succeed, setSucceed] = useState(false);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
