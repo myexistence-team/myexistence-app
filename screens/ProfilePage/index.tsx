@@ -103,6 +103,25 @@ export function ProfileScreen() {
         {school.location}
       </Text>
       <MEButton
+        style={{
+          marginBottom: 16
+        }}
+        onPress={() => {
+          navigation.navigate('Root', {
+            screen: 'ProfilePage',
+            params: {
+              screen: 'EditProfile',
+              initial: false
+            }
+          })
+        }}
+        // isLoading={true} 
+        color='primary'
+        variant='outline'
+      >
+        Pengaturan
+      </MEButton>
+      <MEButton
         // size='sm'
         onPress={handleLogOut}
         // isLoading={true} 

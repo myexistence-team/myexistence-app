@@ -16,10 +16,12 @@ import ScheduleCard from '../../components/ScheduleCard'
 import MESpinner from '../../components/MESpinner'
 import { getCurrentScheduleTime } from '../../utils/getters'
 import { ScheduleStasuses } from '../../constants/constants'
+import { useNavigation } from '@react-navigation/native'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const { auth } = useContext(AuthContext);
+  const navigation = useNavigation();
 
   const [currentSchedule, setCurrentSchedule] = useState<any>(null);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -200,7 +202,17 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
             <View style={{
               flex: 1,
             }}>
-            <MEButton>
+            <MEButton
+              onPress={() => {
+                navigation.navigate('Root', {
+                  screen: 'ProfilePage',
+                  params: {
+                    screen: 'EditProfile',
+                    initial: false
+                  }
+                })
+              }}
+            >
               Pengaturan
             </MEButton>
             </View>
