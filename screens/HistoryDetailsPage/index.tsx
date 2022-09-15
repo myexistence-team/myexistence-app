@@ -14,6 +14,7 @@ import { DAYS_ARRAY } from '../../constants/constants';
 import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { PresenceStatusEnum } from '../../enums';
+import MEPressableText from '../../components/MEPressableText';
 
 function getStatusColor(status: string) {
   switch (status) {
@@ -95,7 +96,27 @@ export default function HistoryDetailsPage({
           <MESpinner/>
         ) : (
           <>
-            <Text style={[{fontFamily: 'manrope-bold', marginBottom: 4, fontSize: 30}]}>{classroom?.name}</Text>
+            <MEPressableText 
+              style={[{
+                fontFamily: 'manrope-bold', 
+                marginBottom: 4, 
+                fontSize: 30
+              }]}
+              onPress={() => {
+                navigation.navigate('Root', {
+                  screen: 'ClassPage',
+                  params: {
+                    screen: 'ClassDetails',
+                    params: {
+                      classId: log.classId
+                    },
+                    initial: false
+                  }
+                })
+              }}
+            >
+              {classroom?.name}
+            </MEPressableText>
             <Text style={[textStyles.body1, {marginBottom: 32}]}>{classroom?.description}</Text>
 
             <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Jadwal</Text>

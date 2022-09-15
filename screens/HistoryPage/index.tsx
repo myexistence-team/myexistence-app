@@ -89,8 +89,8 @@ export function History() {
           ) : isLoading ? (
             <MESpinner/>
           ) : (
-            logs.map((l) => (
-              <HistoryCard history={l}/>
+            logs.map((l, idx) => (
+              <HistoryCard key={idx} history={l}/>
             ))
           )
         }
