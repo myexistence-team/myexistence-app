@@ -106,7 +106,10 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
       getDocs(logsQuery).then((docSnaps) => {
         const docsArr: any[] = [];
         docSnaps.docs.forEach((doc) => {
-          docsArr.push(doc.data());
+          docsArr.push({
+            ...doc.data(),
+            id: doc.id
+          });
         })
         setLogs(docsArr);
       })

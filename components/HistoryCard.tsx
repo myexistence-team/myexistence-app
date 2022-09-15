@@ -1,8 +1,9 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { doc, getDoc } from "firebase/firestore";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 import Colors from "../constants/Colors";
 import { textStyles } from "../constants/Styles";
 import { ProfileContext } from "../contexts";
@@ -29,6 +30,7 @@ function getStatusColor(status: string) {
 
 export default function HistoryCard(props: { history: Log }) {
   const { history } = props;
+  const navigation = useNavigation();
   const [className, setClassName] = useState<string | null>(null);
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
@@ -50,82 +52,100 @@ export default function HistoryCard(props: { history: Log }) {
   }, []);
 
   return (
-    <MECard
-      style={{
-        marginBottom: 16,
+    <Pressable
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.75 : 1
+      })}
+      onPress={() => {
+        navigation.navigate("Root", {
+          screen: "HistoryPage",
+          params: {
+            screen: "HistoryDetails",
+            params: {
+              logId: history.id,
+            },
+            initial: false,
+          },
+        })
       }}
     >
-      <View
+      <MECard
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 8,
+          marginBottom: 16,
         }}
       >
         <View
           style={{
             flexDirection: "row",
+            justifyContent: "space-between",
             alignItems: "center",
-            flex: 2,
+            marginBottom: 8,
           }}
         >
-          <FontAwesome5 size={12} name="calendar" color={Colors.light.grey} />
-          <Text
-            style={[
-              textStyles.body3,
-              {
-                marginLeft: 8,
-                color: Colors.light.grey,
-              },
-            ]}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flex: 2,
+            }}
           >
-            {moment(history.time.toDate()).format("LL - HH:mm")}
-          </Text>
+            <FontAwesome5 size={12} name="calendar" color={Colors.light.grey} />
+            <Text
+              style={[
+                textStyles.body3,
+                {
+                  marginLeft: 8,
+                  color: Colors.light.grey,
+                },
+              ]}
+            >
+              {moment(history.time.toDate()).format("LL - HH:mm")}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
+            <FontAwesome
+              size={12}
+              name="circle"
+              color={getStatusColor(history.status)}
+            />
+            <Text
+              style={[
+                textStyles.body3,
+                {
+                  marginLeft: 4,
+                  fontFamily: "manrope-bold",
+                  color: getStatusColor(history.status),
+                },
+              ]}
+            >
+              {PresenceStatusEnum[history.status]}
+            </Text>
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            flex: 1,
-          }}
-        >
-          <FontAwesome
-            size={12}
-            name="circle"
-            color={getStatusColor(history.status)}
-          />
-          <Text
-            style={[
-              textStyles.body3,
-              {
-                marginLeft: 4,
-                fontFamily: "manrope-bold",
-                color: getStatusColor(history.status),
-              },
-            ]}
-          >
-            {PresenceStatusEnum[history.status]}
-          </Text>
-        </View>
-      </View>
-      {
-        className ? (
-          <Text
-            style={[
-              textStyles.body1,
-              {
-                fontFamily: "manrope-bold",
-              },
-            ]}
-          >
-            {className}
-          </Text>
-        ) : (
-          <ActivityIndicator/>
-        )
-      }
-    </MECard>
+        {
+          className ? (
+            <Text
+              style={[
+                textStyles.body1,
+                {
+                  fontFamily: "manrope-bold",
+                },
+              ]}
+            >
+              {className}
+            </Text>
+          ) : (
+            <ActivityIndicator/>
+          )
+        }
+      </MECard>
+    </Pressable>
   );
 }

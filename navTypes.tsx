@@ -38,7 +38,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type ScheduleScreenProps = NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">
-
+export type HistoryScreenProps = NativeStackScreenProps<HistoryPageParamList, "HistoryDetails">
 export type ClassScreenProps = NativeStackScreenProps<ClassParamList, "ClassDetails">
 
 export type ScheduleParamList = {

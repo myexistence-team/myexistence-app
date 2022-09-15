@@ -54,6 +54,7 @@ export type Class = BaseType & {
 }
 
 export type Log = {
+  id: string,
   schedule: {
     start: Timestamp,
     end: Timestamp,

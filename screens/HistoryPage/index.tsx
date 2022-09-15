@@ -10,6 +10,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import MESpinner from "../../components/MESpinner";
 import HistoryCard from "../../components/HistoryCard";
+import HistoryDetailsPage from "../HistoryDetailsPage";
 
 const Stack = createNativeStackNavigator<HistoryPageParamList>();
 
@@ -25,13 +26,13 @@ export default function HistoryPage() {
           header: () => null
         }}
       />
-      {/* <Stack.Screen 
-        name='ScheduleDetails' 
-        component={ScheduleDetailsPage}
+      <Stack.Screen 
+        name='HistoryDetails' 
+        component={HistoryDetailsPage}
         options={{
           headerShown: false,
         }}
-      /> */}
+      />
     </Stack.Navigator>
   )
 }

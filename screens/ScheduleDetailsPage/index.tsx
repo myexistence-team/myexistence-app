@@ -62,14 +62,14 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       onRefresh={loadData}
       refreshing={!Boolean(schedule)}
     >
+      <MEHeader
+        title='Detail Jadwal'
+      />
       {
         !schedule ? (
           <MESpinner/>
         ) : (
           <>
-            <MEHeader
-              title='Detail Jadwal'
-            />
             <Text style={textStyles.body2}>Nama Kelas</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
               {schedule.className}
