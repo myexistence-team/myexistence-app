@@ -57,12 +57,6 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     loadData();
   }, [])
 
-  const now: Date = useCurrentScheduleTime();
-  const diffInMs = schedule ? schedule.start.getTime() - now.getTime() : 0;
-
-  const diffToNowInMins = Math.floor(diffInMs/60000);
-  const diffToNowInHours = Math.floor(diffInMs/3600000);
-
   return (
     <MEContainer
       onRefresh={loadData}
@@ -95,13 +89,13 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               <View style={{ flex: 1 }}>
                 <Text style={textStyles.body2}>Jam Mulai</Text>
                 <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(schedule.start).format("HH:mm")}
+                  {moment(schedule.start.toDate()).format("HH:mm")}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={textStyles.body2}>Jam Selesai</Text>
                 <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(schedule.end).format("HH:mm")}
+                  {moment(schedule.end.toDate()).format("HH:mm")}
                 </Text>
               </View>
             </View>

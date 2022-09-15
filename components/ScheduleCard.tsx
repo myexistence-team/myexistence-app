@@ -73,7 +73,7 @@ export default function ScheduleCard({
             <FontAwesome5 size={12} name='clock'/>{'  '}
             <Text
             >
-              {moment(schedule.start).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
+              {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
             </Text>
             {' • '}
             <Text>
@@ -103,7 +103,7 @@ export default function ScheduleCard({
           {schedule.classDescription}
         </Text>
         {
-          (disableScanButton === undefined || disableScanButton === false) && diffToNowInMins <= 10 && diffToNowInMins > 0 ? (
+          (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
             <View
             style={{
                 flex: 1,
