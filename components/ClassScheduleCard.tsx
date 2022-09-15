@@ -89,7 +89,7 @@ export default function ClassScheduleCard({
             }
           ]}
         >
-          {moment(schedule.start).format("HH:mm")} - {moment(schedule.end).format("HH:mm")}
+          {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
         </Text>
         {
           (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
