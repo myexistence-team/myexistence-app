@@ -30,6 +30,7 @@ export default function EditProfile() {
       displayName: profile.displayName,
       description: profile.description,
       role: profile.role,
+      photoUrl: profile.photoUrl,
     }
   });
 
