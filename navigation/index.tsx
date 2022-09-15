@@ -38,6 +38,7 @@ import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
 import QRScanner from '../screens/QRScanner';
 import ClassPage from '../screens/ClassPage';
+import HistoryPage from '../screens/HistoryPage';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
@@ -209,7 +210,7 @@ function BottomTabNavigator() {
         name="Home"
         component={HomePage}
         options={({ navigation }: RootTabScreenProps<'Home'>) => ({
-          title: 'Home',
+          title: 'Beranda',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerShown: false,
         })}
@@ -220,6 +221,15 @@ function BottomTabNavigator() {
         options={({ navigation }: RootTabScreenProps<'SchedulesPage'>) => ({
           title: 'Jadwal',
           tabBarIcon: ({ color }) => <TabBarIcon name="calendar" color={color} />,
+          headerShown: false,
+        })}
+      />
+      <BottomTab.Screen
+        name="HistoryPage"
+        component={HistoryPage}
+        options={({ navigation }: RootTabScreenProps<'HistoryPage'>) => ({
+          title: 'Riwayat',
+          tabBarIcon: ({ color }) => <TabBarIcon name="clock-o" color={color} />,
           headerShown: false,
         })}
       />

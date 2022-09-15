@@ -54,9 +54,17 @@ export type ProfileParamList = {
   EditProfile: undefined,
 }
 
+export type HistoryPageParamList = {
+  History: undefined,
+  HistoryDetails: {
+    logId: string,
+  }
+}
+
 export type RootTabParamList = {
   Home: undefined;
   SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
+  HistoryPage: NavigatorScreenParams<HistoryPageParamList> | undefined,
   ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
   ClassPage: NavigatorScreenParams<ClassParamList> | undefined,
 };

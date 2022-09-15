@@ -34,14 +34,14 @@ export default function History({
       }
       <MEButton
         variant='outline'
-        // onPress={() => {
-        //   navigation.navigate('Root', {
-        //     screen: "SchedulesPage", 
-        //     params: {
-        //       screen: "Schedules"
-        //     }
-        //   })
-        // }}
+        onPress={() => {
+          navigation.navigate('Root', {
+            screen: 'HistoryPage', 
+            params: {
+              screen: "History"
+            }
+          })
+        }}
       >
         Tampilkan Lebih Banyak
       </MEButton>
