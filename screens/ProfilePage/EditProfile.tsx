@@ -29,6 +29,7 @@ export default function EditProfile() {
     defaultValues: {
       displayName: profile.displayName,
       description: profile.description,
+      role: profile.role,
     }
   });
 

@@ -8,12 +8,10 @@ export async function updateProfile(
   profile: any, 
   photoUri: string
 ) {
-  console.log(uid)
-  console.log(profile)
   const storage = getStorage();
-  const storageRef = ref(storage, 'hllo'); 
+  const storageRef = ref(storage, `profilePhotos/${profile.role}-${uid}`); 
 
-  var photoUrl = null;
+  var photoUrl = profile.photoUrl;
   if (photoUri) {
     const blob: any = await getBlob(photoUri)
     const uploadSnap = await uploadBytes(storageRef, blob);
