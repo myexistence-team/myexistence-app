@@ -5,10 +5,14 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function MEImagePicker({
   onChange,
-  defaultImageUrl
+  defaultImageUrl,
+  aspectRatio = [1, 1],
+  fullPreview
 }: {
   onChange?: Function,
-  defaultImageUrl?: string
+  defaultImageUrl?: string,
+  aspectRatio?: [number, number],
+  fullPreview?: boolean
 }) {
   const [image, setImage] = useState<string | any>(defaultImageUrl);
 
@@ -17,7 +21,7 @@ export default function MEImagePicker({
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1],
+      aspect: aspectRatio,
       quality: 1,
     });
 
@@ -38,7 +42,7 @@ export default function MEImagePicker({
 
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [1, 1],
+      aspect: aspectRatio,
     });
 
     if (!result.cancelled) {
@@ -53,7 +57,11 @@ export default function MEImagePicker({
         image && (
           <Image 
             source={{ uri: image }} 
-            style={{ 
+            style={fullPreview ? {
+              marginBottom: 16,
+              width: '100%',
+              height: 300
+            } : { 
               marginBottom: 16,
               width: 120, 
               height: 120,

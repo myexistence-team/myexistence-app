@@ -38,3 +38,14 @@ export enum ScheduleStasuses {
   OPENED = "OPENED",
   CLOSED = "CLOSED",
 }
+
+export enum ExcuseTypes {
+  SICK = 'SICK',
+  OTHER = 'OTHER',
+}
+
+export enum ExcuseStatuses {
+  WAITING = 'WAITING',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+}

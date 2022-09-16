@@ -105,27 +105,28 @@ export default function ScheduleCard({
         {
           (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
             <View
-            style={{
-                flex: 1,
+              style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between'
+                marginTop: 16
               }}
             >
               <View
                 style={[
                   { 
-                    width: '40%',
+                    flex: 2,
+                    marginRight: 8
                   }
                 ]}
               >
                 <MEButton
-                color='white'
-                style={[
-                    { 
-                      borderWidth: 1,
-                      borderColor: Colors.light.blue,
-                    }
-                  ]}
+                  color='primary'
+                  variant='outline'
+                  onPress={() => {
+                    navigation.navigate('ExcusePage', {
+                      scheduleId: schedule.id,
+                      classId: schedule.classId
+                    })
+                  }}
                 >
                     Izin
                 </MEButton>
@@ -133,7 +134,7 @@ export default function ScheduleCard({
               <View
                 style={[
                   { 
-                    width: '60%',
+                    flex: 3
                   }
                 ]}
               >

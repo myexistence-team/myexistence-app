@@ -95,30 +95,21 @@ export default function ClassScheduleCard({
           (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
             <View
             style={{
-                // flex: 1,
-                // flexDirection: 'row',
-                // justifyContent: 'center',
-                // width: 167,
-                flex: 1,
                 flexDirection: 'row',
-                justifyContent: 'space-between'
+                marginTop: 16
               }}
             >
               <View
                 style={[
                   { 
-                    width: '40%',
+                    flex: 2,
+                    marginRight: 8
                   }
                 ]}
               >
                 <MEButton
-                color='white'
-                style={[
-                    { 
-                      borderWidth: 1,
-                      borderColor: Colors.light.blue,
-                    }
-                  ]}
+                  color='primary'
+                  variant='outline'
                 >
                     Izin
                 </MEButton>
@@ -126,7 +117,7 @@ export default function ClassScheduleCard({
               <View
                 style={[
                   { 
-                    width: '60%',
+                    flex: 3,
                   }
                 ]}
               >

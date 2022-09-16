@@ -28,8 +28,7 @@ import SchedulePage from '../screens/SchedulePage';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../navTypes';
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
-import { initializeApp } from 'firebase/app';
-import { app, firebaseConfig } from '../firebase';
+import { app } from '../firebase';
 import { ProfileContext, SchoolContext, AuthContext } from '../contexts';
 import { useContext } from 'react';
 import { getFirestore, doc, Firestore, onSnapshot } from 'firebase/firestore';
@@ -39,13 +38,13 @@ import MESpinner from '../components/MESpinner';
 import QRScanner from '../screens/QRScanner';
 import ClassPage from '../screens/ClassPage';
 import HistoryPage from '../screens/HistoryPage';
+import ExcusePage from '../screens/ExcusePage';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const [isInitializing, setIsInitializing] = React.useState(true);
-  const [authError, setAuthError] = React.useState(null);
   const [auth, setAuth] = React.useState<any>(null);
   const [profile, setProfile] = React.useState<any>(null);
   const [school, setSchool] = React.useState<any>(null);
@@ -183,6 +182,7 @@ function RootNavigator(props: any) {
         )
       }
       <Stack.Screen name="Scanner" component={QRScanner} options={{ headerShown: false }} />
+      <Stack.Screen name="ExcusePage" component={ExcusePage} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
       <Stack.Group screenOptions={{ presentation: 'modal' }}>
         <Stack.Screen name="Modal" component={ModalScreen} />

@@ -20,7 +20,11 @@ export type RootStackParamList = {
   Scanner: { 
     scheduleId: string,
     schedule: Schedule
-   },
+  },
+  ExcusePage: {
+    scheduleId: string,
+    classId: string,
+  },
   RegisterAccount: undefined,
   Modal: undefined;
   NotFound: undefined;
@@ -40,6 +44,7 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 export type ScheduleScreenProps = NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">
 export type HistoryScreenProps = NativeStackScreenProps<HistoryPageParamList, "HistoryDetails">
 export type ClassScreenProps = NativeStackScreenProps<ClassParamList, "ClassDetails">
+export type ExcusePageScreenProps = NativeStackScreenProps<RootStackParamList, "ExcusePage">
 
 export type ScheduleParamList = {
   Schedules: undefined,

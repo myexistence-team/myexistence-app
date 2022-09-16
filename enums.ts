@@ -11,3 +11,8 @@ export enum PresenceStatusEnum {
   LATE = "Terlambat",
   EXCUSED = "Izin",
 }
+
+export enum ExcuseTypeEnum {
+  SICK = 'Sakit',
+  OTHER = 'Lain',
+}
