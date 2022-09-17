@@ -38,7 +38,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
   )
 
   function loadData() {
-    if (profile.classIds.length) {  
+    if (profile.classIds?.length) {  
       setIsLoading(true);     
       setClass(null);
 
@@ -119,11 +119,11 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
 
   return (
       <MEContainer      
-        onRefresh={profile.classIds.length ? loadData : undefined}
+        onRefresh={profile.classIds?.length ? loadData : undefined}
         refreshing={isLoading}
       >
           {
-            !profile.classIds.length? (
+            !profile.classIds?.length? (
               <Text style={[textStyles.body2]}>
                 Anda belum terdaftar di kelas apapun.
               </Text>

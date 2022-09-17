@@ -9,7 +9,7 @@ import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
-import { collection, collectionGroup, doc, documentId, DocumentReference, getDoc, getDocs, limit, query, updateDoc, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, documentId, DocumentReference, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import Colors from '../../constants/Colors'
 import ScheduleCard from '../../components/ScheduleCard'
@@ -38,31 +38,31 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         const currentScheduleQuery = query(
           collectionGroup(firestore, 'schedules'),
           where('id', '==', profile.currentScheduleId),
-          );
-          getDocs(currentScheduleQuery)
-          .then((docs) => {
-            const schedule: any = docs.docs[0].data();
-            if (
-              schedule.end.toDate().getTime() < nowScheduleDate.getTime()
-              || schedule.status === ScheduleStasuses.CLOSED
-            ) {
-              updateDoc(doc(firestore, 'users', profile.id), {
-                currentScheduleId: null
-              })
-            } else {
-              excludedScheduleId = profile.currentScheduleId;
-              getDoc(doc(firestore, `schools/${profile.schoolId}/classes/${schedule.classId}`)).then((classSnap) => {
-                const classObj: Class | any = classSnap.data();
-                const convertedSchedule = {
-                  ...schedule,
-                  className: classObj.name,
-                  classDescription: classObj.description,
-                  class: null
-                }
-                setCurrentSchedule(convertedSchedule);
-              })
-            }
-          })
+        );
+        getDocs(currentScheduleQuery)
+        .then((docs) => {
+          const schedule: any = docs.docs[0].data();
+          if (
+            schedule.end.toDate().getTime() < nowScheduleDate.getTime()
+            || schedule.status === ScheduleStasuses.CLOSED
+          ) {
+            updateDoc(doc(firestore, 'users', profile.id), {
+              currentScheduleId: null
+            })
+          } else {
+            excludedScheduleId = profile.currentScheduleId;
+            getDoc(doc(firestore, `schools/${profile.schoolId}/classes/${schedule.classId}`)).then((classSnap) => {
+              const classObj: Class | any = classSnap.data();
+              const convertedSchedule = {
+                ...schedule,
+                className: classObj.name,
+                classDescription: classObj.description,
+                class: null
+              }
+              setCurrentSchedule(convertedSchedule);
+            })
+          }
+        })
       } else {
         setCurrentSchedule(null);
       }
@@ -70,6 +70,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         collectionGroup(firestore, 'schedules'), 
         where('classId', 'in', profile.classIds),
         where('end', '>', nowScheduleDate),
+        orderBy('end', 'desc'),
         limit(excludedScheduleId ? 6 : 5),
       );
       const classesQuery = query(collection(
@@ -135,7 +136,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           onRefresh={loadHomePageData}
           progressViewOffset={32}
           colors={[Colors.light.tint]}
-          enabled={Boolean(profile.classIds.length)}
+          enabled={Boolean(profile.classIds?.length)}
         />
       }
     >
@@ -219,7 +220,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           </View>
         </MECard>
         {
-          !profile.classIds.length ? (
+          !profile.classIds?.length ? (
             <Text style={[textStyles.body2, { textAlign: 'center' }]}>
               Anda belum terdaftar di kelas apapun. {'\n'}
               Mohon hubungi administrator sekolah Anda.

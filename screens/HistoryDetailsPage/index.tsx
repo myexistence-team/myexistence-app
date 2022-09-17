@@ -10,7 +10,7 @@ import MEContainer from '../../components/MEContainer';
 import MEHeader from '../../components/MEHeader';
 import MESpinner from '../../components/MESpinner';
 import { textStyles } from '../../constants/Styles';
-import { DAYS_ARRAY } from '../../constants/constants';
+import { DAYS_ARRAY, AbsentStasuses } from '../../constants/constants';
 import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { PresenceStatusEnum } from '../../enums';
@@ -174,12 +174,16 @@ export default function HistoryDetailsPage({
                   {PresenceStatusEnum[log.status]}
                 </Text>
               </View>
-              <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Jam Masuk</Text>
-                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(log.time.toDate()).format("HH:mm")}
-                </Text>
-              </View>
+              {
+                log.status === AbsentStasuses.PRESENT || log.status === AbsentStasuses.LATE && (
+                  <View style={{ flex: 1 }}>
+                    <Text style={textStyles.body2}>Jam Masuk</Text>
+                    <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                      {moment(log.time.toDate()).format("HH:mm")}
+                    </Text>
+                  </View>
+                )
+              }
             </View>
           </>
         )

@@ -51,7 +51,7 @@ export function History() {
   );
 
   function loadData() {
-    if (profile.classIds.length) {
+    if (profile.classIds?.length) {
       setIsLoading(true);
       getDocs(logsQuery).then((docSnaps) => {
         const docsArr: any[] = [];
@@ -72,7 +72,7 @@ export function History() {
 
   return (
     <MEContainer
-      onRefresh={profile.classIds.length ? loadData : undefined}
+      onRefresh={profile.classIds?.length ? loadData : undefined}
       refreshing={isLoading}
     >
       <>
@@ -82,7 +82,7 @@ export function History() {
           Riwayat
         </Text>
         {
-          !profile.classIds.length ? (
+          !profile.classIds?.length ? (
             <Text style={[textStyles.body2]}>
               Anda belum terdaftar di kelas apapun.
             </Text>

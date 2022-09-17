@@ -54,12 +54,12 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
-    ...profile.classIds.length ? [where('classId', 'in', profile.classIds)] : [],
-    where('start', '>', nowScheduleDate),
+    ...profile.classIds?.length ? [where('classId', 'in', profile.classIds)] : [],
+    where('end', '>', nowScheduleDate),
   );
 
   function loadData() {    
-    if (profile.classIds.length) {
+    if (profile.classIds?.length) {
       setIsLoading(true);
       getDocs(classesQuery).then((docs) => {
         const classObjs: any = {};
@@ -96,7 +96,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
 
   return (
     <MEContainer
-      onRefresh={profile.classIds.length ? loadData : undefined}
+      onRefresh={profile.classIds?.length ? loadData : undefined}
       refreshing={isLoading}
     >
       <Text 
@@ -105,7 +105,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
         Jadwal
       </Text>
       {
-        !profile.classIds.length ? (          
+        !profile.classIds?.length ? (          
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>

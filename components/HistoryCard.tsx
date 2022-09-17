@@ -82,26 +82,30 @@ export default function HistoryCard(props: { history: Log }) {
             marginBottom: 8,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              flex: 2,
-            }}
-          >
-            <FontAwesome5 size={12} name="calendar" color={Colors.light.grey} />
-            <Text
-              style={[
-                textStyles.body3,
-                {
-                  marginLeft: 8,
-                  color: Colors.light.grey,
-                },
-              ]}
-            >
-              {moment(history.time.toDate()).format("LL - HH:mm")}
-            </Text>
-          </View>
+          {
+            history.time && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  flex: 2,
+                }}
+              >
+                <FontAwesome5 size={12} name="calendar" color={Colors.light.grey} />
+                <Text
+                  style={[
+                    textStyles.body3,
+                    {
+                      marginLeft: 8,
+                      color: Colors.light.grey,
+                    },
+                  ]}
+                >
+                  {moment(history.time.toDate()).format("LL - HH:mm")}
+                </Text>
+              </View>
+            )
+          }
           <View
             style={{
               flexDirection: "row",

@@ -52,7 +52,7 @@ function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
   )
 
   function loadData() {
-    if (profile.classIds.length) {
+    if (profile.classIds?.length) {
       setIsLoading(true);
       getDocs(classesQuery).then((docs) => {
         const docsArr: any[] = [];
@@ -78,14 +78,14 @@ function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
 
   return (
     <MEContainer
-      onRefresh={profile.classIds.length ? loadData : undefined}
+      onRefresh={profile.classIds?.length ? loadData : undefined}
       refreshing={isLoading}  
     >
       <Text
         style={[textStyles.heading3, {marginBottom: 16}]}
       >Kelas</Text>
       {
-        !profile.classIds.length? (
+        !profile.classIds?.length? (
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
