@@ -34,7 +34,9 @@ function getStatusColor(status: string) {
 export default function HistoryDetailsPage({ 
   route: { 
     params: { 
-      logId 
+      logId,
+      isCurrent,
+      classId,
     } 
   }
 }: HistoryScreenProps) {
@@ -46,13 +48,29 @@ export default function HistoryDetailsPage({
 
   function loadData() {
     setLog(null);
-    getDoc(doc(
-      firestore, 
-      'schools', 
-      profile.schoolId,
-      'logs',
-      logId,
-    )).then((logSnap) => {
+    var currentLogRef
+    if (isCurrent && profile.currentScheduleId) {
+      currentLogRef = doc(
+        firestore,
+        'schools',
+        profile.schoolId,
+        'classes',
+        classId,
+        'schedules',
+        profile.currentScheduleId,
+        'studentLogs',
+        logId
+      )
+    } else {
+      currentLogRef = doc(
+        firestore, 
+        'schools', 
+        profile.schoolId,
+        'logs',
+        logId,
+      )
+    }
+    getDoc(currentLogRef).then((logSnap) => {
       if (logSnap.exists()) {
         setLog(logSnap.data());
         getDoc(doc(

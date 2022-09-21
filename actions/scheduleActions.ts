@@ -23,6 +23,7 @@ export async function createPresenceInSchedule(
   ]
   const userRef = doc(firestore, 'users', studentId);
   const scheduleRef = doc(firestore, 'schools', ...schedulePath);
+  console.log(classId, scheduleId, qrCodeId);
   const qrCodeRef = doc(
     firestore, 
     'schools', 

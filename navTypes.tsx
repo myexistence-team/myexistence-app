@@ -63,6 +63,8 @@ export type HistoryPageParamList = {
   History: undefined,
   HistoryDetails: {
     logId: string,
+    isCurrent?: boolean,
+    classId: boolean
   }
 }
 

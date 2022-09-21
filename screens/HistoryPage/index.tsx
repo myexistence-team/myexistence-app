@@ -1,12 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { HistoryPageParamList, ScheduleParamList } from "../../navTypes";
+import { HistoryPageParamList } from "../../navTypes";
 import React, { useContext, useEffect, useState } from 'react';
 import MEContainer from "../../components/MEContainer";
 import { Text } from "react-native";
 import { textStyles } from "../../constants/Styles";
 import { Log, Profile } from "../../types";
 import { AuthContext, ProfileContext } from "../../contexts";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, query, where } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import MESpinner from "../../components/MESpinner";
 import HistoryCard from "../../components/HistoryCard";
@@ -42,6 +42,7 @@ export function History() {
   const { auth } = useContext(AuthContext);
 
   const [logs, setLogs] = useState<(any | Log)[]>([]);
+  const [currentLogs, setCurrentLogs] = useState<(any | Log)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const logsQuery = query(collection(
@@ -50,6 +51,7 @@ export function History() {
     where('studentId', '==', auth.uid),
   );
 
+  
   function loadData() {
     if (profile.classIds?.length) {
       setIsLoading(true);
@@ -61,6 +63,44 @@ export function History() {
         setIsLoading(false);
         setLogs(docsArr);
       })
+      if (profile.currentScheduleId) {
+        const currentScheduleQuery = query(
+          collectionGroup(firestore, `schedules`), 
+          where('id', '==', profile.currentScheduleId)
+        );
+        getDocs(currentScheduleQuery).then((scheduleSnaps) => {
+          if (!scheduleSnaps.empty) {
+            const scheduleSnap = scheduleSnaps.docs[0];
+            const schedule = scheduleSnap.data();
+            const currentLogsQuery = query(
+              collection(
+                firestore,
+                'schools',
+                profile.schoolId || '',
+                'classes',
+                schedule.classId,
+                'schedules',
+                scheduleSnap.id,
+                'studentLogs'
+              ), 
+              where('studentId', '==', auth.uid)
+            );
+            getDocs(currentLogsQuery).then((logSnaps) => {
+              const logsData: any[] = [];
+              if (!logSnaps.empty) {
+                logSnaps.docs.forEach((docData) => {
+                  logsData.push({
+                    ...docData.data(),
+                    id: docData.id,
+                    isCurrent: true,
+                  })
+                })
+              }
+              setCurrentLogs(logsData);
+            })
+          }
+        })
+      }
     } else {
       setIsLoading(false);
     }
@@ -81,6 +121,27 @@ export function History() {
         >
           Riwayat
         </Text>
+        {
+          currentLogs.length > 0 && (
+            <>            
+              <Text
+                style={[textStyles.heading4, { marginBottom: 16 }]}
+              >
+                Sedang Berlangsung
+              </Text>
+              {
+                currentLogs.map((l, idx) => (
+                  <HistoryCard key={idx} history={l}/>
+                ))
+              }
+              <Text
+                style={[textStyles.heading4, { marginBottom: 16 }]}
+              >
+                Semua Riwayat
+              </Text>
+            </>
+          )
+        }
         {
           !profile.classIds?.length ? (
             <Text style={[textStyles.body2]}>

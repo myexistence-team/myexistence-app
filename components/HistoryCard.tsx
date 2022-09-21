@@ -1,12 +1,12 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, collectionGroup, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import Colors from "../constants/Colors";
 import { textStyles } from "../constants/Styles";
-import { ProfileContext } from "../contexts";
+import { AuthContext, ProfileContext } from "../contexts";
 import { PresenceStatusEnum } from "../enums";
 import { firestore } from "../firebase";
 import { Log, Profile } from "../types";
@@ -63,6 +63,8 @@ export default function HistoryCard(props: { history: Log }) {
             screen: "HistoryDetails",
             params: {
               logId: history.id,
+              isCurrent: history.isCurrent,
+              classId: history.classId,
             },
             initial: false,
           },
