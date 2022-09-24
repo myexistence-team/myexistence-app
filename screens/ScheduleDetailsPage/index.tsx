@@ -7,24 +7,28 @@ import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, limit, onSnapshot, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { ProfileContext } from '../../contexts'
+import { AuthContext, ProfileContext } from '../../contexts'
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { DAYS_ARRAY, ScheduleStasuses } from '../../constants/constants'
+import { DAYS_ARRAY, ProfileRoles, ScheduleStasuses } from '../../constants/constants'
+import { closeSchedule, openSchedule } from '../../actions/scheduleActions'
+import SvgQRCode from 'react-native-qrcode-svg';
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId } = route.params;
   const navigation = useNavigation();
 
   const { profile } = useContext(ProfileContext);
+  const { auth } = useContext(AuthContext);
   const [schedule, setSchedule] = useState<Schedule | any>(null);
+  const [qrCode, setQRCode] = useState<any>(null);
 
   function loadData() {
     setSchedule(null);
-    getDoc(doc(
+    onSnapshot(doc(
       firestore, 
       'schools', 
       profile.schoolId,
@@ -32,7 +36,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       classId,
       'schedules',
       scheduleId
-    )).then((scheduleSnap) => {
+    ), (scheduleSnap) => {
       if (scheduleSnap.exists()) {
         getDoc(doc(
           firestore, 
@@ -53,9 +57,60 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     })
   } 
 
+  function loadQRCodes() {
+    onSnapshot(
+      query(
+        collection(
+          firestore, 
+          'schools',
+          profile.schoolId || '',
+          'classes',
+          classId,
+          'schedules',
+          scheduleId,
+          'qrCodes'
+        ),
+        where('scanned', '==', false),
+        limit(1)
+      ),
+      (qrCodeSnaps) => {
+        if (!qrCodeSnaps.empty) {
+          setQRCode({
+            ...qrCodeSnaps.docs[0].data(),
+            id: qrCodeSnaps.docs[0].id
+          });
+        }
+      }
+    );
+  }
+
+  useEffect(() => {
+    if (schedule) {
+      if (schedule.status === ScheduleStasuses.OPENED) {
+        loadQRCodes();
+      } else {
+        setQRCode(null);
+      }
+    }
+  }, [schedule])
+
   useEffect(() => {
     loadData();
   }, [])
+
+  const [changingStatus, setChangingStatus] = useState(false);
+  function handleOpenOrCloseClass() {
+    setChangingStatus(true);
+    (schedule.status === ScheduleStasuses.CLOSED ? openSchedule : closeSchedule)(
+      profile.schoolId,
+      classId,
+      scheduleId,
+      auth.uid
+    )
+      .finally(() => {
+        setChangingStatus(false);
+      })
+  }
 
   return (
     <MEContainer
@@ -106,21 +161,50 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.tolerance} Menit
             </Text>
             {
-              schedule.status === ScheduleStasuses.OPENED ? (
-                <MEButton
-                  iconStart="qrcode"
-                  size='lg'
-                  style={{
-                    marginTop: 8
-                  }}
-                  onPress={() => navigation.navigate('Scanner', {
-                    scheduleId: schedule.id,
-                    schedule
-                  })}
-                >
-                  Pindai QR Code
-                </MEButton>
-              ) : null
+              qrCode && (
+                <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                  <SvgQRCode
+                    value={qrCode.id}
+                    size={240}
+                  />
+                </View>
+              )
+            }
+            {
+              profile.role === ProfileRoles.STUDENT ? (
+                <>                
+                  {
+                    schedule.status === ScheduleStasuses.OPENED ? (
+                      <MEButton
+                        iconStart="qrcode"
+                        size='lg'
+                        style={{
+                          marginTop: 8
+                        }}
+                        onPress={() => navigation.navigate('Scanner', {
+                          scheduleId: schedule.id,
+                          schedule
+                        })}
+                      >
+                        Pindai QR Code
+                      </MEButton>
+                    ) : null
+                  }
+                </>
+              ) : (
+                <>
+                  <MEButton
+                    size='lg'
+                    style={{
+                      marginTop: 8
+                    }}
+                    onPress={handleOpenOrCloseClass}
+                    isLoading={changingStatus}
+                  >
+                    { schedule.status === ScheduleStasuses.CLOSED ? 'Buka Kelas' : 'Tutup Kelas' }
+                  </MEButton>
+                </>
+              )
             }
           </>
         )

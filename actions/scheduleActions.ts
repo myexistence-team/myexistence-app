@@ -1,9 +1,9 @@
 import { FirebaseError } from "firebase/app";
-import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { AbsentStasuses, ExcuseStatuses, ScheduleStasuses } from "../constants/constants";
 import { QRCodesErrors, SchedulesError } from "../errors";
-import { firestore } from "../firebase";
+import { app, firestore } from "../firebase";
 import { QRCode, Schedule } from "../types";
 import { getBlob } from "../utils/utilFunctions";
 
@@ -165,4 +165,184 @@ export async function createExcuseRequest(
       'Jadwal tidak ditemukan.'
     )
   }
+}
+
+export async function openSchedule(
+  schoolId: string,
+  classId: string,
+  scheduleId: string,
+  teacherId: string
+) {
+  const batch = writeBatch(firestore);
+  const schedulePath = [
+    schoolId,
+    'classes',
+    classId,
+    'schedules',
+    scheduleId,
+  ];
+  // const scheduleSnap = await getDoc(doc(firestore, 'schools', ...schedulePath));
+  const classSnap = await getDoc(
+    doc(
+      firestore,
+      'schools',
+      schoolId,
+      'classes',
+      classId
+    )
+  );
+  
+  if (classSnap.exists()) {
+    const classObj = classSnap.data();
+  
+    if (classObj.studentIds?.length) {
+      classObj.studentIds.forEach((studentId: string) => {
+        batch.set(
+          doc(collection(
+            firestore,
+            'schools',
+            ...schedulePath,
+            'qrCodes',
+          )), {
+            scanned: false
+          }
+        )
+      })
+    } 
+  
+    await batch.commit();
+    
+    await updateDoc(
+      doc(
+        firestore,
+        'schools',
+        ...schedulePath
+      ), {
+        status: ScheduleStasuses.OPENED,
+        openedAt: new Date(),
+        openedBy: teacherId
+      }
+    )
+    
+    await updateDoc(
+      doc(firestore, 'users', teacherId), {
+        currentScheduleId: scheduleId
+      }
+    )
+  } else {
+    throw new FirebaseError(
+      SchedulesError.SCHDEULE_NOT_FOUND,
+      'Jadwal tidak ditemukan!'
+    )
+  }
+}
+
+export async function closeSchedule(
+  schoolId: string,
+  classId: string,
+  scheduleId: string,
+  teacherId: string
+) {
+  const schedulePath = [
+    schoolId,
+    'classes',
+    classId,
+    'schedules',
+    scheduleId,
+  ];
+  await updateDoc(
+    doc(
+      firestore,
+      'schools',
+      ...schedulePath
+    ), {
+      status: ScheduleStasuses.CLOSED,
+    }
+  );
+  const batch = writeBatch(firestore);
+  
+  const studentLogsRef = collection(
+    firestore,
+    'schools',
+    ...schedulePath,
+    'studentLogs'
+  );
+  const qrCodesRef = collection(
+    firestore,
+    'schools',
+    ...schedulePath,
+    'qrCodes'
+  );
+  const classRef = doc(
+    firestore,
+    'schools',
+    schoolId,
+    'classes',
+    classId
+  );
+  const logsRef = collection(
+    firestore,
+    'schools',
+    schoolId,
+    'logs'
+  );
+  const scheduleRef = doc(firestore, 'schools', ...schedulePath);
+
+  
+  // Deletes all QR Codes
+  const qrCodeSnaps = await getDocs(qrCodesRef);
+  if (!qrCodeSnaps.empty) {
+    qrCodeSnaps.docs.forEach((snap) => {
+      batch.delete(snap.ref);
+    })
+  }
+
+  const classSnap = await getDoc(classRef);
+  if (classSnap.exists()) {
+    const presentStudentIds: string[] = [];
+    const classStudentIds = classSnap.data().studentIds;
+    const absentStudentIds: string[] = classStudentIds.filter((sId: string) => !presentStudentIds.includes(sId));
+
+    // Delete and add to (move) studentLogs to logs collection
+    const studentLogSnaps = await getDocs(studentLogsRef);
+    if (!studentLogSnaps.empty) {
+      studentLogSnaps.docs.forEach((snap) => {
+        const studentLog = snap.data();
+        presentStudentIds.push(studentLog.studentId);
+        batch.delete(snap.ref);
+        batch.set(doc(logsRef), studentLog);
+      });
+    }
+    
+    // Add logs data for absent students
+    if (absentStudentIds.length) {
+      const scheduleSnap = await getDoc(scheduleRef);
+      if (scheduleSnap.exists()) {
+        const schedule = scheduleSnap.data();
+        absentStudentIds.forEach((studentId) => {
+          batch.set(doc(logsRef), {
+            schedule: {
+              start: schedule.start,
+              end: schedule.end,
+              tolerance: schedule.tolerance,
+              openedAt: schedule.openedAt,
+            },
+            studentId,
+            classId,
+            teacherId: schedule.openedBy,
+            status: "ABSENT",
+            time: schedule.end
+          })
+        })
+      }
+    }
+  }
+
+  await batch.commit();
+
+  await updateDoc(
+    doc(firestore, 'users', teacherId), {
+      currentScheduleId: null
+    }
+  )
 }
