@@ -330,8 +330,8 @@ export async function closeSchedule(
             studentId,
             classId,
             teacherId: schedule.openedBy,
-            status: "ABSENT",
-            time: schedule.end
+            status: AbsentStasuses.ABSENT,
+            time: new Date()
           })
         })
       }
