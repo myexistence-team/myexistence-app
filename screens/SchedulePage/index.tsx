@@ -15,6 +15,7 @@ import { firestore } from '../../firebase';
 import { Profile } from '../../types';
 import Colors from '../../constants/Colors';
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime';
+import SchedulePresences from '../SchedulePresences';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -33,6 +34,13 @@ export default function SchedulePage() {
       <Stack.Screen 
         name='ScheduleDetails' 
         component={ScheduleDetailsPage}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name='SchedulePresences' 
+        component={SchedulePresences}
         options={{
           headerShown: false,
         }}

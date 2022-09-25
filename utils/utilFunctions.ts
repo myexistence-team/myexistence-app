@@ -1,3 +1,5 @@
+import Colors from "../constants/Colors";
+
 export const groupBy = function(xs: any[], key: string) {
   return xs.reduce(function(rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -23,4 +25,19 @@ export async function getBlob(uri: string) {
     xhr.open("GET", uri, true);
     xhr.send(null);
   });
+}
+
+export function getStatusColor(status: string) {
+  switch (status) {
+    case "PRESENT":
+      return Colors.light.green;
+    case "ABSENT":
+      return Colors.light.red;
+    case "LATE":
+      return Colors.light.orange;
+    case "EXCUSED":
+      return Colors.light.yellows.yellow3;
+    default:
+      return Colors.light.black;
+  }
 }

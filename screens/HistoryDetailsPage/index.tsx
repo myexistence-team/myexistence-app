@@ -15,21 +15,7 @@ import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { PresenceStatusEnum } from '../../enums';
 import MEPressableText from '../../components/MEPressableText';
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "PRESENT":
-      return Colors.light.green;
-    case "ABSENT":
-      return Colors.light.red;
-    case "LATE":
-      return Colors.light.orange;
-    case "EXCUSED":
-      return Colors.light.yellows.yellow3;
-    default:
-      return Colors.light.black;
-  }
-}
+import { getStatusColor } from '../../utils/utilFunctions';
 
 export default function HistoryDetailsPage({ 
   route: { 

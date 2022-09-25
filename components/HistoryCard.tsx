@@ -6,27 +6,13 @@ import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import Colors from "../constants/Colors";
 import { textStyles } from "../constants/Styles";
-import { AuthContext, ProfileContext } from "../contexts";
+import { ProfileContext } from "../contexts";
 import { PresenceStatusEnum } from "../enums";
 import { firestore } from "../firebase";
 import { Log, Profile } from "../types";
+import { getStatusColor } from "../utils/utilFunctions";
 import MECard from "./MECard";
 import { View } from "./Themed";
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "PRESENT":
-      return Colors.light.green;
-    case "ABSENT":
-      return Colors.light.red;
-    case "LATE":
-      return Colors.light.orange;
-    case "EXCUSED":
-      return Colors.light.yellows.yellow3;
-    default:
-      return Colors.light.black;
-  }
-}
 
 export default function HistoryCard(props: { history: Log }) {
   const { history } = props;

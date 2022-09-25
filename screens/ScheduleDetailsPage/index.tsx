@@ -167,11 +167,12 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             </Text>
             {
               qrCode && (
-                <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                <View style={{ alignItems: 'center', padding: 24,  }}>
                   <SvgQRCode
                     value={qrCode.id}
                     size={240}
                   />
+                  <Text style={[textStyles.body3, { textAlign: 'center' }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
                 </View>
               )
             }
@@ -202,11 +203,26 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                     schedule.status === ScheduleStasuses.OPENED && (
                       <>
                         <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
-                        <MEPressableText style={[textStyles.body1, { 
-                          fontFamily: 'manrope-bold', 
-                          marginBottom: 16,
-                          textAlign: 'center'
-                        }]}>
+                        <MEPressableText 
+                          style={[textStyles.body1, { 
+                            fontFamily: 'manrope-bold', 
+                            marginBottom: 16,
+                            textAlign: 'center'
+                          }]}
+                          onPress={() => {
+                            navigation.navigate('Root', {
+                              screen: 'SchedulesPage',
+                              params: {
+                                screen: 'SchedulePresences',
+                                params: {
+                                  scheduleId,
+                                  classId
+                                },  
+                                initial: false
+                              }
+                            })
+                          }}
+                        >
                           {schedule.studentCount - absentCount}/{schedule.studentCount}
                         </MEPressableText>
                       </>

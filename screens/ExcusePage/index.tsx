@@ -39,7 +39,6 @@ export default function ExcusePage({
   const { auth } = useContext(AuthContext);
   const { school } = useContext(SchoolContext);
   function onSubmit(data: any) {
-    console.log(data);
     setIsSubmitting(true);
     createExcuseRequest(
       auth.uid,

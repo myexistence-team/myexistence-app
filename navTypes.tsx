@@ -52,6 +52,10 @@ export type ScheduleParamList = {
     classId: string,
     scheduleId: string 
   },
+  SchedulePresences: { 
+    classId: string,
+    scheduleId: string 
+  },
 }
 
 export type ProfileParamList = {
