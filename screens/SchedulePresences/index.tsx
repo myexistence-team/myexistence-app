@@ -9,6 +9,10 @@ import { firestore } from '../../firebase'
 import { ProfileContext } from '../../contexts'
 import MESpinner from '../../components/MESpinner'
 import StudentCard from '../../components/StudentCard'
+import { textStyles } from '../../constants/Styles'
+import MEPressableText from '../../components/MEPressableText'
+import { AbsentStasuses } from '../../constants/constants'
+import Colors from '../../constants/Colors'
 
 export default function SchedulePresences({
   route: {
@@ -19,11 +23,26 @@ export default function SchedulePresences({
   }
 }: NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">) {
   const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState<null | string>(null);
   const [students, setStudents] = useState<any[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
   const [studentLogs, setStudentLogs] = useState<any>({});
 
   const {profile} = useContext(ProfileContext);
+
+  useEffect(() => {
+    if (status) {
+      var filteredStudentIds: string[] = []
+      if (status === AbsentStasuses.ABSENT) {
+        filteredStudentIds = students.map((s) => s.id).filter((sId) => !Object.keys(studentLogs).includes(sId));
+      } else {
+        filteredStudentIds = Object.entries(studentLogs).filter((l) => l[1] === status).map((l) => l[0]);
+      }
+      setFilteredStudents(students.filter((s) => filteredStudentIds.includes(s.id)));
+    } else {
+      setFilteredStudents(students);
+    }
+  }, [studentLogs, students, status])
 
   function loadData() {
     setIsLoading(true);
@@ -68,9 +87,19 @@ export default function SchedulePresences({
     });
   }
 
+  const studentLogsArr = Object.values(studentLogs);
+  const presentCount = studentLogsArr.filter((s) => s === AbsentStasuses.PRESENT).length;
+  const lateCount = studentLogsArr.filter((s) => s === AbsentStasuses.LATE).length;
+  const excusedCount = studentLogsArr.filter((s) => s === AbsentStasuses.EXCUSED).length;
+  const absentCount = Math.max(0, students.length - presentCount - lateCount - excusedCount);
+
   useEffect(() => {
     loadData();
   }, [])
+
+  function handleChangeStatus(stat: string) {
+    setStatus((prevStatus) => (prevStatus === stat ? null : stat));
+  }
 
   return (
     <MEContainer
@@ -80,13 +109,75 @@ export default function SchedulePresences({
       <MEHeader
         title={`Pelajar (${students.length})`}
       />
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={textStyles.body2}>Hadir</Text>
+          <MEPressableText 
+            style={[textStyles.body1, { 
+              fontFamily: 'manrope-bold', 
+              marginBottom: 16,
+              ...status === AbsentStasuses.PRESENT ? {
+                color: Colors.light.black 
+              } : {}
+            }]}
+            onPress={() => handleChangeStatus(AbsentStasuses.PRESENT)}
+          >
+            {presentCount}
+          </MEPressableText>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={textStyles.body2}>Izin</Text>
+          <MEPressableText 
+            style={[textStyles.body1, { 
+              fontFamily: 'manrope-bold', 
+              marginBottom: 16,
+              ...status === AbsentStasuses.EXCUSED ? {
+                color: Colors.light.black 
+              } : {}
+            }]}
+            onPress={() => handleChangeStatus(AbsentStasuses.EXCUSED)}
+          >
+            {excusedCount}
+          </MEPressableText>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={textStyles.body2}>Terlambat</Text>
+          <MEPressableText 
+            style={[textStyles.body1, { 
+              fontFamily: 'manrope-bold', 
+              marginBottom: 16,
+              ...status === AbsentStasuses.LATE ? {
+                color: Colors.light.black 
+              } : {}
+            }]}
+            onPress={() => handleChangeStatus(AbsentStasuses.LATE)}
+          >
+            {lateCount}
+          </MEPressableText>
+        </View>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={textStyles.body2}>Absen</Text>
+          <MEPressableText 
+            style={[textStyles.body1, { 
+              fontFamily: 'manrope-bold', 
+              marginBottom: 16,
+              ...status === AbsentStasuses.ABSENT ? {
+                color: Colors.light.black 
+              } : {}
+            }]}
+            onPress={() => handleChangeStatus(AbsentStasuses.ABSENT)}
+          >
+            {absentCount}
+          </MEPressableText>
+        </View>
+      </View>
       {
         isLoading ? (
           <MESpinner/>
         ) : (
           <>
             {
-              students.map((s, idx) => (
+              filteredStudents.map((s, idx) => (
                 <StudentCard key={idx} student={s} status={studentLogs[s.id]}/>
               ))
             }
