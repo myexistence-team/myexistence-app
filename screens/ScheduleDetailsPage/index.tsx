@@ -7,15 +7,15 @@ import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { collection, doc, getDoc, limit, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import { AuthContext, ProfileContext } from '../../contexts'
-import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
 import { DAYS_ARRAY, ProfileRoles, ScheduleStasuses } from '../../constants/constants'
 import { closeSchedule, openSchedule } from '../../actions/scheduleActions'
 import SvgQRCode from 'react-native-qrcode-svg';
+import MEPressableText from '../../components/MEPressableText'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId } = route.params;
@@ -25,6 +25,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { auth } = useContext(AuthContext);
   const [schedule, setSchedule] = useState<Schedule | any>(null);
   const [qrCode, setQRCode] = useState<any>(null);
+  const [absentCount, setAbsentCount] = useState(0);
 
   function loadData() {
     setSchedule(null);
@@ -50,6 +51,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               ...scheduleSnap.data(),
               className: classSnap.data().name,
               classDescription: classSnap.data().description,
+              studentCount: classSnap.data().studentIds?.length || 0
             });
           }
         })
@@ -58,22 +60,25 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   } 
 
   function loadQRCodes() {
+    const schedulePath = [
+      profile.schoolId,
+      'classes',
+      classId,
+      'schedules',
+      scheduleId,
+    ];
     onSnapshot(
       query(
         collection(
           firestore, 
           'schools',
-          profile.schoolId || '',
-          'classes',
-          classId,
-          'schedules',
-          scheduleId,
+          ...schedulePath,
           'qrCodes'
         ),
         where('scanned', '==', false),
-        limit(1)
       ),
       (qrCodeSnaps) => {
+        setAbsentCount(qrCodeSnaps.size);
         if (!qrCodeSnaps.empty) {
           setQRCode({
             ...qrCodeSnaps.docs[0].data(),
@@ -193,6 +198,20 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                 </>
               ) : (
                 <>
+                  {
+                    schedule.status === ScheduleStasuses.OPENED && (
+                      <>
+                        <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
+                        <MEPressableText style={[textStyles.body1, { 
+                          fontFamily: 'manrope-bold', 
+                          marginBottom: 16,
+                          textAlign: 'center'
+                        }]}>
+                          {schedule.studentCount - absentCount}/{schedule.studentCount}
+                        </MEPressableText>
+                      </>
+                    )
+                  }
                   <MEButton
                     size='lg'
                     style={{

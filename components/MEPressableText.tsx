@@ -6,7 +6,7 @@ export default function MEPressableText({
   style,
   onPress,
   children
-}: TextProps & PressableProps) {
+}: TextProps) {
   return (
     <Pressable
       onPress={onPress}
