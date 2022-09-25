@@ -6,12 +6,14 @@ import StatusIcon from './StatusIcon'
 
 export default function StudentCard({
   student,
-  status
+  status,
+  onPress
 }: {
   student: {
     displayName: string
   },
   status?: string
+  onPress?: Function
 }) {
   return (
     <MECard
@@ -20,6 +22,7 @@ export default function StudentCard({
         justifyContent: 'space-between',
         marginBottom: 16
       }}
+      onPress={onPress}
     >
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>{student.displayName}</Text>
       {

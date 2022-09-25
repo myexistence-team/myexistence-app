@@ -13,6 +13,7 @@ import { textStyles } from '../../constants/Styles'
 import MEPressableText from '../../components/MEPressableText'
 import { AbsentStasuses } from '../../constants/constants'
 import Colors from '../../constants/Colors'
+import { Log } from '../../types'
 
 export default function SchedulePresences({
   route: {
@@ -20,23 +21,25 @@ export default function SchedulePresences({
       classId,
       scheduleId
     }
-  }
+  },
+  navigation
 }: NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [classroom, setClassroom] = useState<any>(null);
   const [status, setStatus] = useState<null | string>(null);
   const [students, setStudents] = useState<any[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
-  const [studentLogs, setStudentLogs] = useState<any>({});
+  const [studentLogs, setStudentLogs] = useState<{[key: string]: Log}>({});
 
   const {profile} = useContext(ProfileContext);
 
   useEffect(() => {
-    if (status) {
+    if (status && Object.keys(studentLogs).length) {
       var filteredStudentIds: string[] = []
       if (status === AbsentStasuses.ABSENT) {
         filteredStudentIds = students.map((s) => s.id).filter((sId) => !Object.keys(studentLogs).includes(sId));
       } else {
-        filteredStudentIds = Object.entries(studentLogs).filter((l) => l[1] === status).map((l) => l[0]);
+        filteredStudentIds = Object.entries(studentLogs).filter((l) => l[1].status === status).map((l) => l[0]);
       }
       setFilteredStudents(students.filter((s) => filteredStudentIds.includes(s.id)));
     } else {
@@ -54,6 +57,7 @@ export default function SchedulePresences({
       classId
     )).then((classSnap) => {
       if (classSnap.exists()) {
+        setClassroom({ ...classSnap.data(), id: classSnap.id });
         getDocs(query(collection(
           firestore,
           'users',
@@ -81,16 +85,16 @@ export default function SchedulePresences({
     ), (logSnaps) => {
       var studentLogsData: any = {};
       logSnaps.docs.forEach((l) => { 
-        studentLogsData[l.data().studentId] = l.data().status;
+        studentLogsData[l.data().studentId] = {...l.data(), id: l.id};
       });
       setStudentLogs(studentLogsData);
     });
   }
 
   const studentLogsArr = Object.values(studentLogs);
-  const presentCount = studentLogsArr.filter((s) => s === AbsentStasuses.PRESENT).length;
-  const lateCount = studentLogsArr.filter((s) => s === AbsentStasuses.LATE).length;
-  const excusedCount = studentLogsArr.filter((s) => s === AbsentStasuses.EXCUSED).length;
+  const presentCount = studentLogsArr.filter((s: Log) => s.status === AbsentStasuses.PRESENT).length;
+  const lateCount = studentLogsArr.filter((s: Log) => s.status === AbsentStasuses.LATE).length;
+  const excusedCount = studentLogsArr.filter((s: Log) => s.status === AbsentStasuses.EXCUSED).length;
   const absentCount = Math.max(0, students.length - presentCount - lateCount - excusedCount);
 
   useEffect(() => {
@@ -172,13 +176,33 @@ export default function SchedulePresences({
         </View>
       </View>
       {
-        isLoading ? (
+        isLoading && filteredStudents.length ? (
           <MESpinner/>
         ) : (
           <>
             {
               filteredStudents.map((s, idx) => (
-                <StudentCard key={idx} student={s} status={studentLogs[s.id]}/>
+                <StudentCard 
+                  key={idx} 
+                  student={s} 
+                  status={studentLogs[s.id]?.status}
+                  onPress={!studentLogs[s.id] ? undefined : () => {
+                    navigation.navigate('SchedulePresenceDetails', {
+                      logId: studentLogs[s.id].id,
+                      isStudentLog: true,
+                      presence: {
+                        studentName: s.displayName,
+                        className: classroom.name,
+                        classId: studentLogs[s.id]?.classId,
+                        status: studentLogs[s.id]?.status,
+                        start: studentLogs[s.id]?.schedule.start,
+                        end: studentLogs[s.id]?.schedule.end,
+                        time: studentLogs[s.id]?.time,
+                        excuse: studentLogs[s.id]?.excuse,
+                      }
+                    })
+                  }}
+                />
               ))
             }
           </>

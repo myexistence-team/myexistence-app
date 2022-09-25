@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 24,
     paddingTop: (StatusBar.currentHeight !== undefined ? StatusBar.currentHeight : 0) + 64,
+    paddingBottom: 40
   }
 })
 

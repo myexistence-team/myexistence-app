@@ -5,7 +5,8 @@
 
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Timestamp } from 'firebase/firestore';
 import { Schedule } from './types';
 
 declare global {
@@ -56,6 +57,20 @@ export type ScheduleParamList = {
     classId: string,
     scheduleId: string 
   },
+  SchedulePresenceDetails: {
+    isStudentLog?: boolean,
+    logId: string,
+    presence?: {
+      studentName: string,
+      className: string,
+      classId: string,
+      status: string,
+      start: Timestamp,
+      end: Timestamp,
+      time: Timestamp,
+      excuse?: any
+    }
+  }
 }
 
 export type ProfileParamList = {

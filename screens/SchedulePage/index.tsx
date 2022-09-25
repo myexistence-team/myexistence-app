@@ -16,6 +16,7 @@ import { Profile } from '../../types';
 import Colors from '../../constants/Colors';
 import useCurrentScheduleTime from '../../hooks/useCurrentScheduleTime';
 import SchedulePresences from '../SchedulePresences';
+import SchedulePresenceDetails from '../SchedulePresenceDetails';
 
 const Stack = createNativeStackNavigator<ScheduleParamList>();
 
@@ -41,6 +42,13 @@ export default function SchedulePage() {
       <Stack.Screen 
         name='SchedulePresences' 
         component={SchedulePresences}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name='SchedulePresenceDetails' 
+        component={SchedulePresenceDetails}
         options={{
           headerShown: false,
         }}
