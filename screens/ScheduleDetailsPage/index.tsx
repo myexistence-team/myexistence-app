@@ -172,7 +172,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                     value={qrCode.id}
                     size={240}
                   />
-                  <Text style={[textStyles.body3, { textAlign: 'center' }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
+                  <Text style={[textStyles.body3, { textAlign: 'center', marginTop: 8 }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
                 </View>
               )
             }
