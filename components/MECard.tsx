@@ -1,4 +1,4 @@
-import { View, StyleSheet, Platform } from 'react-native'
+import { View, StyleSheet, Platform, Pressable } from 'react-native'
 import React from 'react'
 import { ViewProps } from './Themed';
 
@@ -19,12 +19,26 @@ export const cardStyle = StyleSheet.create({
   }
 })
 
-export default function MECard(props: ViewProps) {
-  const { children, style, ...rest } = props;
+export default function MECard(props: ViewProps & { onPress?: Function }) {
+  const { onPress, style, ...rest } = props;
 
-  return (
-    <View style={[cardStyle.card, style]} {...rest}>
-      {children}
-    </View>
-  )
+  if (onPress) {
+    return (
+      <Pressable 
+        onPress={() => onPress()} 
+        style={({ pressed }) => ([
+          cardStyle.card, 
+          {
+            opacity: pressed ? 0.75 : 1
+          },
+          style
+        ])} 
+        {...rest}
+      />
+    );
+  } else {
+    return (
+      <View style={[cardStyle.card, style]} {...rest}/>
+    );
+  }
 }

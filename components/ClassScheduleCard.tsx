@@ -22,10 +22,10 @@ export default function ClassScheduleCard({
   const navigation = useNavigation();
 
   return (
-    <Pressable
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.75 : 1
-      })}
+    <MECard
+      style={{
+        marginBottom: 16
+      }} 
       onPress={() => {
         navigation.navigate("Root", {
           screen: "SchedulesPage",
@@ -40,106 +40,100 @@ export default function ClassScheduleCard({
         })
       }}
     >
-      <MECard
+      <View
         style={{
-          marginBottom: 16
-        }} 
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <Text 
-            style={[
-              textStyles.body3,
-              { 
-                flexDirection: 'row', 
-                alignItems: 'center',
-              }
-            ]}
-          >
-            <Text
-            >
-              {DAYS_ARRAY[schedule.day]}
-            </Text>
-            
-          </Text>
-          <Text
+        <Text 
           style={[
             textStyles.body3,
             { 
               flexDirection: 'row', 
               alignItems: 'center',
-              color: Colors.light.grey,
-            }
-          ]}
-          >
-              Toleransi {schedule.tolerance} menit
-        </Text>
-        </View>
-        <Text 
-          style={[
-            textStyles.body1,
-            {
-              marginVertical: 8,
-              fontFamily: 'manrope-bold'
             }
           ]}
         >
-          {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
+          <Text
+          >
+            {DAYS_ARRAY[schedule.day]}
+          </Text>
+          
         </Text>
-        {
-          (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
+        <Text
+        style={[
+          textStyles.body3,
+          { 
+            flexDirection: 'row', 
+            alignItems: 'center',
+            color: Colors.light.grey,
+          }
+        ]}
+        >
+            Toleransi {schedule.tolerance} menit
+      </Text>
+      </View>
+      <Text 
+        style={[
+          textStyles.body1,
+          {
+            marginVertical: 8,
+            fontFamily: 'manrope-bold'
+          }
+        ]}
+      >
+        {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
+      </Text>
+      {
+        (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
+          <View
+          style={{
+              flexDirection: 'row',
+              marginTop: 16
+            }}
+          >
             <View
-            style={{
-                flexDirection: 'row',
-                marginTop: 16
-              }}
+              style={[
+                { 
+                  flex: 2,
+                  marginRight: 8
+                }
+              ]}
             >
-              <View
-                style={[
-                  { 
-                    flex: 2,
-                    marginRight: 8
-                  }
-                ]}
+              <MEButton
+                color='primary'
+                variant='outline'
               >
-                <MEButton
-                  color='primary'
-                  variant='outline'
-                >
-                    Izin
-                </MEButton>
-              </View>
-              <View
-                style={[
-                  { 
-                    flex: 3,
-                  }
-                ]}
-              >
-                <MEButton
-                iconStart="qrcode"
-                style={[
-                  { 
-                    marginLeft: 4
-                  }
-                ]}
-                onPress={() => navigation.navigate('Scanner', {
-                    scheduleId: schedule.id,
-                    schedule
-                })}
-                >
-                Pindai QR Code
-                </MEButton>
-              </View>
+                  Izin
+              </MEButton>
             </View>
-          ) : null
-        }
-      </MECard>
-    </Pressable>
+            <View
+              style={[
+                { 
+                  flex: 3,
+                }
+              ]}
+            >
+              <MEButton
+              iconStart="qrcode"
+              style={[
+                { 
+                  marginLeft: 4
+                }
+              ]}
+              onPress={() => navigation.navigate('Scanner', {
+                  scheduleId: schedule.id,
+                  schedule
+              })}
+              >
+              Pindai QR Code
+              </MEButton>
+            </View>
+          </View>
+        ) : null
+      }
+    </MECard>
   )
 }

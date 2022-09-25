@@ -166,31 +166,20 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.tolerance} Menit
             </Text>
             {
-              qrCode && (
-                <View style={{ alignItems: 'center', padding: 24,  }}>
-                  <SvgQRCode
-                    value={qrCode.id}
-                    size={240}
-                  />
-                  <Text style={[textStyles.body3, { textAlign: 'center', marginTop: 8 }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
-                </View>
-              )
-            }
-            {
               profile.role === ProfileRoles.STUDENT ? (
                 <>                
                   {
                     schedule.status === ScheduleStasuses.OPENED ? (
                       <MEButton
-                        iconStart="qrcode"
-                        size='lg'
-                        style={{
-                          marginTop: 8
-                        }}
-                        onPress={() => navigation.navigate('Scanner', {
-                          scheduleId: schedule.id,
-                          schedule
-                        })}
+                      iconStart="qrcode"
+                      size='lg'
+                      style={{
+                        marginTop: 8
+                      }}
+                      onPress={() => navigation.navigate('Scanner', {
+                        scheduleId: schedule.id,
+                        schedule
+                      })}
                       >
                         Pindai QR Code
                       </MEButton>
@@ -202,6 +191,17 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                   {
                     schedule.status === ScheduleStasuses.OPENED && (
                       <>
+                        {
+                          qrCode && (
+                            <View style={{ alignItems: 'center', padding: 24,  }}>
+                              <SvgQRCode
+                                value={qrCode.id}
+                                size={240}
+                              />
+                              <Text style={[textStyles.body3, { textAlign: 'center', marginTop: 8 }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
+                            </View>
+                          )
+                        }
                         <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
                         <MEPressableText 
                           style={[textStyles.body1, { 

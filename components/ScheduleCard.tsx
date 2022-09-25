@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text } from 'react-native'
 import React from 'react'
 import MECard from './MECard';
 import { textStyles } from '../constants/Styles';
@@ -8,7 +8,6 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
-import { ScheduleStasuses } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule,
@@ -30,10 +29,10 @@ export default function ScheduleCard({
   const diffToNowInHours = Math.floor(diffToNowInMins/60);
 
   return (
-    <Pressable
-      style={({ pressed }) => ({
-        opacity: pressed ? 0.75 : 1
-      })}
+    <MECard
+      style={{
+        marginBottom: 16
+      }} 
       onPress={() => {
         navigation.navigate("Root", {
           screen: "SchedulesPage",
@@ -48,115 +47,109 @@ export default function ScheduleCard({
         })
       }}
     >
-      <MECard
+      <View
         style={{
-          marginBottom: 16
-        }} 
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <Text 
-            style={[
-              textStyles.body3,
-              { 
-                flexDirection: 'row', 
-                alignItems: 'center',
-                color: Colors.light.grey,
-              }
-            ]}
-          >
-            <FontAwesome5 size={12} name='clock'/>{'  '}
-            <Text
-            >
-              {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
-            </Text>
-            {' • '}
-            <Text>
-              Toleransi {schedule.tolerance} menit
-            </Text>
-          </Text>
-          {
-            (disableCountdown === undefined || disableCountdown === false) && diffToNowInHours < 24 ? (
-              <Text style={textStyles.body3}>
-                {diffInMs > 0 ? 'Dalam' : 'Terlambat'} {diffToNowInMins > 60 ? diffToNowInHours : diffToNowInMins} {diffToNowInMins > 60 ? 'Jam' : 'Menit'}
-              </Text>
-            ) : null
-          }
-        </View>
         <Text 
           style={[
-            textStyles.body1,
-            {
-              marginVertical: 8,
-              fontFamily: 'manrope-bold'
+            textStyles.body3,
+            { 
+              flexDirection: 'row', 
+              alignItems: 'center',
+              color: Colors.light.grey,
             }
           ]}
         >
-          {schedule.className}
-        </Text>
-        <Text style={[textStyles.body3]}>
-          {schedule.classDescription}
+          <FontAwesome5 size={12} name='clock'/>{'  '}
+          <Text
+          >
+            {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
+          </Text>
+          {' • '}
+          <Text>
+            Toleransi {schedule.tolerance} menit
+          </Text>
         </Text>
         {
-          (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                marginTop: 16
-              }}
-            >
-              <View
-                style={[
-                  { 
-                    flex: 2,
-                    marginRight: 8
-                  }
-                ]}
-              >
-                <MEButton
-                  color='primary'
-                  variant='outline'
-                  onPress={() => {
-                    navigation.navigate('ExcusePage', {
-                      scheduleId: schedule.id,
-                      classId: schedule.classId
-                    })
-                  }}
-                >
-                    Izin
-                </MEButton>
-              </View>
-              <View
-                style={[
-                  { 
-                    flex: 3
-                  }
-                ]}
-              >
-                <MEButton
-                iconStart="qrcode"
-                style={[
-                  { 
-                    marginLeft: 4
-                  }
-                ]}
-                onPress={() => navigation.navigate('Scanner', {
-                    scheduleId: schedule.id,
-                    schedule
-                })}
-                >
-                Pindai QR Code
-                </MEButton>
-              </View>
-            </View>
+          (disableCountdown === undefined || disableCountdown === false) && diffToNowInHours < 24 ? (
+            <Text style={textStyles.body3}>
+              {diffInMs > 0 ? 'Dalam' : 'Terlambat'} {diffToNowInMins > 60 ? diffToNowInHours : diffToNowInMins} {diffToNowInMins > 60 ? 'Jam' : 'Menit'}
+            </Text>
           ) : null
         }
-      </MECard>
-    </Pressable>
+      </View>
+      <Text 
+        style={[
+          textStyles.body1,
+          {
+            marginVertical: 8,
+            fontFamily: 'manrope-bold'
+          }
+        ]}
+      >
+        {schedule.className}
+      </Text>
+      <Text style={[textStyles.body3]}>
+        {schedule.classDescription}
+      </Text>
+      {
+        (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 16
+            }}
+          >
+            <View
+              style={[
+                { 
+                  flex: 2,
+                  marginRight: 8
+                }
+              ]}
+            >
+              <MEButton
+                color='primary'
+                variant='outline'
+                onPress={() => {
+                  navigation.navigate('ExcusePage', {
+                    scheduleId: schedule.id,
+                    classId: schedule.classId
+                  })
+                }}
+              >
+                  Izin
+              </MEButton>
+            </View>
+            <View
+              style={[
+                { 
+                  flex: 3
+                }
+              ]}
+            >
+              <MEButton
+              iconStart="qrcode"
+              style={[
+                { 
+                  marginLeft: 4
+                }
+              ]}
+              onPress={() => navigation.navigate('Scanner', {
+                  scheduleId: schedule.id,
+                  schedule
+              })}
+              >
+              Pindai QR Code
+              </MEButton>
+            </View>
+          </View>
+        ) : null
+      }
+    </MECard>
   )
 }
