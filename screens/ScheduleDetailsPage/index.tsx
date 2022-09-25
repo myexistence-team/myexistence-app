@@ -18,7 +18,7 @@ import SvgQRCode from 'react-native-qrcode-svg';
 import MEPressableText from '../../components/MEPressableText'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
-  const { scheduleId, classId } = route.params;
+  const { scheduleId, classId, toggleOpen } = route.params;
   const navigation = useNavigation();
 
   const { profile } = useContext(ProfileContext);
@@ -116,6 +116,12 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         setChangingStatus(false);
       })
   }
+
+  useEffect(() => {
+    if (toggleOpen) {
+      handleOpenOrCloseClass();
+    }
+  }, [toggleOpen])
 
   return (
     <MEContainer

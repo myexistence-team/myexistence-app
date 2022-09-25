@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import MECard from './MECard';
 import { textStyles } from '../constants/Styles';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -8,6 +8,8 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
+import { ProfileContext } from '../contexts';
+import { ProfileRoles } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule,
@@ -20,6 +22,7 @@ export default function ScheduleCard({
   disableScanButton?: boolean,
   disableCountdown?: boolean,
 }) {
+  const { profile } = useContext(ProfileContext);
   const navigation = useNavigation();
 
   const now: Date = useCurrentScheduleTime();
@@ -97,58 +100,91 @@ export default function ScheduleCard({
         {schedule.classDescription}
       </Text>
       {
-        (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 16
-            }}
-          >
-            <View
-              style={[
-                { 
-                  flex: 2,
-                  marginRight: 8
-                }
-              ]}
-            >
-              <MEButton
-                color='primary'
-                variant='outline'
-                onPress={() => {
-                  navigation.navigate('ExcusePage', {
-                    scheduleId: schedule.id,
-                    classId: schedule.classId
-                  })
-                }}
-              >
-                  Izin
-              </MEButton>
-            </View>
-            <View
-              style={[
-                { 
-                  flex: 3
-                }
-              ]}
-            >
-              <MEButton
-              iconStart="qrcode"
-              style={[
-                { 
-                  marginLeft: 4
-                }
-              ]}
-              onPress={() => navigation.navigate('Scanner', {
-                  scheduleId: schedule.id,
-                  schedule
-              })}
-              >
-              Pindai QR Code
-              </MEButton>
-            </View>
-          </View>
-        ) : null
+        profile.role === ProfileRoles.STUDENT ? (
+          <>
+            {
+              (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 16
+                  }}
+                >
+                  <View
+                    style={[
+                      { 
+                        flex: 2,
+                        marginRight: 8
+                      }
+                    ]}
+                  >
+                    <MEButton
+                      color='primary'
+                      variant='outline'
+                      onPress={() => {
+                        navigation.navigate('ExcusePage', {
+                          scheduleId: schedule.id,
+                          classId: schedule.classId
+                        })
+                      }}
+                    >
+                        Izin
+                    </MEButton>
+                  </View>
+                  <View
+                    style={[
+                      { 
+                        flex: 3
+                      }
+                    ]}
+                  >
+                    <MEButton
+                    iconStart="qrcode"
+                    style={[
+                      { 
+                        marginLeft: 4
+                      }
+                    ]}
+                    onPress={() => navigation.navigate('Scanner', {
+                      scheduleId: schedule.id,
+                      schedule
+                    })}
+                    >
+                      Pindai QR Code
+                    </MEButton>
+                  </View>
+                </View>
+              ) : null
+            }
+          </>
+        ) : (
+          <>
+            {
+              schedule.status === 'CLOSED' && (
+                <View style={{ marginTop: 16 }}>
+                  <MEButton
+                    onPress={() => {
+                      navigation.navigate("Root", {
+                        screen: "SchedulesPage",
+                        params: {
+                          screen: "ScheduleDetails",
+                          params: {
+                            classId: schedule.classId,
+                            scheduleId: schedule.id,
+                            toggleOpen: true
+                          },
+                          initial: false,
+                        },
+                      })
+                    }}
+                  >
+                    Buka Kelas
+                  </MEButton>
+                </View>
+              )
+            }
+          </>
+        )
       }
     </MECard>
   )

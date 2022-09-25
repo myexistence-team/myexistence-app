@@ -51,7 +51,8 @@ export type ScheduleParamList = {
   Schedules: undefined,
   ScheduleDetails: { 
     classId: string,
-    scheduleId: string 
+    scheduleId: string,
+    toggleOpen?: boolean
   },
   SchedulePresences: { 
     classId: string,
