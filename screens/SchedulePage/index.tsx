@@ -6,7 +6,7 @@ import { textStyles } from '../../constants/Styles';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
 import ScheduleDetailsPage from '../ScheduleDetailsPage';
 import { ScheduleParamList } from '../../navTypes';
-import { collection, collectionGroup, documentId, getDocs, query, Timestamp, where } from 'firebase/firestore';
+import { collection, collectionGroup, documentId, getDocs, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { ProfileContext } from '../../contexts';
 import MESpinner from '../../components/MESpinner';
 import { DAYS_ARRAY } from '../../constants/constants';
@@ -43,6 +43,7 @@ export default function SchedulePage() {
 
 function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) {
   const { profile } : { profile: Profile } = useContext(ProfileContext);
+  const todayInt = (new Date()).getDay();
 
   const nowScheduleDate = useCurrentScheduleTime();
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -55,7 +56,8 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
     ...profile.classIds?.length ? [where('classId', 'in', profile.classIds)] : [],
-    where('end', '>', nowScheduleDate),
+    where('day', '>=', todayInt),
+    orderBy('day', 'asc')
   );
 
   function loadData() {    
@@ -92,7 +94,6 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
 
   const schedulesGroupedByDay = groupBy(schedules, 'day');
   const schedulesGroupedByDayArr = Object.entries(schedulesGroupedByDay);
-  schedulesGroupedByDayArr.push(schedulesGroupedByDayArr.shift() || ['any', null]);
 
   return (
     <MEContainer

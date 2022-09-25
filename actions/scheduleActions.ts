@@ -23,7 +23,6 @@ export async function createPresenceInSchedule(
   ]
   const userRef = doc(firestore, 'users', studentId);
   const scheduleRef = doc(firestore, 'schools', ...schedulePath);
-  console.log(classId, scheduleId, qrCodeId);
   const qrCodeRef = doc(
     firestore, 
     'schools', 
@@ -301,8 +300,7 @@ export async function closeSchedule(
   if (classSnap.exists()) {
     const presentStudentIds: string[] = [];
     const classStudentIds = classSnap.data().studentIds;
-    const absentStudentIds: string[] = classStudentIds.filter((sId: string) => !presentStudentIds.includes(sId));
-
+    
     // Delete and add to (move) studentLogs to logs collection
     const studentLogSnaps = await getDocs(studentLogsRef);
     if (!studentLogSnaps.empty) {
@@ -315,6 +313,7 @@ export async function closeSchedule(
     }
     
     // Add logs data for absent students
+    const absentStudentIds: string[] = classStudentIds.filter((sId: string) => !presentStudentIds.includes(sId));
     if (absentStudentIds.length) {
       const scheduleSnap = await getDoc(scheduleRef);
       if (scheduleSnap.exists()) {

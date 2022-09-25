@@ -165,17 +165,15 @@ export default function HistoryDetailsPage({
             </Text>
 
             <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sesi Kelas</Text>
+            <Text style={textStyles.body2}>Guru</Text>
+            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+              {teacher?.displayName}
+            </Text>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Guru</Text>
+                <Text style={textStyles.body2}>Tanggal Dibuka</Text>
                 <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {teacher?.displayName}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Jam Dibuka</Text>
-                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(log.schedule.openedAt.toDate()).format("HH:mm")}
+                  {moment(log.schedule.openedAt.toDate()).format("LL HH:mm")}
                 </Text>
               </View>
             </View>
@@ -193,7 +191,7 @@ export default function HistoryDetailsPage({
                 </Text>
               </View>
               {
-                log.status === AbsentStasuses.PRESENT || log.status === AbsentStasuses.LATE && (
+                (log.status === AbsentStasuses.PRESENT || log.status === AbsentStasuses.LATE) && (
                   <View style={{ flex: 1 }}>
                     <Text style={textStyles.body2}>Jam Masuk</Text>
                     <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
