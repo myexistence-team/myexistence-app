@@ -31,8 +31,6 @@ export default function SchedulePresenceDetails({
     excuse
   } = presence;
 
-  console.log(excuse);
-
   const [isLoading, setIsLoading] = useState(false);
   function loadData() {
     setIsLoading(true);

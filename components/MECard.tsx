@@ -21,7 +21,6 @@ export const cardStyle = StyleSheet.create({
 
 export default function MECard(props: ViewProps & { onPress?: Function }) {
   const { onPress, style, ...rest } = props;
-  console.log(onPress)
 
   if (onPress) {
     return (
