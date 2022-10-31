@@ -12,10 +12,11 @@ import { firestore } from '../../firebase'
 import { AuthContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { DAYS_ARRAY, ProfileRoles, ScheduleStasuses } from '../../constants/constants'
+import { DAYS_ARRAY, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
 import { closeSchedule, openSchedule } from '../../actions/scheduleActions'
-import SvgQRCode from 'react-native-qrcode-svg';
 import MEPressableText from '../../components/MEPressableText'
+import ScheduleOpenQRCode from './ScheduleOpenQRCode'
+import ScheduleOpenStudentCallouts from './ScheduleOpenStudentCallouts'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -26,6 +27,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const [schedule, setSchedule] = useState<Schedule | any>(null);
   const [qrCode, setQRCode] = useState<any>(null);
   const [absentCount, setAbsentCount] = useState(0);
+  const [studentIds, setStudentIds] = useState<string[]>([]);
 
   function loadData() {
     setSchedule(null);
@@ -51,8 +53,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               ...scheduleSnap.data(),
               className: classSnap.data().name,
               classDescription: classSnap.data().description,
-              studentCount: classSnap.data().studentIds?.length || 0
             });
+            setStudentIds(classSnap.data().studentIds || []);
           }
         })
       }
@@ -103,23 +105,24 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     loadData();
   }, [])
 
-  const [changingStatus, setChangingStatus] = useState(false);
-  function handleOpenOrCloseClass() {
-    setChangingStatus(true);
+  const [changingStatus, setChangingStatus] = useState<any>(null);
+  function handleOpenOrCloseClass(openMethod: ScheduleOpenMethods) {
+    setChangingStatus(openMethod);
     (schedule.status === ScheduleStasuses.CLOSED ? openSchedule : closeSchedule)(
       profile.schoolId,
       classId,
       scheduleId,
-      auth.uid
+      auth.uid,
+      openMethod
     )
       .finally(() => {
-        setChangingStatus(false);
+        setChangingStatus(null);
       })
   }
 
   useEffect(() => {
     if (toggleOpen) {
-      handleOpenOrCloseClass();
+      handleOpenOrCloseClass(toggleOpen);
     }
   }, [toggleOpen])
 
@@ -195,55 +198,43 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               ) : (
                 <>
                   {
-                    schedule.status === ScheduleStasuses.OPENED && (
-                      <>
-                        {
-                          qrCode && (
-                            <View style={{ alignItems: 'center', padding: 24,  }}>
-                              <SvgQRCode
-                                value={qrCode.id}
-                                size={240}
-                              />
-                              <Text style={[textStyles.body3, { textAlign: 'center', marginTop: 8 }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
-                            </View>
-                          )
-                        }
-                        <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
-                        <MEPressableText 
-                          style={[textStyles.body1, { 
-                            fontFamily: 'manrope-bold', 
-                            marginBottom: 16,
-                            textAlign: 'center'
-                          }]}
-                          onPress={() => {
-                            navigation.navigate('Root', {
-                              screen: 'SchedulesPage',
-                              params: {
-                                screen: 'SchedulePresences',
-                                params: {
-                                  scheduleId,
-                                  classId
-                                },  
-                                initial: false
-                              }
-                            })
-                          }}
-                        >
-                          {schedule.studentCount - absentCount}/{schedule.studentCount}
-                        </MEPressableText>
-                      </>
-                    )
+                    (schedule.status === ScheduleStasuses.OPENED)
+                    ? schedule.openMethod === ScheduleOpenMethods.QR_CODE 
+                    ? <ScheduleOpenQRCode
+                      qrCode={qrCode}
+                      scheduleId={scheduleId}
+                      classId={classId}
+                      absentCount={absentCount}
+                      studentCount={studentIds.length}
+                    /> : studentIds.length ? (
+                      <ScheduleOpenStudentCallouts
+                        studentIds={studentIds}
+                        scheduleId={scheduleId}
+                        classId={classId}
+                      />  
+                    ) : null : null
                   }
                   <MEButton
                     size='lg'
                     style={{
-                      marginTop: 8
+                      marginVertical: 8
                     }}
-                    onPress={handleOpenOrCloseClass}
-                    isLoading={changingStatus}
+                    onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
+                    isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
                   >
                     { schedule.status === ScheduleStasuses.CLOSED ? 'Buka Kelas' : 'Tutup Kelas' }
                   </MEButton>
+                  {
+                    schedule.status !== ScheduleStasuses.OPENED && (
+                      <MEButton
+                        size='lg'
+                        onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.CALLOUT)}
+                        isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
+                      >
+                        Panggil Pelajar
+                      </MEButton>
+                    )
+                  }
                 </>
               )
             }

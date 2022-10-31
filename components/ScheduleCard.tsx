@@ -9,7 +9,7 @@ import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
 import { ProfileContext } from '../contexts';
-import { ProfileRoles } from '../constants/constants';
+import { ProfileRoles, ScheduleOpenMethods } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule,
@@ -171,7 +171,7 @@ export default function ScheduleCard({
                           params: {
                             classId: schedule.classId,
                             scheduleId: schedule.id,
-                            toggleOpen: true
+                            toggleOpen: ScheduleOpenMethods.QR_CODE
                           },
                           initial: false,
                         },

@@ -39,6 +39,11 @@ export enum ScheduleStasuses {
   CLOSED = "CLOSED",
 }
 
+export enum ScheduleOpenMethods {
+  QR_CODE = "QR_CODE",
+  CALLOUT = "CALLOUT",
+}
+
 export enum ExcuseTypes {
   SICK = 'SICK',
   OTHER = 'OTHER',
