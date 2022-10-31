@@ -1,7 +1,7 @@
 import { FirebaseError } from "firebase/app";
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import { AbsentStasuses, ExcuseStatuses, ScheduleStasuses } from "../constants/constants";
+import { AbsentStasuses, ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "../constants/constants";
 import { QRCodesErrors, SchedulesError } from "../errors";
 import { app, firestore } from "../firebase";
 import { QRCode, Schedule } from "../types";
@@ -12,7 +12,7 @@ export async function createPresenceInSchedule(
   schoolId: string, 
   classId:string, 
   scheduleId: string, 
-  qrCodeId: string
+  qrCodeId?: string
 ) {
   const schedulePath = [
     schoolId,
@@ -23,11 +23,14 @@ export async function createPresenceInSchedule(
   ]
   const userRef = doc(firestore, 'users', studentId);
   const scheduleRef = doc(firestore, 'schools', ...schedulePath);
-  const qrCodeRef = doc(
-    firestore, 
-    'schools', 
-    ...[...schedulePath, 'qrCodes', qrCodeId]
-  );
+  let qrCodeRef;
+  if (qrCodeId) {
+    qrCodeRef = doc(
+      firestore, 
+      'schools', 
+      ...[...schedulePath, 'qrCodes', qrCodeId]
+    );
+  }
   const studentLogsRef = collection(
     firestore, 
     'schools', 
@@ -42,6 +45,19 @@ export async function createPresenceInSchedule(
   const scheduleSnap = await getDoc(scheduleRef);
   if (scheduleSnap.exists()) {
     const schedule: Schedule | any = scheduleSnap.data();
+    const studentLogPayload = {
+      schedule: {
+        start: schedule.start,
+        end: schedule.end,
+        tolerance: schedule.tolerance,
+        openedAt: schedule.openedAt,
+      },
+      studentId,
+      classId,
+      teacherId: schedule.openedBy,
+      status: AbsentStasuses.PRESENT,
+      time: new Date(),
+    }
     if (schedule.status !== ScheduleStasuses.OPENED) {
       throw new FirebaseError(
         SchedulesError.SCHDEULE_HAS_NOT_OPENED,
@@ -58,39 +74,30 @@ export async function createPresenceInSchedule(
           'Anda sudah hadir untuk jadwal ini.'
         )
       }
-      const qrCodeSnap = await getDoc(qrCodeRef);
-      if (qrCodeSnap.exists()) {
-        const qrCode: QRCode | any = qrCodeSnap.data();
-        if (qrCode.scanned) {
-          throw new FirebaseError(
-            QRCodesErrors.QRCODE_ALREADY_SCANNED,
-            'QR code sudah pernah dipindai. Mohon coba lagi.'
-          );
-        } else {
-          await updateDoc(qrCodeRef, {
-            scanned: true
-          })
-          const payload = {
-            schedule: {
-              start: schedule.start,
-              end: schedule.end,
-              tolerance: schedule.tolerance,
-              openedAt: schedule.openedAt,
-            },
-            studentId,
-            classId,
-            teacherId: schedule.openedBy,
-            status: AbsentStasuses.PRESENT,
-            time: new Date(),
+      if (qrCodeRef) {
+        const qrCodeSnap = await getDoc(qrCodeRef);
+        if (qrCodeSnap.exists()) {
+          const qrCode: QRCode | any = qrCodeSnap.data();
+          if (qrCode.scanned) {
+            throw new FirebaseError(
+              QRCodesErrors.QRCODE_ALREADY_SCANNED,
+              'QR code sudah pernah dipindai. Mohon coba lagi.'
+            );
+          } else {
+            await updateDoc(qrCodeRef, {
+              scanned: true
+            })
+            await addDoc(studentLogsRef, studentLogPayload)
+            Promise.resolve();
           }
-          await addDoc(studentLogsRef, payload)
-          Promise.resolve();
+        } else {
+          throw new FirebaseError(
+            QRCodesErrors.QRCODE_NOT_FOUND,
+            'QR Code tidak ditemukan. Mohon coba lagi.'
+          );
         }
       } else {
-        throw new FirebaseError(
-          QRCodesErrors.QRCODE_NOT_FOUND,
-          'QR Code tidak ditemukan. Mohon coba lagi.'
-        );
+        await addDoc(studentLogsRef, studentLogPayload)
       }
     }
   } else {
@@ -110,7 +117,7 @@ export async function createExcuseRequest(
     type: 'SICK' | 'OTHER' | string,
     message: string,
     proofUri: string,
-  }
+  },
 ) {
   const schedulePath = [
     schoolId,
@@ -170,7 +177,8 @@ export async function openSchedule(
   schoolId: string,
   classId: string,
   scheduleId: string,
-  teacherId: string
+  teacherId: string,
+  openMethod: ScheduleOpenMethods
 ) {
   const batch = writeBatch(firestore);
   const schedulePath = [
@@ -218,6 +226,7 @@ export async function openSchedule(
         ...schedulePath
       ), {
         status: ScheduleStasuses.OPENED,
+        openMethod,
         openedAt: new Date(),
         openedBy: teacherId
       }
@@ -344,4 +353,45 @@ export async function closeSchedule(
       currentScheduleId: null
     }
   )
+}
+
+export async function createStudentPresenceFromCallout({
+  scheduleId,
+  studentId,
+  classId,
+  schoolId,
+  status
+}: {
+  scheduleId: string,
+  studentId: string,
+  classId: string,
+  schoolId: string,
+  status: AbsentStasuses
+}
+) {
+  const scheduleRef = doc(firestore, "schools", schoolId, "classes", classId, "schedules", scheduleId);
+  const studentLogsRef = collection(firestore, scheduleRef.path, "studentLogs");
+  console.log(scheduleRef.path);
+
+  const scheduleDoc = await getDoc(scheduleRef);
+  const schedule = scheduleDoc.data();
+
+  if (schedule) {
+    const newLog = {
+      schedule: {
+        start: schedule.start,
+        end: schedule.end,
+        tolerance: schedule.tolerance,
+        openedAt: schedule.openedAt,
+      },
+      studentId,
+      classId,
+      teacherId: schedule.openedBy,
+      status: AbsentStasuses.ABSENT,
+      time: new Date(),
+    }
+
+    await addDoc(studentLogsRef, newLog);
+  }
+
 }
