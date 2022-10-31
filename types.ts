@@ -1,4 +1,5 @@
 import { DocumentReference, Timestamp } from "firebase/firestore"
+import { ScheduleOpenMethods } from "./constants/constants"
 
 export type BaseType = {
   id: string,
@@ -42,6 +43,7 @@ export type Schedule = BaseType & {
   end: Date,
   tolerance: number,
   classId: string,
+  openMethod?: ScheduleOpenMethods
 }
 
 export type Class = BaseType & {
