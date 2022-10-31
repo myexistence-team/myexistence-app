@@ -7,6 +7,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Timestamp } from 'firebase/firestore';
+import { ScheduleOpenMethods } from './constants/constants';
 import { Schedule } from './types';
 
 declare global {
@@ -52,7 +53,10 @@ export type ScheduleParamList = {
   ScheduleDetails: { 
     classId: string,
     scheduleId: string,
-    toggleOpen?: boolean
+    toggleOpen?: ScheduleOpenMethods
+  },
+  ScheduleStudentCallouts: {
+    studentIds: string[]
   },
   SchedulePresences: { 
     classId: string,
