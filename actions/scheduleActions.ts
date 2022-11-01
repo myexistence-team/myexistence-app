@@ -355,23 +355,24 @@ export async function closeSchedule(
   )
 }
 
-export async function createStudentPresenceFromCallout({
+export async function createUpdateStudentPresenceFromCallout({
   scheduleId,
   studentId,
   classId,
   schoolId,
-  status
+  status,
+  studentLogId
 }: {
   scheduleId: string,
   studentId: string,
   classId: string,
   schoolId: string,
-  status: AbsentStasuses
+  status: AbsentStasuses,
+  studentLogId?: string,
 }
 ) {
   const scheduleRef = doc(firestore, "schools", schoolId, "classes", classId, "schedules", scheduleId);
   const studentLogsRef = collection(firestore, scheduleRef.path, "studentLogs");
-  console.log(scheduleRef.path);
 
   const scheduleDoc = await getDoc(scheduleRef);
   const schedule = scheduleDoc.data();
@@ -387,11 +388,47 @@ export async function createStudentPresenceFromCallout({
       studentId,
       classId,
       teacherId: schedule.openedBy,
-      status: AbsentStasuses.ABSENT,
+      status,
       time: new Date(),
     }
 
-    await addDoc(studentLogsRef, newLog);
+    if (studentLogId) {
+      const studentLogRef = doc(firestore, studentLogsRef.path, studentLogId);
+      await updateDoc(studentLogRef, newLog);
+    } else {
+      await addDoc(studentLogsRef, newLog);
+    }
   }
 
+}
+
+export async function studentExcuseStatusChange({
+  scheduleId,
+  classId,
+  schoolId,
+  studentLogId,
+  excuseStatus
+}: {
+  scheduleId: string,
+  classId: string,
+  schoolId: string,
+  studentLogId: string,
+  excuseStatus: ExcuseStatuses
+}) {
+  const studentLogRef = doc(
+    firestore, 
+    "schools", 
+    schoolId, 
+    "classes", 
+    classId, 
+    "schedules", 
+    scheduleId, 
+    "studentLogs", 
+    studentLogId
+  );
+
+  const studentLogSnap = await getDoc(studentLogRef);
+  const studentLog = studentLogSnap.data();
+  const newStudentLog = { ...studentLog, excuseStatus };
+  await updateDoc(studentLogRef, newStudentLog);
 }

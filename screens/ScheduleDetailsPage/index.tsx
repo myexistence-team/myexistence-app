@@ -194,6 +194,18 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       </MEButton>
                     ) : null
                   }
+                  <MEButton
+                    size='lg'
+                    variant='outline'
+                    style={{
+                      marginTop: 8
+                    }}
+                    onPress={() => navigation.navigate('ExcusePage', {
+                      classId, scheduleId
+                    })}
+                  >
+                    Izin
+                  </MEButton>
                 </>
               ) : (
                 <>

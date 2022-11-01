@@ -16,3 +16,9 @@ export enum ExcuseTypeEnum {
   SICK = 'Sakit',
   OTHER = 'Lain',
 }
+
+export enum ExcuseStatusesEnum {
+  WAITING = 'Menunggu Perizinan 🕒',
+  ACCEPTED = 'Diterima ✅',
+  REJECTED = 'Ditolak ❌',
+}

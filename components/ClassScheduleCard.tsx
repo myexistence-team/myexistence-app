@@ -105,6 +105,12 @@ export default function ClassScheduleCard({
               <MEButton
                 color='primary'
                 variant='outline'
+                onPress={() => {
+                  navigation.navigate("ExcusePage", {
+                    classId: schedule.classId,
+                    scheduleId: schedule.id
+                  })
+                }}
               >
                   Izin
               </MEButton>
