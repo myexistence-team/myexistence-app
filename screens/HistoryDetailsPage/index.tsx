@@ -13,7 +13,7 @@ import { textStyles } from '../../constants/Styles';
 import { DAYS_ARRAY, AbsentStasuses } from '../../constants/constants';
 import moment from 'moment';
 import Colors from '../../constants/Colors';
-import { PresenceStatusEnum } from '../../enums';
+import { ExcuseStatusesEnum, PresenceStatusEnum } from '../../enums';
 import MEPressableText from '../../components/MEPressableText';
 import { getStatusColor } from '../../utils/utilFunctions';
 
@@ -176,6 +176,19 @@ export default function HistoryDetailsPage({
                   {PresenceStatusEnum[log.status]}
                 </Text>
               </View>
+              {
+                log.status === AbsentStasuses.EXCUSED && (
+                  <View style={{ flex: 1 }}>
+                    <Text style={textStyles.body2}>Status Perizinan</Text>
+                    <Text style={[textStyles.body1, { 
+                      fontFamily: 'manrope-bold', 
+                      marginBottom: 16,
+                    }]}>
+                      {ExcuseStatusesEnum[log.excuseStatus]}
+                    </Text>
+                  </View>
+                )
+              }
               {
                 (log.status === AbsentStasuses.PRESENT || log.status === AbsentStasuses.LATE) && (
                   <View style={{ flex: 1 }}>
