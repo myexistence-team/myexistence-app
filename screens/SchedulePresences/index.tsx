@@ -190,6 +190,8 @@ export default function SchedulePresences({
                     navigation.navigate('SchedulePresenceDetails', {
                       logId: studentLogs[s.id].id,
                       isStudentLog: true,
+                      scheduleId,
+                      classId,
                       presence: {
                         studentName: s.displayName,
                         className: classroom.name,

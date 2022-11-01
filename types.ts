@@ -65,6 +65,10 @@ export type Log = {
     closedAt: Timestamp,
     tolerance: number,
   },
+  excuse?: {
+    proofUrl: string,
+    reason: string,
+  },
   studentId: string,
   teacherId: string,
   classId: string,

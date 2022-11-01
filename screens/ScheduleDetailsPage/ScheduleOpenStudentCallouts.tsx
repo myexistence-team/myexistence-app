@@ -1,9 +1,11 @@
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { collection, documentId, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react'
 import { Image, Modal, Pressable, Text, View } from 'react-native';
 import { createUpdateStudentPresenceFromCallout, studentExcuseStatusChange } from '../../actions/scheduleActions';
 import MEButton from '../../components/MEButton';
+import MEPressableText from '../../components/MEPressableText';
 import MESpinner from '../../components/MESpinner';
 import Colors from '../../constants/Colors';
 import { AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
@@ -21,6 +23,7 @@ export default function ScheduleOpenStudentCallouts({
   scheduleId: string,
   classId: string,
 }) {
+  const navigation = useNavigation();
   const [students, setStudents] = useState<any[]>([]);
   const [studentLogsState, setStudentLogs] = useState<any[]>([]);
   const { profile } = useContext(ProfileContext);
@@ -108,13 +111,24 @@ export default function ScheduleOpenStudentCallouts({
         marginBottom: 16
       }}
     >
-      {
-        currentIdx < students.length && (
-          <Text style={[textStyles.body1, { marginBottom: 16 }]}>
-            {currentIdx + 1}/{students.length}
-          </Text>
-        )
-      }
+      <MEPressableText 
+        onPress={() => {
+          navigation.navigate('Root', {
+            screen: 'SchedulesPage',
+            params: {
+              screen: 'SchedulePresences',
+              params: {
+                scheduleId,
+                classId
+              },  
+              initial: false
+            }
+          })
+        }}
+        style={[textStyles.body1, { marginBottom: 16 }]}
+      >
+        {currentIdx + 1}/{students.length}
+      </MEPressableText>
       {
         students.length === 0 ? (
           <MESpinner/>

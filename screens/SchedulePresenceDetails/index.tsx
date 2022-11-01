@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ScheduleParamList } from '../../navTypes'
 import MEContainer from '../../components/MEContainer';
@@ -8,18 +8,25 @@ import { textStyles } from '../../constants/Styles';
 import moment from 'moment';
 import { getStatusColor } from '../../utils/utilFunctions';
 import { PresenceStatusEnum } from '../../enums';
-import { AbsentStasuses } from '../../constants/constants';
+import { AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
 import MEButton from '../../components/MEButton';
+import { studentExcuseStatusChange } from '../../actions/scheduleActions';
+import { ProfileContext } from '../../contexts';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { firestore } from '../../firebase';
 
 export default function SchedulePresenceDetails({
   route: {
     params: {
       logId,
+      classId,
+      scheduleId,
       isStudentLog,
       presence: presenceProp
     }
   }
 }: NativeStackScreenProps<ScheduleParamList, "SchedulePresenceDetails">) {
+  const { profile } = useContext(ProfileContext);
   const [presence, setPresence] = useState<any>(presenceProp)
   const {
     className,
@@ -28,20 +35,48 @@ export default function SchedulePresenceDetails({
     status,
     studentName,
     time,
-    excuse
+    excuse,
+    excuseStatus
   } = presence;
 
-  const [isLoading, setIsLoading] = useState(false);
+  const studentLogRef = doc(
+    firestore, 
+    'schools',
+    profile.schoolId,
+    'classes',
+    classId,
+    'schedules',
+    scheduleId,
+    'studentLogs',
+    logId
+  );
   function loadData() {
-    setIsLoading(true);
-    setIsLoading(false);
+    if (logId) {
+      onSnapshot(studentLogRef, (doc) => {
+        setPresence((prev: any) => ({ ...prev, ...doc.data(), id: doc.id }));
+      })
+    }
   }
 
   useEffect(() => {
-    if (!presence) {
-      loadData();
-    }
-  }, [presence])
+    loadData();
+    // if (!presence) {
+    // }
+  }, [])
+
+  const [excuseStatusLoading, setExcuseStatusLoading] = useState<any>(null);
+
+  async function handleExcuseStatusChange(excuseStatus: ExcuseStatuses) {
+    setExcuseStatusLoading(excuseStatus);
+    await studentExcuseStatusChange({
+      scheduleId, 
+      classId: presence.classId, 
+      schoolId: profile.schoolId,
+      studentLogId: logId,
+      excuseStatus,
+    })
+    setExcuseStatusLoading(null);
+  }
 
   return (
     <MEContainer>
@@ -104,12 +139,23 @@ export default function SchedulePresenceDetails({
             />
             <View style={{ flexDirection: 'row', marginTop: 16 }}>
               <View style={{ flex: 1, marginRight: 16 }}>
-                <MEButton variant='outline' color='danger'>
+                <MEButton 
+                  color='danger'
+                  variant={excuseStatus !== ExcuseStatuses.REJECTED ? 'outline' : undefined}
+                  iconStart={excuseStatus === ExcuseStatuses.REJECTED ? 'check' : undefined}
+                  isLoading={excuseStatusLoading === ExcuseStatuses.REJECTED}
+                  onPress={() => handleExcuseStatusChange(ExcuseStatuses.REJECTED)}
+                >
                   Tolak
                 </MEButton>
               </View>
               <View style={{ flex: 1 }}>
-                <MEButton>
+                <MEButton 
+                  variant={excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
+                  iconStart={excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
+                  isLoading={excuseStatusLoading === ExcuseStatuses.ACCEPTED}
+                  onPress={() => handleExcuseStatusChange(ExcuseStatuses.ACCEPTED)}
+                >
                   Terima
                 </MEButton>
               </View>
