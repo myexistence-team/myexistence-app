@@ -150,19 +150,25 @@ export default function HistoryDetailsPage({
               {log.schedule.tolerance} Menit
             </Text>
 
-            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sesi Kelas</Text>
-            <Text style={textStyles.body2}>Guru</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {teacher?.displayName}
-            </Text>
-            <View style={{ flexDirection: 'row' }}>
-              <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Tanggal Dibuka</Text>
-                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(log.schedule.openedAt.toDate()).format("LL HH:mm")}
-                </Text>
-              </View>
-            </View>
+            {
+              log.schedule.openedAt && log.schedule.teacherId && (
+                <>
+                  <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sesi Kelas</Text>
+                  <Text style={textStyles.body2}>Guru</Text>
+                  <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                    {teacher?.displayName}
+                  </Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <View style={{ flex: 1 }}>
+                      <Text style={textStyles.body2}>Tanggal Dibuka</Text>
+                      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                        {moment(log.schedule.openedAt.toDate()).format("LL HH:mm")}
+                      </Text>
+                    </View>
+                  </View> 
+                </>
+              )
+            }
 
             <Text style={[textStyles.heading4, { marginBottom: 16, marginTop: 24 }]}>Kehadiran Anda</Text>
             <View style={{ flexDirection: 'row' }}>

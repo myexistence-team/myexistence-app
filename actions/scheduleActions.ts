@@ -147,11 +147,11 @@ export async function createExcuseRequest(
         start: schedule.start,
         end: schedule.end,
         tolerance: schedule.tolerance,
-        openedAt: schedule.openedAt,
+        ...schedule.openedAt ? { openedAt: schedule.openedAt } : {}
       },
       studentId,
       classId,
-      teacherId: schedule.openedBy,
+      ...schedule.openedBy ? {teacherId: schedule.openedBy} : {},
       status: AbsentStasuses.EXCUSED,
       time: new Date(),
       excuse: {
@@ -162,9 +162,11 @@ export async function createExcuseRequest(
       excuseStatus: ExcuseStatuses.WAITING
     }
     await addDoc(studentLogsRef, payload);
-    await updateDoc(userRef, {
-      currentScheduleId: scheduleId
-    })
+    if (schedule.openedAt && schedule.openedBy) {
+      await updateDoc(userRef, {
+        currentScheduleId: scheduleId
+      })
+    }
   } else {
     throw new FirebaseError(
       SchedulesError.SCHDEULE_NOT_FOUND,

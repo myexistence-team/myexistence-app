@@ -66,11 +66,13 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
       } else {
         setCurrentSchedule(null);
       }
+      const todayInt = (new Date()).getDay();
       const schedulesQuery = query(
         collectionGroup(firestore, 'schedules'), 
         where('classId', 'in', profile.classIds),
-        where('end', '>', nowScheduleDate),
-        orderBy('end', 'desc'),
+        where('day', '>=', todayInt),
+        orderBy('day', 'asc'),
+        orderBy('start', 'asc'),
         limit(excludedScheduleId ? 6 : 5),
       );
       const classesQuery = query(collection(
@@ -82,6 +84,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         firestore, 
         `schools/${profile.schoolId}/logs`),
         where('studentId', '==', auth.uid),
+        orderBy('time', 'desc'),
         limit(5)
       );
 

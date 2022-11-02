@@ -127,7 +127,7 @@ export default function ScheduleOpenStudentCallouts({
         }}
         style={[textStyles.body1, { marginBottom: 16 }]}
       >
-        {currentIdx + 1}/{students.length}
+        {Math.min(currentIdx + 1, students.length)}/{students.length}
       </MEPressableText>
       {
         students.length === 0 ? (

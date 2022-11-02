@@ -28,7 +28,8 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
   const scheduleQuery = query(collection(
     firestore, 
     `schools/${profile.schoolId}/classes/${ classId }/schedules`),
-    orderBy('start')
+    orderBy('day'),
+    orderBy('start'),
   )
 
   const classQuery = query(collection(

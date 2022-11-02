@@ -6,7 +6,7 @@ import { Text } from "react-native";
 import { textStyles } from "../../constants/Styles";
 import { Log, Profile } from "../../types";
 import { AuthContext, ProfileContext } from "../../contexts";
-import { collection, collectionGroup, getDocs, query, where } from "firebase/firestore";
+import { collection, collectionGroup, getDocs, orderBy, query, where } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import MESpinner from "../../components/MESpinner";
 import HistoryCard from "../../components/HistoryCard";
@@ -49,6 +49,7 @@ export function History() {
     firestore, 
     `schools/${profile.schoolId}/logs`),
     where('studentId', '==', auth.uid),
+    orderBy('time', 'desc')
   );
 
   
@@ -100,6 +101,8 @@ export function History() {
             })
           }
         })
+      } else {
+        setCurrentLogs([]);
       }
     } else {
       setIsLoading(false);
