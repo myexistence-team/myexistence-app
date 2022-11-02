@@ -14,8 +14,8 @@ import { getStatusColor } from "../utils/utilFunctions";
 import MECard from "./MECard";
 import { View } from "./Themed";
 
-export default function HistoryCard(props: { history: Log }) {
-  const { history } = props;
+export default function HistoryCard(props: { history: Log, clickable: boolean }) {
+  const { history, clickable = true } = props;
   const navigation = useNavigation();
   const [className, setClassName] = useState<string | null>(null);
   const { profile }: { profile: Profile } = useContext(ProfileContext);
@@ -42,7 +42,7 @@ export default function HistoryCard(props: { history: Log }) {
       style={{
         marginBottom: 16,
       }}
-      onPress={() => {
+      onPress={!clickable ? undefined : () => {
         navigation.navigate("Root", {
           screen: "HistoryPage",
           params: {

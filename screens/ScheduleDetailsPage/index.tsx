@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { ScheduleScreenProps } from '../../navTypes'
 import { textStyles } from '../../constants/Styles'
@@ -7,7 +7,7 @@ import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { collection, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import { AuthContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
@@ -17,6 +17,7 @@ import { closeSchedule, openSchedule } from '../../actions/scheduleActions'
 import MEPressableText from '../../components/MEPressableText'
 import ScheduleOpenQRCode from './ScheduleOpenQRCode'
 import ScheduleOpenStudentCallouts from './ScheduleOpenStudentCallouts'
+import HistoryCard from '../../components/HistoryCard'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -28,10 +29,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const [qrCode, setQRCode] = useState<any>(null);
   const [absentCount, setAbsentCount] = useState(0);
   const [studentIds, setStudentIds] = useState<string[]>([]);
+  const [studentLogs, setStudentLogs] = useState<any[]>([]);
 
   function loadData() {
     setSchedule(null);
-    onSnapshot(doc(
+    const scheduleRef = doc(
       firestore, 
       'schools', 
       profile.schoolId,
@@ -39,7 +41,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       classId,
       'schedules',
       scheduleId
-    ), (scheduleSnap) => {
+    );
+    onSnapshot(scheduleRef, (scheduleSnap) => {
       if (scheduleSnap.exists()) {
         getDoc(doc(
           firestore, 
@@ -59,7 +62,14 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         })
       }
     })
+    const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
+    const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
+    onSnapshot(studentLogsQuery, (docs) => {
+      setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    });
   } 
+
+  console.log(studentLogs);
 
   function loadQRCodes() {
     const schedulePath = [
@@ -176,9 +186,30 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             </Text>
             {
               profile.role === ProfileRoles.STUDENT ? (
-                <>                
+                <>
                   {
-                    schedule.status === ScheduleStasuses.OPENED ? (
+                    studentLogs.length > 0 ? studentLogs.map((studentLog, slIdx) => (
+                      <HistoryCard
+                        history={studentLog}
+                        key={slIdx}
+                      />
+                    )) : (
+                      <MEButton
+                        size='lg'
+                        variant='outline'
+                        style={{
+                          marginTop: 8
+                        }}
+                        onPress={() => navigation.navigate('ExcusePage', {
+                          classId, scheduleId
+                        })}
+                      >
+                        Izin
+                      </MEButton>
+                    )
+                  }                
+                  {
+                    schedule.status === ScheduleStasuses.OPENED && (
                       <MEButton
                       iconStart="qrcode"
                       size='lg'
@@ -192,20 +223,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       >
                         Pindai QR Code
                       </MEButton>
-                    ) : null
+                    )
                   }
-                  <MEButton
-                    size='lg'
-                    variant='outline'
-                    style={{
-                      marginTop: 8
-                    }}
-                    onPress={() => navigation.navigate('ExcusePage', {
-                      classId, scheduleId
-                    })}
-                  >
-                    Izin
-                  </MEButton>
                 </>
               ) : (
                 <>
