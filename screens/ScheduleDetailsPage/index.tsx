@@ -42,7 +42,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       'schedules',
       scheduleId
     );
-    onSnapshot(scheduleRef, (scheduleSnap) => {
+    const unsubSchedule = onSnapshot(scheduleRef, (scheduleSnap) => {
       if (scheduleSnap.exists()) {
         getDoc(doc(
           firestore, 
@@ -64,12 +64,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     })
     const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
     const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
-    onSnapshot(studentLogsQuery, (docs) => {
+    const unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
       setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
+    return { unsubSchedule, unsubStudentLogs };
   } 
-
-  console.log(studentLogs);
 
   function loadQRCodes() {
     const schedulePath = [
@@ -79,7 +78,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       'schedules',
       scheduleId,
     ];
-    onSnapshot(
+    return onSnapshot(
       query(
         collection(
           firestore, 
@@ -104,7 +103,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   useEffect(() => {
     if (schedule) {
       if (schedule.status === ScheduleStasuses.OPENED) {
-        loadQRCodes();
+        const unsubQRCodes = loadQRCodes();
+        return () => unsubQRCodes();
       } else {
         setQRCode(null);
       }
@@ -112,7 +112,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   }, [schedule])
 
   useEffect(() => {
-    loadData();
+    const { unsubSchedule, unsubStudentLogs } = loadData();
+    return () => {
+      unsubSchedule();
+      unsubStudentLogs();
+    }
   }, [])
 
   const [changingStatus, setChangingStatus] = useState<any>(null);

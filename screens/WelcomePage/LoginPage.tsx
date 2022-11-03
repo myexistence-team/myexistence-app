@@ -34,8 +34,6 @@ export default function LoginPage(props: any) {
       // })
       .catch((error: FirebaseError) => {
         alert(error.message);
-      })
-      .finally(() => {
         setIsSubmitting(false);
       })
   }

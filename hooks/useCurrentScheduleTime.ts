@@ -9,12 +9,13 @@ export default function useCurrentScheduleTime() {
   const [time, setTime] = useState(nowScheduleDate);
 
   useEffect(() => {
-    setInterval(() => {
+    const timer = setInterval(() => {
       setTime((prev) => {
         prev.setSeconds(prev.getSeconds() + 1)
         return prev;
       });
     }, 1000)
+    return () => clearInterval(timer);
   }, [])
 
   return time;

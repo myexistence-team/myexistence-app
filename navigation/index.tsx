@@ -65,7 +65,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 
   React.useEffect(() => {
     if (auth && auth.uid) {
-      onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
+      const unsubscrubeProfile = onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
         if (docSnap.exists()) {
           const profile = docSnap.data();
           setProfile({
@@ -77,30 +77,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           setIsInitializing(false);
         }
       })
-      // getDoc(doc(firestore, 'users', auth.uid))
-      // .then((docSnap: DocumentSnapshot) => {
-      //   if (docSnap.exists()) {
-      //     const profile = docSnap.data();
-      //     getDoc(doc(firestore, 'schools', profile.schoolId))
-      //       .then((schoolSnap: DocumentSnapshot) => {
-      //         setProfile(profile);
-      //         setSchool(schoolSnap.data());
-      //       })
-      //   }
-      // })
-      // .catch((e: FirestoreError) => {
-      //   var message: string = '';
-      //   switch (e.code) {
-      //     case 'resource-exhausted':
-      //       message = 'Kuota Anda sudah habis. Mohon coba lagi nanti.'
-      //     default:
-      //       message = 'Terjadi kesalahan. Mohon coba lagi nanti.'
-      //   }
-      //   Alert.alert(
-      //     "Oops!",
-      //     message
-      //   )
-      // })
+      return () => unsubscrubeProfile();
     } else {
       setProfile(null);
     }
@@ -108,7 +85,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 
   React.useEffect(() => {
     if (profile && profile.schoolId) {
-      onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
+      const unsubProfile = onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
         if (docSnap.exists()) {
           const school = docSnap.data();
           setSchool({
@@ -120,6 +97,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           setSchool(null);
         }
       })
+      return () => unsubProfile();
     } else {
       setSchool(null);
     }

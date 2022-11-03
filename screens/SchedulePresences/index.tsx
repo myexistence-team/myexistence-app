@@ -73,7 +73,7 @@ export default function SchedulePresences({
         })
       }
     });
-    onSnapshot(collection(
+    return onSnapshot(collection(
       firestore,
       'schools',
       profile.schoolId,
@@ -98,7 +98,8 @@ export default function SchedulePresences({
   const absentCount = Math.max(0, students.length - presentCount - lateCount - excusedCount);
 
   useEffect(() => {
-    loadData();
+    const unsub = loadData();
+    return () => unsub();
   }, [])
 
   function handleChangeStatus(stat: string) {

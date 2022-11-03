@@ -53,16 +53,16 @@ export default function SchedulePresenceDetails({
   );
   function loadData() {
     if (logId) {
-      onSnapshot(studentLogRef, (doc) => {
+      const unsubLog = onSnapshot(studentLogRef, (doc) => {
         setPresence((prev: any) => ({ ...prev, ...doc.data(), id: doc.id }));
       })
+      return unsubLog;
     }
   }
 
   useEffect(() => {
-    loadData();
-    // if (!presence) {
-    // }
+    const unsub = loadData();
+    if (unsub) return () => unsub();
   }, [])
 
   const [excuseStatusLoading, setExcuseStatusLoading] = useState<any>(null);

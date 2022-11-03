@@ -34,13 +34,7 @@ export default function ScheduleOpenStudentCallouts({
   );
   const studentLogsRef = collection(firestore, "schools", profile.schoolId, "classes", classId, "schedules", scheduleId, "studentLogs");
 
-  async function loadData() {
-    onSnapshot(studentLogsRef, (docs) => {
-      setStudentLogs(docs.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id
-      })));
-    })
+  function loadData() {
     getDocs(studentsQuery).then((docs) => {
       setStudents(docs.docs.map((doc) => ({
         ...doc.data(),
@@ -48,8 +42,16 @@ export default function ScheduleOpenStudentCallouts({
       })))
     })
   }
+
   useEffect(() => {
     loadData();
+    const unsub = onSnapshot(studentLogsRef, (docs) => {
+      setStudentLogs(docs.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id
+      })));
+    })
+    return () => unsub();
   }, []);
   
   const studentLogs = studentLogsState.filter((sl) => sl.excuseStatus !== ExcuseStatuses.WAITING);
