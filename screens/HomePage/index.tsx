@@ -158,10 +158,17 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         }}
       >
         <Text style={[textStyles.heading4, { color: 'white' }]} >Selamat Datang!</Text>
-        <MECard style={{
-          marginTop: 16,
-          marginBottom: 32,
-        }}>
+        <MECard 
+          style={{
+            marginTop: 16,
+            marginBottom: 32,
+          }}
+          onPress={() => {
+            navigation.navigate('Root', {
+              screen: 'ProfilePage',
+            })
+          }}
+        >
           <View style={{
             flexDirection: 'row',         
           }}>
