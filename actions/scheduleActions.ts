@@ -50,8 +50,9 @@ export async function createPresenceInSchedule(
         start: schedule.start,
         end: schedule.end,
         tolerance: schedule.tolerance,
-        openedAt: schedule.openedAt,
+        openedAt: schedule.openedAt || null,
       },
+      scheduleId: scheduleSnap.id,
       studentId,
       classId,
       teacherId: schedule.openedBy,
@@ -149,6 +150,7 @@ export async function createExcuseRequest(
         tolerance: schedule.tolerance,
         ...schedule.openedAt ? { openedAt: schedule.openedAt } : {}
       },
+      scheduleId: scheduleSnap.id,
       studentId,
       classId,
       ...schedule.openedBy ? {teacherId: schedule.openedBy} : {},
@@ -337,6 +339,7 @@ export async function closeSchedule(
               tolerance: schedule.tolerance,
               openedAt: schedule.openedAt,
             },
+            scheduleId: scheduleSnap.id,
             studentId,
             classId,
             teacherId: schedule.openedBy,
@@ -377,8 +380,8 @@ export async function createUpdateStudentPresenceFromCallout({
   const scheduleRef = doc(firestore, "schools", schoolId, "classes", classId, "schedules", scheduleId);
   const studentLogsRef = collection(firestore, scheduleRef.path, "studentLogs");
 
-  const scheduleDoc = await getDoc(scheduleRef);
-  const schedule = scheduleDoc.data();
+  const scheduleSnap = await getDoc(scheduleRef);
+  const schedule = scheduleSnap.data();
 
   if (schedule) {
     const newLog = {
@@ -388,6 +391,7 @@ export async function createUpdateStudentPresenceFromCallout({
         tolerance: schedule.tolerance,
         openedAt: schedule.openedAt,
       },
+      scheduleId: scheduleSnap.id,
       studentId,
       classId,
       teacherId: schedule.openedBy,
