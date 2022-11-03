@@ -8,7 +8,7 @@ import {
   Auth,
   getAuth,
   onAuthStateChanged,
-  UserCredential,
+  User,
   // FacebookAuthProvider,
   // signInWithCredential,
 } from 'firebase/auth';
@@ -29,9 +29,9 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../nav
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
 import { app } from '../firebase';
-import { ProfileContext, SchoolContext, AuthContext } from '../contexts';
+import { ProfileContext, SchoolContext, AuthContext, ClassesContext } from '../contexts';
 import { useContext } from 'react';
-import { getFirestore, doc, Firestore, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, Firestore, onSnapshot, collection } from 'firebase/firestore';
 import { Profile } from '../types';
 import RegisterAccount from '../screens/WelcomePage/RegisterAccount';
 import MESpinner from '../components/MESpinner';
@@ -48,6 +48,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [auth, setAuth] = React.useState<any>(null);
   const [profile, setProfile] = React.useState<any>(null);
   const [school, setSchool] = React.useState<any>(null);
+  const [classes, setClasses] = React.useState<any[]>([]);
   
   React.useEffect(() => {
     const unsubAuth = onAuthStateChanged(fbAuth, user => {
@@ -83,7 +84,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       setProfile(null);
     }
   }, [auth])
-
+  
   React.useEffect(() => {
     if (profile && profile.schoolId) {
       const unsubProfile = onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
@@ -98,7 +99,17 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           setSchool(null);
         }
       })
-      return () => unsubProfile();
+      const unsubClasses = onSnapshot(collection(firestore, 'schools', profile.schoolId, 'classes'), (snaps) => {
+        if (!snaps.empty) {
+          setClasses(snaps.docs.map((doc) => ({ ...doc.data(), id: doc.id })))
+        } else {
+          setClasses([]);
+        }
+      })
+      return () => {
+        unsubProfile();
+        unsubClasses();
+      };
     } else {
       setSchool(null);
     }
@@ -122,11 +133,13 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     <AuthContext.Provider value={{ auth, setAuth }}>
       <ProfileContext.Provider value={{ profile, setProfile }}>
         <SchoolContext.Provider value={{ school, setSchool }}>
-          <NavigationContainer
-            linking={LinkingConfiguration}
-            theme={METheme}>
-            <RootNavigator/>
-          </NavigationContainer>
+          <ClassesContext.Provider value={{ classes, setClasses }}>
+            <NavigationContainer
+              linking={LinkingConfiguration}
+              theme={METheme}>
+              <RootNavigator/>
+            </NavigationContainer>
+          </ClassesContext.Provider>
         </SchoolContext.Provider>
       </ProfileContext.Provider>
     </AuthContext.Provider>
@@ -140,7 +153,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator(props: any) {
-  const { auth }: { auth: UserCredential } = useContext(AuthContext);
+  const { auth }: { auth: User } = useContext(AuthContext);
   const { profile }: { profile: Profile } = useContext(ProfileContext);
 
   return (

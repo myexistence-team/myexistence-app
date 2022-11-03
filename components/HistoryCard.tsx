@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Text } from "react-native";
 import Colors from "../constants/Colors";
 import { textStyles } from "../constants/Styles";
-import { ProfileContext } from "../contexts";
+import { ClassesContext, ProfileContext } from "../contexts";
 import { PresenceStatusEnum } from "../enums";
 import { firestore } from "../firebase";
 import { Log, Profile } from "../types";
@@ -14,28 +14,29 @@ import { getStatusColor } from "../utils/utilFunctions";
 import MECard from "./MECard";
 import { View } from "./Themed";
 
-export default function HistoryCard(props: { history: Log, clickable: boolean }) {
+export default function HistoryCard(props: { history: Log, clickable?: boolean }) {
   const { history, clickable = true } = props;
   const navigation = useNavigation();
-  const [className, setClassName] = useState<string | null>(null);
   const { profile }: { profile: Profile } = useContext(ProfileContext);
+  const { classes } = useContext(ClassesContext);
+  const { name: className } = classes.find((c) => c.id === history.classId);
 
-  function loadClassData() {
-    getDoc(doc(
-      firestore, 
-      `schools/${profile.schoolId}/classes/${history.classId}`
-    )).then((docSnap) => {
-      if (docSnap.exists()) {
-        setClassName(docSnap.data().name)
-      } else {
-        setClassName('Kelas Tidak Ditemukan')
-      }
-    })
-  }
+  // function loadClassData() {
+  //   getDoc(doc(
+  //     firestore, 
+  //     `schools/${profile.schoolId}/classes/${history.classId}`
+  //   )).then((docSnap) => {
+  //     if (docSnap.exists()) {
+  //       setClassName(docSnap.data().name)
+  //     } else {
+  //       setClassName('Kelas Tidak Ditemukan')
+  //     }
+  //   })
+  // }
 
-  useEffect(() => {
-    loadClassData();
-  }, []);
+  // useEffect(() => {
+  //   loadClassData();
+  // }, []);
 
   return (
     <MECard
