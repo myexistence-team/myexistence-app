@@ -244,13 +244,18 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       classId={classId}
                       absentCount={absentCount}
                       studentCount={studentIds.length}
-                    /> : studentIds.length ? (
+                    /> : studentIds.length > 0 && (
                       <ScheduleOpenStudentCallouts
                         studentIds={studentIds}
                         scheduleId={scheduleId}
                         classId={classId}
                       />  
-                    ) : null : null
+                    ) : null
+                  }
+                  {
+                    schedule.status === ScheduleStasuses.CLOSED && (
+                      <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
+                    )
                   }
                   <MEButton
                     size='lg'
@@ -259,8 +264,9 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                     }}
                     onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
                     isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
+                    iconStart={schedule.status === ScheduleStasuses.CLOSED ? 'qrcode' : 'window-close'}
                   >
-                    { schedule.status === ScheduleStasuses.CLOSED ? 'Buka Kelas' : 'Tutup Kelas' }
+                    { schedule.status === ScheduleStasuses.CLOSED ? 'QR Code' : 'Tutup Kelas' }
                   </MEButton>
                   {
                     schedule.status !== ScheduleStasuses.OPENED && (
@@ -268,6 +274,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                         size='lg'
                         onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.CALLOUT)}
                         isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
+                        iconStart='hand-paper'
                       >
                         Panggil Pelajar
                       </MEButton>
