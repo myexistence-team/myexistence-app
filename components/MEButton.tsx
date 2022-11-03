@@ -147,7 +147,7 @@ export default function MEButton(props: PressableProps & {
           } : {},
           style,
         ])}
-        disabled={disabled}
+        disabled={disabled || isLoading}
         android_ripple={{
           color: 'white'
         }}
