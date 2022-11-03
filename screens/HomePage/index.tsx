@@ -42,10 +42,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         getDocs(currentScheduleQuery)
         .then((docs) => {
           const schedule: any = docs.docs[0].data();
-          if (
-            schedule.end.toDate().getTime() < nowScheduleDate.getTime()
-            || schedule.status === ScheduleStasuses.CLOSED
-          ) {
+          if (schedule.status === ScheduleStasuses.CLOSED) {
             updateDoc(doc(firestore, 'users', profile.id), {
               currentScheduleId: null
             })

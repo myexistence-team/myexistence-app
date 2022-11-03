@@ -235,12 +235,12 @@ export async function openSchedule(
         openedBy: teacherId
       }
     )
+
+    console.log("SCHEDULEID" ,scheduleId);
     
-    await updateDoc(
-      doc(firestore, 'users', teacherId), {
-        currentScheduleId: scheduleId
-      }
-    )
+    await updateDoc(doc(firestore, 'users', teacherId), {
+      currentScheduleId: scheduleId
+    })
   } else {
     throw new FirebaseError(
       SchedulesError.SCHDEULE_NOT_FOUND,
@@ -255,6 +255,7 @@ export async function closeSchedule(
   scheduleId: string,
   teacherId: string
 ) {
+  console.log("CLOSE SCHED")
   const schedulePath = [
     schoolId,
     'classes',

@@ -49,9 +49,10 @@ export type Schedule = BaseType & {
 export type Class = BaseType & {
   className: string,
   classDescription: string,
-  name?: string
+  name?: string,
+  description?: string,
   // teacherIds: string[],
-  // studentsIds: string[],
+  studentIds: string[],
   // schedules: DocumentReference[]
   
 }

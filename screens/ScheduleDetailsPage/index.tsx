@@ -7,9 +7,9 @@ import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { collection, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, DocumentReference, getDoc, getDocs, limit, onSnapshot, query, Unsubscribe, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { AuthContext, ProfileContext } from '../../contexts'
+import { AuthContext, ClassesContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
 import { DAYS_ARRAY, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
@@ -24,6 +24,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const navigation = useNavigation();
 
   const { profile } = useContext(ProfileContext);
+  const { classes } = useContext(ClassesContext);
   const { auth } = useContext(AuthContext);
   const [schedule, setSchedule] = useState<Schedule | any>(null);
   const [qrCode, setQRCode] = useState<any>(null);
@@ -33,40 +34,35 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   function loadData() {
     setSchedule(null);
-    const scheduleRef = doc(
-      firestore, 
-      'schools', 
-      profile.schoolId,
-      'classes',
-      classId,
-      'schedules',
-      scheduleId
-    );
-    const unsubSchedule = onSnapshot(scheduleRef, (scheduleSnap) => {
-      if (scheduleSnap.exists()) {
-        getDoc(doc(
-          firestore, 
-          'schools', 
-          profile.schoolId,
-          'classes',
-          classId
-        )).then((classSnap) => {
-          if (classSnap.exists()) {
-            setSchedule({
-              ...scheduleSnap.data(),
-              className: classSnap.data().name,
-              classDescription: classSnap.data().description,
-            });
-            setStudentIds(classSnap.data().studentIds || []);
-          }
-        })
+    const schedulesQuery = query(
+      collectionGroup(firestore, 'schedules'),
+      where('id', '==', scheduleId),
+      limit(1)
+    )
+    var scheduleRef: DocumentReference | null = null;
+    const unsubSchedule = onSnapshot(schedulesQuery, (scheduleSnaps) => {
+      if (!scheduleSnaps.empty) {
+        const scheduleData = scheduleSnaps.docs[0].data();
+        scheduleRef = scheduleSnaps.docs[0].ref;
+        const classObj = classes?.find((c) => c.id === scheduleData.classId)
+        if (classObj) {
+          setSchedule({
+            ...scheduleData,
+            className: classObj.name,
+            classDescription: classObj.description,
+          });
+          setStudentIds(classObj.studentIds || []);
+        }
       }
     })
-    const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
-    const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
-    const unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
-      setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    });
+    var unsubStudentLogs: Unsubscribe | null = null;
+    if (scheduleRef) {
+      const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
+      const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
+      unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
+        setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      });
+    }
     return { unsubSchedule, unsubStudentLogs };
   } 
 
@@ -114,10 +110,10 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   useEffect(() => {
     const { unsubSchedule, unsubStudentLogs } = loadData();
     return () => {
-      unsubSchedule();
-      unsubStudentLogs();
+      if (unsubSchedule) unsubSchedule();
+      if (unsubStudentLogs) unsubStudentLogs();
     }
-  }, [])
+  }, [scheduleId])
 
   const [changingStatus, setChangingStatus] = useState<any>(null);
   function handleOpenOrCloseClass(openMethod: ScheduleOpenMethods) {
@@ -189,95 +185,122 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.tolerance} Menit
             </Text>
             {
-              profile.role === ProfileRoles.STUDENT ? (
+              profile.currentScheduleId && scheduleId !== profile.currentScheduleId ? (
                 <>
-                  {
-                    studentLogs.length > 0 ? studentLogs.map((studentLog, slIdx) => (
-                      <HistoryCard
-                        history={studentLog}
-                        key={slIdx}
-                        clickable={false}
-                      />
-                    )) : (
-                      <>                      
-                        {
-                          schedule.status === ScheduleStasuses.OPENED && (
-                            <MEButton
-                            iconStart="qrcode"
-                            size='lg'
-                            style={{
-                              marginTop: 8
-                            }}
-                            onPress={() => navigation.navigate('Scanner', {
-                              scheduleId: schedule.id,
-                              schedule
-                            })}
-                            >
-                              Pindai QR Code
-                            </MEButton>
-                          )
-                        }
-                        <MEButton
-                          size='lg'
-                          variant='outline'
-                          style={{
-                            marginTop: 8
-                          }}
-                          onPress={() => navigation.navigate('ExcusePage', {
-                            classId, scheduleId
-                          })}
-                        >
-                          Izin
-                        </MEButton>
-                      </>
-                    )
-                  }                
+                  <Text style={[textStyles.body1, { textAlign: 'center', marginBottom: 8 }]}>Anda sudah membuka kelas</Text>
+                  <MEPressableText 
+                    style={[textStyles.body1, { textAlign: 'center' }]}
+                    onPress={() => {
+                      navigation.navigate('Root', {
+                        screen: 'SchedulesPage',
+                        params: {
+                          screen: 'ScheduleDetails',
+                          params: {
+                            classId,
+                            scheduleId: profile.currentScheduleId || '',
+                          },
+                          initial: false
+                        },
+                        initial: false
+                      })
+                    }}
+                  >Lihat Jadwal</MEPressableText>
                 </>
               ) : (
                 <>
                   {
-                    (schedule.status === ScheduleStasuses.OPENED)
-                    ? schedule.openMethod === ScheduleOpenMethods.QR_CODE 
-                    ? <ScheduleOpenQRCode
-                      qrCode={qrCode}
-                      scheduleId={scheduleId}
-                      classId={classId}
-                      absentCount={absentCount}
-                      studentCount={studentIds.length}
-                    /> : studentIds.length > 0 && (
-                      <ScheduleOpenStudentCallouts
-                        studentIds={studentIds}
-                        scheduleId={scheduleId}
-                        classId={classId}
-                      />  
-                    ) : null
-                  }
-                  {
-                    schedule.status === ScheduleStasuses.CLOSED && (
-                      <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
-                    )
-                  }
-                  <MEButton
-                    size='lg'
-                    style={{
-                      marginVertical: 8
-                    }}
-                    onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
-                    isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
-                    iconStart={schedule.status === ScheduleStasuses.CLOSED ? 'qrcode' : 'window-close'}
-                  >
-                    { schedule.status === ScheduleStasuses.CLOSED ? 'QR Code' : 'Tutup Kelas' }
-                  </MEButton>
-                  {
-                    schedule.status !== ScheduleStasuses.OPENED && (
-                      <MEButton
-                        size='lg'
-                        onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.CALLOUT)}
-                        isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
-                        iconStart='hand-paper'
-                      >
-                        Panggil Pelajar
-                      </MEButton>
+                    profile.role === ProfileRoles.STUDENT ? (
+                      <>
+                        {
+                          studentLogs.length > 0 ? studentLogs.map((studentLog, slIdx) => (
+                            <HistoryCard
+                              history={studentLog}
+                              key={slIdx}
+                              clickable={false}
+                            />
+                          )) : (
+                            <>                      
+                              {
+                                schedule.status === ScheduleStasuses.OPENED && (
+                                  <MEButton
+                                  iconStart="qrcode"
+                                  size='lg'
+                                  style={{
+                                    marginTop: 8
+                                  }}
+                                  onPress={() => navigation.navigate('Scanner', {
+                                    scheduleId: schedule.id,
+                                    schedule
+                                  })}
+                                  >
+                                    Pindai QR Code
+                                  </MEButton>
+                                )
+                              }
+                              <MEButton
+                                size='lg'
+                                variant='outline'
+                                style={{
+                                  marginTop: 8
+                                }}
+                                onPress={() => navigation.navigate('ExcusePage', {
+                                  classId, scheduleId
+                                })}
+                              >
+                                Izin
+                              </MEButton>
+                            </>
+                          )
+                        }                
+                      </>
+                    ) : (
+                      <>
+                        {
+                          (schedule.status === ScheduleStasuses.OPENED)
+                          ? schedule.openMethod === ScheduleOpenMethods.QR_CODE 
+                          ? <ScheduleOpenQRCode
+                            qrCode={qrCode}
+                            scheduleId={scheduleId}
+                            classId={classId}
+                            absentCount={absentCount}
+                            studentCount={studentIds.length}
+                          /> : studentIds.length > 0 && (
+                            <ScheduleOpenStudentCallouts
+                              studentIds={studentIds}
+                              scheduleId={scheduleId}
+                              classId={classId}
+                            />  
+                          ) : null
+                        }
+                        {
+                          schedule.status === ScheduleStasuses.CLOSED && (
+                            <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
+                          )
+                        }
+                        <MEButton
+                          size='lg'
+                          style={{
+                            marginVertical: 8
+                          }}
+                          onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
+                          isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
+                          iconStart={schedule.status === ScheduleStasuses.CLOSED ? 'qrcode' : 'window-close'}
+                        >
+                          { schedule.status === ScheduleStasuses.CLOSED ? 'QR Code' : 'Tutup Kelas' }
+                        </MEButton>
+                        {
+                          schedule.status !== ScheduleStasuses.OPENED && (
+                            <MEButton
+                              size='lg'
+                              onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.CALLOUT)}
+                              isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
+                              iconStart='hand-paper'
+                            >
+                              Panggil Pelajar
+                            </MEButton>
+                          )
+                        }
+                      </>
                     )
                   }
                 </>
