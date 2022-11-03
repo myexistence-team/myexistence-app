@@ -21,23 +21,6 @@ export default function HistoryCard(props: { history: Log, clickable?: boolean }
   const { classes } = useContext(ClassesContext);
   const { name: className } = classes.find((c) => c.id === history.classId);
 
-  // function loadClassData() {
-  //   getDoc(doc(
-  //     firestore, 
-  //     `schools/${profile.schoolId}/classes/${history.classId}`
-  //   )).then((docSnap) => {
-  //     if (docSnap.exists()) {
-  //       setClassName(docSnap.data().name)
-  //     } else {
-  //       setClassName('Kelas Tidak Ditemukan')
-  //     }
-  //   })
-  // }
-
-  // useEffect(() => {
-  //   loadClassData();
-  // }, []);
-
   return (
     <MECard
       style={{

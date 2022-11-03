@@ -89,10 +89,12 @@ export type LogCounts = {
 }
 
 export type LogCountBySchedule = LogCounts & {
-  scheduleId: string
+  scheduleId: string,
+  schedule: any
 }
 
 export type LogCountByClass = {
-  classId: string,
+  classId?: string,
+  className?: string,
   counts: LogCountBySchedule[];
 }
