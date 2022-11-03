@@ -8,9 +8,9 @@ import { textStyles } from '../../constants/Styles';
 import moment from 'moment';
 import { getStatusColor } from '../../utils/utilFunctions';
 import { PresenceStatusEnum } from '../../enums';
-import { AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
+import { AbsentStasuses, ExcuseStatuses, ProfileRoles } from '../../constants/constants';
 import MEButton from '../../components/MEButton';
-import { studentExcuseStatusChange } from '../../actions/scheduleActions';
+import { createUpdateStudentPresenceFromCallout, studentExcuseStatusChange } from '../../actions/scheduleActions';
 import { ProfileContext } from '../../contexts';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase';
@@ -36,7 +36,8 @@ export default function SchedulePresenceDetails({
     studentName,
     time,
     excuse,
-    excuseStatus
+    excuseStatus,
+    studentId
   } = presence;
 
   const studentLogRef = doc(
@@ -65,6 +66,7 @@ export default function SchedulePresenceDetails({
   }, [])
 
   const [excuseStatusLoading, setExcuseStatusLoading] = useState<any>(null);
+  const [presenceLoading, setPresenceLoading] = useState<any>(null);
 
   async function handleExcuseStatusChange(excuseStatus: ExcuseStatuses) {
     setExcuseStatusLoading(excuseStatus);
@@ -76,6 +78,19 @@ export default function SchedulePresenceDetails({
       excuseStatus,
     })
     setExcuseStatusLoading(null);
+  }
+
+  async function handleCreatePresence(status: AbsentStasuses) {
+    setPresenceLoading(status);
+    await createUpdateStudentPresenceFromCallout({ 
+      scheduleId, 
+      studentId: studentId, 
+      classId, 
+      schoolId: profile.schoolId,
+      status,
+      studentLogId: logId
+    })
+    setPresenceLoading(null);
   }
 
   return (
@@ -106,18 +121,48 @@ export default function SchedulePresenceDetails({
         </View>
       </View>
       <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Mulai</Text>
-          <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16, color: getStatusColor(status) }]}>
-            {PresenceStatusEnum[status]}
-          </Text>
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Kehadiran</Text>
-          <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(time.toDate()).format("HH:mm")}
-          </Text>
-        </View>
+        {
+          profile.role === ProfileRoles.STUDENT ? (
+            <>
+              <View style={{ flex: 1 }}>
+                <Text style={textStyles.body2}>Kehadiran</Text>
+                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16, color: getStatusColor(status) }]}>
+                  {PresenceStatusEnum[status]}
+                </Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={textStyles.body2}>Jam Kehadiran</Text>
+                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                  {moment(time.toDate()).format("HH:mm")}
+                </Text>
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={{ flex: 1, marginRight: 16 }}>
+                <MEButton 
+                  color='danger'
+                  variant={status !== AbsentStasuses.ABSENT ? 'outline' : undefined}
+                  iconStart={status === AbsentStasuses.ABSENT ? 'check' : undefined}
+                  isLoading={presenceLoading === AbsentStasuses.ABSENT}
+                  onPress={() => handleCreatePresence(AbsentStasuses.ABSENT)}
+                >
+                  Absen
+                </MEButton>
+              </View>
+              <View style={{ flex: 1 }}>
+                <MEButton 
+                  variant={status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
+                  iconStart={status === AbsentStasuses.PRESENT ? 'check' : undefined}
+                  isLoading={presenceLoading === AbsentStasuses.PRESENT}
+                  onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
+                >
+                  Hadir
+                </MEButton>
+              </View>
+            </>
+          )
+        }
       </View>
       {
         status === AbsentStasuses.EXCUSED && excuse && (

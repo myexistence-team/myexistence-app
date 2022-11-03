@@ -69,6 +69,7 @@ export type ScheduleParamList = {
     scheduleId: string,
     presence?: {
       studentName: string,
+      studentId: string,
       className: string,
       classId: string,
       status: string,

@@ -194,6 +194,7 @@ export default function SchedulePresences({
                       classId,
                       presence: {
                         studentName: s.displayName,
+                        studentId: s.id,
                         className: classroom.name,
                         classId: studentLogs[s.id]?.classId,
                         status: studentLogs[s.id]?.status,

@@ -373,6 +373,7 @@ export async function createUpdateStudentPresenceFromCallout({
   studentLogId?: string,
 }
 ) {
+  const studentRef = doc(firestore, 'users', studentId);
   const scheduleRef = doc(firestore, "schools", schoolId, "classes", classId, "schedules", scheduleId);
   const studentLogsRef = collection(firestore, scheduleRef.path, "studentLogs");
 
@@ -400,6 +401,10 @@ export async function createUpdateStudentPresenceFromCallout({
     } else {
       await addDoc(studentLogsRef, newLog);
     }
+
+    await updateDoc(studentRef, {
+      currentScheduleId: schedule.id
+    })
   }
 
 }
