@@ -192,39 +192,42 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       <HistoryCard
                         history={studentLog}
                         key={slIdx}
+                        clickable={false}
                       />
                     )) : (
-                      <MEButton
-                        size='lg'
-                        variant='outline'
-                        style={{
-                          marginTop: 8
-                        }}
-                        onPress={() => navigation.navigate('ExcusePage', {
-                          classId, scheduleId
-                        })}
-                      >
-                        Izin
-                      </MEButton>
+                      <>                      
+                        {
+                          schedule.status === ScheduleStasuses.OPENED && (
+                            <MEButton
+                            iconStart="qrcode"
+                            size='lg'
+                            style={{
+                              marginTop: 8
+                            }}
+                            onPress={() => navigation.navigate('Scanner', {
+                              scheduleId: schedule.id,
+                              schedule
+                            })}
+                            >
+                              Pindai QR Code
+                            </MEButton>
+                          )
+                        }
+                        <MEButton
+                          size='lg'
+                          variant='outline'
+                          style={{
+                            marginTop: 8
+                          }}
+                          onPress={() => navigation.navigate('ExcusePage', {
+                            classId, scheduleId
+                          })}
+                        >
+                          Izin
+                        </MEButton>
+                      </>
                     )
                   }                
-                  {
-                    schedule.status === ScheduleStasuses.OPENED && (
-                      <MEButton
-                      iconStart="qrcode"
-                      size='lg'
-                      style={{
-                        marginTop: 8
-                      }}
-                      onPress={() => navigation.navigate('Scanner', {
-                        scheduleId: schedule.id,
-                        schedule
-                      })}
-                      >
-                        Pindai QR Code
-                      </MEButton>
-                    )
-                  }
                 </>
               ) : (
                 <>
