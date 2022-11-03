@@ -11,7 +11,7 @@ export type BaseType = {
 
 export type Profile = BaseType & {
   displayName: string,
-  schoolId?: string,
+  schoolId: string,
   email: string,
   role: 'SUPER_ADMIN' | 'ADMIN' | 'TEACHER' | 'STUDENT',
   photoUrl?: string,
@@ -49,6 +49,7 @@ export type Schedule = BaseType & {
 export type Class = BaseType & {
   className: string,
   classDescription: string,
+  name?: string
   // teacherIds: string[],
   // studentsIds: string[],
   // schedules: DocumentReference[]
@@ -78,4 +79,20 @@ export type Log = {
 
 export type QRCode =  {
   scanned: boolean
+}
+
+export type LogCounts = {
+  absentCount: number,
+  excusedCount: number,
+  presentCount: number,
+  lateCount: number
+}
+
+export type LogCountBySchedule = LogCounts & {
+  scheduleId: string
+}
+
+export type LogCountByClass = {
+  classId: string,
+  counts: LogCountBySchedule[];
 }

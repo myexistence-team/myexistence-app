@@ -1,25 +1,35 @@
-import { User, UserCredential } from "firebase/auth";
+import { User } from "firebase/auth";
 import { Context, createContext } from "react";
-import { Profile, School } from "./types";
+import { Class, Profile, School } from "./types";
 
 export const SchoolContext: Context<{
-  school: any | School,
-  setSchool: any | Function
+  school: School,
+  setSchool: Function
 }> = createContext({
-  school: null,
-  setSchool: null
+  school: {},
+  setSchool: () => {}
 })
+
 export const AuthContext: Context<{
-  auth: any | UserCredential,
-  setAuth: any | Function
+  auth: User,
+  setAuth: Function
 }> = createContext({
-  auth: null,
-  setAuth: null
+  auth: {},
+  setAuth: () => {}
 })
+
 export const ProfileContext: Context<{
-  profile: any | Profile,
-  setProfile: any | Function
+  profile: Profile,
+  setProfile: Function
 }> = createContext({
-  profile: null,
-  setProfile: null
+  profile: {},
+  setProfile: () => {}
+})
+
+export const ClassesContext: Context<{
+  classes: Class[],
+  setClasses: Function,
+}> = createContext({
+  classes: [],
+  setClasses: Function
 })
