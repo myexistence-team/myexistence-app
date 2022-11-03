@@ -7,19 +7,19 @@ import { useNavigation } from '@react-navigation/native';
 import { Schedule } from '../../types';
 
 export default function ScheduleOpenQRCode({
-  qrCode, scheduleId, classId, absentCount, studentCount
+  qrCode, scheduleId, classId, absentCount = 0, studentCount = 0
 } : {
   qrCode: any,
   scheduleId: string,
   classId: string,
-  absentCount?: number,
-  studentCount?: number,
+  absentCount: number,
+  studentCount: number,
 }) {
   const navigation = useNavigation();
   return (
     <>
       {
-        qrCode && (
+        qrCode ? (
           <View style={{ alignItems: 'center', padding: 24,  }}>
             <SvgQRCode
               value={qrCode.id}
@@ -27,11 +27,11 @@ export default function ScheduleOpenQRCode({
             />
             <Text style={[textStyles.body3, { textAlign: 'center', marginTop: 8 }]}>Berikan QR Code kepada pelajar untuk mereka pindai</Text>
           </View>
-        )
+        ) : null
       }
       <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
       {
-        studentCount && absentCount && (
+        studentCount > 0 && absentCount > 0 && (
           <MEPressableText
             style={[textStyles.body1, { 
               fontFamily: 'manrope-bold', 
