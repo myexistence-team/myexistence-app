@@ -7,7 +7,7 @@ import ClassesCard from "../../components/ClassCard";
 import MEContainer from "../../components/MEContainer";
 import MESpinner from "../../components/MESpinner";
 import { textStyles } from "../../constants/Styles";
-import { ProfileContext } from "../../contexts";
+import { ClassesContext, ProfileContext } from "../../contexts";
 import { firestore } from "../../firebase";
 import { ClassParamList } from "../../navTypes";
 import { Profile } from "../../types";
@@ -41,46 +41,10 @@ export default function ClassPage() {
 
 function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
   const { profile } : { profile: Profile } = useContext(ProfileContext);
-  const [classesState, setClassesState] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-
-  const classesQuery = query(collection(
-    firestore, 
-    `schools/${profile.schoolId}/classes`), 
-    where(documentId(), 'in', profile.classIds)
-  )
-
-  function loadData() {
-    if (profile.classIds?.length) {
-      setIsLoading(true);
-      getDocs(classesQuery).then((docs) => {
-        const docsArr: any[] = [];
-        docs.forEach((doc) => {
-          // console.log(doc.id)
-          docsArr.push({
-            ...doc.data(),
-            id: doc.id,
-          })
-        })
-        // console.log("DOCSARR", docsArr);
-        setClassesState(docsArr)
-        setIsLoading(false);
-      })
-    } else {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadData();
-  }, [])
+  const { classes } = useContext(ClassesContext);
 
   return (
-    <MEContainer
-      onRefresh={profile.classIds?.length ? loadData : undefined}
-      refreshing={isLoading}  
-    >
+    <MEContainer>
       <Text
         style={[textStyles.heading3, {marginBottom: 16}]}
       >Kelas</Text>
@@ -90,15 +54,12 @@ function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
             Anda belum terdaftar di kelas apapun.
           </Text>
         ) : 
-        isLoading? (
-          <MESpinner/>
-        ) : 
-        !classesState.length? (
+        !classes.length? (
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
         ) : 
-        classesState.map((c: any, idx: number) => (
+        classes.map((c: any, idx: number) => (
           <ClassesCard classRoom={c} key={idx}/>
         ))
       }
