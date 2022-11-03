@@ -50,7 +50,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [school, setSchool] = React.useState<any>(null);
   
   React.useEffect(() => {
-    onAuthStateChanged(fbAuth, user => {
+    const unsubAuth = onAuthStateChanged(fbAuth, user => {
       setIsInitializing(true);
       if (user !== null) {
         setAuth(user);
@@ -61,6 +61,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     }, (e) => {
       alert(e.message);
     });
+    return () => unsubAuth();
   }, [])
 
   React.useEffect(() => {
