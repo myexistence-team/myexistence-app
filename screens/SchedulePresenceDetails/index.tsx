@@ -120,92 +120,95 @@ export default function SchedulePresenceDetails({
           </Text>
         </View>
       </View>
-      <View style={{ flexDirection: 'row' }}>
-        {
-          profile.role === ProfileRoles.STUDENT ? (
-            <>
-              <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Kehadiran</Text>
-                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16, color: getStatusColor(status) }]}>
-                  {PresenceStatusEnum[status]}
-                </Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Jam Kehadiran</Text>
-                <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(time.toDate()).format("HH:mm")}
-                </Text>
-              </View>
-            </>
-          ) : (
-            <>
-              <View style={{ flex: 1, marginRight: 16 }}>
-                <MEButton 
-                  color='danger'
-                  variant={status !== AbsentStasuses.ABSENT ? 'outline' : undefined}
-                  iconStart={status === AbsentStasuses.ABSENT ? 'check' : undefined}
-                  isLoading={presenceLoading === AbsentStasuses.ABSENT}
-                  onPress={() => handleCreatePresence(AbsentStasuses.ABSENT)}
-                >
-                  Absen
-                </MEButton>
-              </View>
-              <View style={{ flex: 1 }}>
-                <MEButton 
-                  variant={status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
-                  iconStart={status === AbsentStasuses.PRESENT ? 'check' : undefined}
-                  isLoading={presenceLoading === AbsentStasuses.PRESENT}
-                  onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
-                >
-                  Hadir
-                </MEButton>
-              </View>
-            </>
-          )
-        }
-      </View>
       {
-        status === AbsentStasuses.EXCUSED && excuse && (
-          <>
-            <Text style={textStyles.body2}>Alasan Izin</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {excuse.message}
-            </Text>
-            <Text style={textStyles.body2}>Bukti Izin</Text>
-            <Image
-              source={{
-                uri: excuse.proofUrl
-              }}
-              style={{
-                width: '100%',
-                height: 400,
-                marginTop: 8
-              }}
-            />
-            <View style={{ flexDirection: 'row', marginTop: 16 }}>
-              <View style={{ flex: 1, marginRight: 16 }}>
-                <MEButton 
-                  color='danger'
-                  variant={excuseStatus !== ExcuseStatuses.REJECTED ? 'outline' : undefined}
-                  iconStart={excuseStatus === ExcuseStatuses.REJECTED ? 'check' : undefined}
-                  isLoading={excuseStatusLoading === ExcuseStatuses.REJECTED}
-                  onPress={() => handleExcuseStatusChange(ExcuseStatuses.REJECTED)}
-                >
-                  Tolak
-                </MEButton>
-              </View>
-              <View style={{ flex: 1 }}>
-                <MEButton 
-                  variant={excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
-                  iconStart={excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
-                  isLoading={excuseStatusLoading === ExcuseStatuses.ACCEPTED}
-                  onPress={() => handleExcuseStatusChange(ExcuseStatuses.ACCEPTED)}
-                >
-                  Terima
-                </MEButton>
-              </View>
+        profile.role === ProfileRoles.STUDENT ? (
+          <View style={{ flexDirection: 'row' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={textStyles.body2}>Kehadiran</Text>
+              <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16, color: getStatusColor(status) }]}>
+                {PresenceStatusEnum[status]}
+              </Text>
             </View>
-          </>
+            <View style={{ flex: 1 }}>
+              <Text style={textStyles.body2}>Jam Kehadiran</Text>
+              <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                {moment(time.toDate()).format("HH:mm")}
+              </Text>
+            </View>
+          </View>
+        ) : (
+          <View>
+            {
+              status === AbsentStasuses.EXCUSED && excuse ? (
+                <>
+                  <Text style={textStyles.body2}>Alasan Izin</Text>
+                  <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+                    {excuse.message}
+                  </Text>
+                  <Text style={textStyles.body2}>Bukti Izin</Text>
+                  <Image
+                    source={{
+                      uri: excuse.proofUrl
+                    }}
+                    style={{
+                      width: '100%',
+                      height: 400,
+                      marginTop: 8
+                    }}
+                  />
+                  <View style={{ flexDirection: 'row', marginTop: 16 }}>
+                    <View style={{ flex: 1, marginRight: 16 }}>
+                      <MEButton 
+                        color='danger'
+                        variant={excuseStatus !== ExcuseStatuses.REJECTED ? 'outline' : undefined}
+                        iconStart={excuseStatus === ExcuseStatuses.REJECTED ? 'check' : undefined}
+                        isLoading={excuseStatusLoading === ExcuseStatuses.REJECTED}
+                        onPress={() => handleExcuseStatusChange(ExcuseStatuses.REJECTED)}
+                      >
+                        Tolak
+                      </MEButton>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <MEButton
+                        color='success' 
+                        variant={excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
+                        iconStart={excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
+                        isLoading={excuseStatusLoading === ExcuseStatuses.ACCEPTED}
+                        onPress={() => handleExcuseStatusChange(ExcuseStatuses.ACCEPTED)}
+                      >
+                        Terima
+                      </MEButton>
+                    </View>
+                  </View>
+                </>
+              ) : (
+                <View style={{ flexDirection: 'row' }}>
+                  <View style={{ flex: 1, marginRight: 16 }}>
+                    <MEButton 
+                      color='danger'
+                      variant={status !== AbsentStasuses.ABSENT ? 'outline' : undefined}
+                      iconStart={status === AbsentStasuses.ABSENT ? 'check' : undefined}
+                      isLoading={presenceLoading === AbsentStasuses.ABSENT}
+                      onPress={() => handleCreatePresence(AbsentStasuses.ABSENT)}
+                    >
+                      Absen
+                    </MEButton>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <MEButton   
+                      color='success'
+                      variant={status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
+                      iconStart={status === AbsentStasuses.PRESENT ? 'check' : undefined}
+                      isLoading={presenceLoading === AbsentStasuses.PRESENT}
+                      onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
+                    >
+                      Hadir
+                    </MEButton>
+                  </View>
+                </View>
+              )
+            }
+          </View>
         )
       }
     </MEContainer>
