@@ -266,7 +266,7 @@ export default function ScheduleOpenStudentCallouts({
                   <MEButton
                     onPress={() => setShowExcuse(true)}
                   >
-                    Lihat Izin {studentExcuse.excuseStatus === ExcuseStatuses.WAITING ? null : studentExcuse.excuseStatus === ExcuseStatuses.ACCEPTED ? "(Diterima)" : "(Ditolak)"}
+                    {`Lihat Izin ${studentExcuse.excuseStatus === ExcuseStatuses.WAITING ? null : studentExcuse.excuseStatus === ExcuseStatuses.ACCEPTED ? "(Diterima)" : "(Ditolak)"}`}
                   </MEButton>
                 </View>
               ) : (

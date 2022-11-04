@@ -38,16 +38,22 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       collectionGroup(firestore, 'schedules'),
       where('id', '==', scheduleId),
       limit(1)
-    )
-    var scheduleRef: DocumentReference | null = null;
+    );
+    var unsubStudentLogs: Unsubscribe | null = null;
     const unsubSchedule = onSnapshot(schedulesQuery, (scheduleSnaps) => {
       if (!scheduleSnaps.empty) {
         const scheduleData = scheduleSnaps.docs[0].data();
-        scheduleRef = scheduleSnaps.docs[0].ref;
+        const scheduleRef = scheduleSnaps.docs[0].ref;
         const classObj = classes?.find((c) => c.id === scheduleData.classId)
+        const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
+        const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
+        unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
+          setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        });
         if (classObj) {
           setSchedule({
             ...scheduleData,
+            classId: classObj.id,
             className: classObj.name,
             classDescription: classObj.description,
           });
@@ -55,14 +61,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         }
       }
     })
-    var unsubStudentLogs: Unsubscribe | null = null;
-    if (scheduleRef) {
-      const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
-      const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
-      unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
-        setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      });
-    }
+
     return { unsubSchedule, unsubStudentLogs };
   } 
 
@@ -111,7 +110,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     const { unsubSchedule, unsubStudentLogs } = loadData();
     return () => {
       if (unsubSchedule) unsubSchedule();
-      if (unsubStudentLogs) unsubStudentLogs();
+      if (unsubStudentLogs !== null) unsubStudentLogs();
     }
   }, [scheduleId])
 
@@ -187,7 +186,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             {
               profile.currentScheduleId && scheduleId !== profile.currentScheduleId ? (
                 <>
-                  <Text style={[textStyles.body1, { textAlign: 'center', marginBottom: 8 }]}>Anda sudah membuka kelas</Text>
+                  <Text style={[textStyles.body1, { textAlign: 'center', marginBottom: 8 }]}>Anda sudah memiliki kelas yang aktif.</Text>
                   <MEPressableText 
                     style={[textStyles.body1, { textAlign: 'center' }]}
                     onPress={() => {
@@ -196,7 +195,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                         params: {
                           screen: 'ScheduleDetails',
                           params: {
-                            classId,
+                            classId: schedule.classId,
                             scheduleId: profile.currentScheduleId || '',
                           },
                           initial: false
@@ -261,14 +260,14 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           ? <ScheduleOpenQRCode
                             qrCode={qrCode}
                             scheduleId={scheduleId}
-                            classId={classId}
+                            classId={schedule.classId}
                             absentCount={absentCount}
                             studentCount={studentIds.length}
                           /> : studentIds.length > 0 && (
                             <ScheduleOpenStudentCallouts
                               studentIds={studentIds}
                               scheduleId={scheduleId}
-                              classId={classId}
+                              classId={schedule.classId}
                             />  
                           ) : null
                         }
