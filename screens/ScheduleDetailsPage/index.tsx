@@ -66,10 +66,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   } 
 
   function loadQRCodes() {
+    setQRCode(null);
     const schedulePath = [
       profile.schoolId,
       'classes',
-      classId,
+      schedule.classId,
       'schedules',
       scheduleId,
     ];
@@ -104,7 +105,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         setQRCode(null);
       }
     }
-  }, [schedule])
+  }, [schedule, scheduleId])
 
   useEffect(() => {
     const { unsubSchedule, unsubStudentLogs } = loadData();
@@ -119,7 +120,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     setChangingStatus(openMethod);
     (schedule.status === ScheduleStasuses.CLOSED ? openSchedule : closeSchedule)(
       profile.schoolId,
-      classId,
+      schedule.classId,
       scheduleId,
       auth.uid,
       openMethod
@@ -243,7 +244,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                   marginTop: 8
                                 }}
                                 onPress={() => navigation.navigate('ExcusePage', {
-                                  classId, scheduleId
+                                  classId: schedule.classId, scheduleId
                                 })}
                               >
                                 Izin
@@ -283,6 +284,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           }}
                           onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
                           isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
+                          variant={schedule.status === ScheduleStasuses.CLOSED ? 'contained' : 'outline'}
+                          color={schedule.status === ScheduleStasuses.CLOSED ? 'primary' : 'danger'}
                           iconStart={schedule.status === ScheduleStasuses.CLOSED ? 'qrcode' : 'window-close'}
                         >
                           { schedule.status === ScheduleStasuses.CLOSED ? 'QR Code' : 'Tutup Kelas' }

@@ -9,7 +9,7 @@ import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
 import { ProfileContext } from '../contexts';
-import { ProfileRoles, ScheduleOpenMethods } from '../constants/constants';
+import { ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../constants/constants';
 
 export default function ScheduleCard({
   schedule,
@@ -100,91 +100,99 @@ export default function ScheduleCard({
         {schedule.classDescription}
       </Text>
       {
-        profile.role === ProfileRoles.STUDENT ? (
+        profile.currentScheduleId && schedule.id === profile.currentScheduleId ? (
+          <Text style={[textStyles.body2, { textAlign: 'center' }]}>Kelas sedang aktif</Text>
+        ) : !profile.currentScheduleId ? (
           <>
             {
-              (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginTop: 16
-                  }}
-                >
-                  <View
-                    style={[
-                      { 
-                        flex: 2,
-                        marginRight: 8
-                      }
-                    ]}
-                  >
-                    <MEButton
-                      color='primary'
-                      variant='outline'
-                      onPress={() => {
-                        navigation.navigate('ExcusePage', {
-                          scheduleId: schedule.id,
-                          classId: schedule.classId
-                        })
-                      }}
-                    >
-                        Izin
-                    </MEButton>
-                  </View>
-                  <View
-                    style={[
-                      { 
-                        flex: 3
-                      }
-                    ]}
-                  >
-                    <MEButton
-                    iconStart="qrcode"
-                    style={[
-                      { 
-                        marginLeft: 4
-                      }
-                    ]}
-                    onPress={() => navigation.navigate('Scanner', {
-                      scheduleId: schedule.id,
-                      schedule
-                    })}
-                    >
-                      Pindai QR Code
-                    </MEButton>
-                  </View>
-                </View>
-              ) : null
-            }
-          </>
-        ) : (
-          <>
-            {
-              schedule.status === 'CLOSED' && (
-                <View style={{ marginTop: 16 }}>
-                  <MEButton
-                    onPress={() => {
-                      navigation.navigate("Root", {
-                        screen: "SchedulesPage",
-                        params: {
-                          screen: "ScheduleDetails",
-                          params: {
-                            classId: schedule.classId,
+              profile.role === ProfileRoles.STUDENT ? (
+                <>
+                  {
+                    (disableScanButton === undefined || disableScanButton === false) && schedule.status === 'OPENED' ? (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          marginTop: 16
+                        }}
+                      >
+                        <View
+                          style={[
+                            { 
+                              flex: 2,
+                              marginRight: 8
+                            }
+                          ]}
+                        >
+                          <MEButton
+                            color='primary'
+                            variant='outline'
+                            onPress={() => {
+                              navigation.navigate('ExcusePage', {
+                                scheduleId: schedule.id,
+                                classId: schedule.classId
+                              })
+                            }}
+                          >
+                              Izin
+                          </MEButton>
+                        </View>
+                        <View
+                          style={[
+                            { 
+                              flex: 3
+                            }
+                          ]}
+                        >
+                          <MEButton
+                          iconStart="qrcode"
+                          style={[
+                            { 
+                              marginLeft: 4
+                            }
+                          ]}
+                          onPress={() => navigation.navigate('Scanner', {
                             scheduleId: schedule.id,
-                            toggleOpen: ScheduleOpenMethods.QR_CODE
-                          },
-                          initial: false,
-                        },
-                      })
-                    }}
-                  >
-                    Buka Kelas
-                  </MEButton>
-                </View>
+                            schedule
+                          })}
+                          >
+                            Pindai QR Code
+                          </MEButton>
+                        </View>
+                      </View>
+                    ) : null
+                  }
+                </>
+              ) : (
+                <>
+                  {
+                    schedule.status === 'CLOSED' && (
+                      <View style={{ marginTop: 16 }}>
+                        <MEButton
+                          onPress={() => {
+                            navigation.navigate("Root", {
+                              screen: "SchedulesPage",
+                              params: {
+                                screen: "ScheduleDetails",
+                                params: {
+                                  classId: schedule.classId,
+                                  scheduleId: schedule.id,
+                                  toggleOpen: ScheduleOpenMethods.QR_CODE
+                                },
+                                initial: false,
+                              },
+                            })
+                          }}
+                        >
+                          Buka Kelas
+                        </MEButton>
+                      </View>
+                    )
+                  }
+                </>
               )
             }
           </>
-        )
+        ) : null
       }
     </MECard>
   )
