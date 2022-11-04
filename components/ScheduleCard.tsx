@@ -166,25 +166,45 @@ export default function ScheduleCard({
                 <>
                   {
                     schedule.status === 'CLOSED' && (
-                      <View style={{ marginTop: 16 }}>
-                        <MEButton
-                          onPress={() => {
-                            navigation.navigate("Root", {
-                              screen: "SchedulesPage",
-                              params: {
-                                screen: "ScheduleDetails",
+                      <View style={{ marginTop: 16, flexDirection: 'row' }}>
+                        <View style={{ flex: 1, marginRight: 8 }}>
+                          <MEButton
+                            iconStart='qrcode'
+                            onPress={() => {
+                              navigation.navigate("Root", {
+                                screen: "SchedulesPage",
                                 params: {
-                                  classId: schedule.classId,
-                                  scheduleId: schedule.id,
-                                  toggleOpen: ScheduleOpenMethods.QR_CODE
+                                  screen: "ScheduleDetails",
+                                  params: {
+                                    classId: schedule.classId,
+                                    scheduleId: schedule.id,
+                                    toggleOpen: ScheduleOpenMethods.QR_CODE
+                                  },
+                                  initial: false,
                                 },
-                                initial: false,
-                              },
-                            })
-                          }}
-                        >
-                          Buka Kelas
-                        </MEButton>
+                              })
+                            }}
+                          />
+                        </View>
+                        <View style={{ flex: 1, marginLeft: 8 }}>
+                          <MEButton
+                            iconStart='hand-paper'
+                            onPress={() => {
+                              navigation.navigate("Root", {
+                                screen: "SchedulesPage",
+                                params: {
+                                  screen: "ScheduleDetails",
+                                  params: {
+                                    classId: schedule.classId,
+                                    scheduleId: schedule.id,
+                                    toggleOpen: ScheduleOpenMethods.CALLOUT
+                                  },
+                                  initial: false,
+                                },
+                              })
+                            }}
+                          />
+                        </View>
                       </View>
                     )
                   }

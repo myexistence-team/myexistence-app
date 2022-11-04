@@ -118,9 +118,9 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const [changingStatus, setChangingStatus] = useState<any>(null);
   function handleOpenOrCloseClass(openMethod: ScheduleOpenMethods) {
     setChangingStatus(openMethod);
-    (schedule.status === ScheduleStasuses.CLOSED ? openSchedule : closeSchedule)(
+    (schedule && schedule?.status === ScheduleStasuses.OPENED ? closeSchedule : openSchedule)(
       profile.schoolId,
-      schedule.classId,
+      schedule?.classId || classId,
       scheduleId,
       auth.uid,
       openMethod
