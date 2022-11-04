@@ -1,5 +1,5 @@
 import { DocumentReference, Timestamp } from "firebase/firestore"
-import { ScheduleOpenMethods } from "./constants/constants"
+import { ExcuseStatuses, ScheduleOpenMethods } from "./constants/constants"
 
 export type BaseType = {
   id: string,
@@ -71,6 +71,7 @@ export type Log = {
     proofUrl: string,
     reason: string,
   },
+  excuseStatus?: ExcuseStatuses,
   studentId: string,
   teacherId: string,
   classId: string,
