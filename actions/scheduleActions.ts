@@ -236,8 +236,6 @@ export async function openSchedule(
       }
     )
 
-    console.log("SCHEDULEID" ,scheduleId);
-    
     await updateDoc(doc(firestore, 'users', teacherId), {
       currentScheduleId: scheduleId
     })
@@ -255,7 +253,6 @@ export async function closeSchedule(
   scheduleId: string,
   teacherId: string
 ) {
-  console.log("CLOSE SCHED")
   const schedulePath = [
     schoolId,
     'classes',

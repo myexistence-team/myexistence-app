@@ -63,7 +63,6 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
               )).then((docs) => {
                 const studentArr: any = [];
                 docs.forEach((doc) => {
-                  // console.log(doc.data().displayName);
                   studentArr.push({ 
                     ...doc.data(),
                     id: doc.id
