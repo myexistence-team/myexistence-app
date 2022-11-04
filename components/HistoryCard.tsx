@@ -5,6 +5,7 @@ import moment from "moment";
 import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Text } from "react-native";
 import Colors from "../constants/Colors";
+import { ExcuseStatuses } from "../constants/constants";
 import { textStyles } from "../constants/Styles";
 import { ClassesContext, ProfileContext } from "../contexts";
 import { PresenceStatusEnum } from "../enums";
@@ -13,6 +14,14 @@ import { Log, Profile } from "../types";
 import { getStatusColor } from "../utils/utilFunctions";
 import MECard from "./MECard";
 import { View } from "./Themed";
+
+function getExcuseStatusIconName(excuseStatus: ExcuseStatuses) {
+  switch(excuseStatus) {
+    case ExcuseStatuses.ACCEPTED: return 'check';
+    case ExcuseStatuses.REJECTED: return 'ban';
+    default: return 'clock';
+  }
+}
 
 export default function HistoryCard(props: { history: Log, clickable?: boolean }) {
   const { history, clickable = true } = props;
@@ -86,18 +95,27 @@ export default function HistoryCard(props: { history: Log, clickable?: boolean }
             name="circle"
             color={getStatusColor(history.status)}
           />
-          <Text
-            style={[
-              textStyles.body3,
-              {
-                marginLeft: 4,
-                fontFamily: "manrope-bold",
-                color: getStatusColor(history.status),
-              },
-            ]}
-          >
-            {PresenceStatusEnum[history.status]}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text
+              style={[
+                textStyles.body3,
+                {
+                  marginLeft: 4,
+                  fontFamily: "manrope-bold",
+                  color: getStatusColor(history.status),
+                },
+              ]}
+            >
+              {PresenceStatusEnum[history.status]}
+            </Text>
+            {
+              history.excuseStatus && (
+                <View style={{ marginLeft: 8 }}>
+                  <FontAwesome5 name={getExcuseStatusIconName(history.excuseStatus)} color={Colors.light.yellows.yellow3}/>
+                </View>
+              )
+            }
+          </View>
         </View>
       </View>
       {

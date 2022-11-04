@@ -9,11 +9,11 @@ function getColorHex(color: string) {
     case 'primary':
       return Colors.light.blue;
     case 'secondary':
-      return Colors.light.yellow;
+      return Colors.light.yellows.yellow3;
     case 'danger':
       return Colors.light.red;
     case 'success':
-      return Colors.light.blue;
+      return Colors.light.green;
     case 'disabled':
       return Colors.light.grey;
     default:

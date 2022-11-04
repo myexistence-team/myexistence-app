@@ -252,6 +252,7 @@ export default function ScheduleOpenStudentCallouts({
                           flex: 1
                         }}>
                           <MEButton
+                            color='success'
                             variant={studentExcuse.excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
                             iconStart={studentExcuse.excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
                             isLoading={excuseStatusLoading === ExcuseStatuses.ACCEPTED}
@@ -264,9 +265,10 @@ export default function ScheduleOpenStudentCallouts({
                     </View>
                   </Modal>
                   <MEButton
+                    color='secondary'
                     onPress={() => setShowExcuse(true)}
                   >
-                    {`Lihat Izin ${studentExcuse.excuseStatus === ExcuseStatuses.WAITING ? null : studentExcuse.excuseStatus === ExcuseStatuses.ACCEPTED ? "(Diterima)" : "(Ditolak)"}`}
+                    {`Lihat Izin ${studentExcuse.excuseStatus === ExcuseStatuses.WAITING ? '' : studentExcuse.excuseStatus === ExcuseStatuses.ACCEPTED ? "(Diterima)" : "(Ditolak)"}`}
                   </MEButton>
                 </View>
               ) : (
@@ -291,6 +293,7 @@ export default function ScheduleOpenStudentCallouts({
                     flex: 1
                   }}>
                     <MEButton
+                      color='success'
                       variant={currentStudentLog?.status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
                       iconStart={currentStudentLog?.status === AbsentStasuses.PRESENT ? 'check' : undefined}
                       onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
