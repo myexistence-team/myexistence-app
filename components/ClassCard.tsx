@@ -12,7 +12,6 @@ export default function ClassCard(props: {
     },
 }) {
     const {classRoom} = props;
-    // console.log(classRoom.id);
 
     const navigation = useNavigation();
 
