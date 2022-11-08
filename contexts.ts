@@ -1,6 +1,6 @@
 import { User } from "firebase/auth";
 import { Context, createContext } from "react";
-import { Class, Profile, School } from "./types";
+import { Class, Profile, School, Teacher } from "./types";
 
 export const SchoolContext: Context<{
   school: School,
@@ -12,7 +12,7 @@ export const SchoolContext: Context<{
 
 export const AuthContext: Context<{
   auth: User,
-  setAuth: Function
+  setAuth: any
 }> = createContext({
   auth: {},
   setAuth: () => {}
@@ -20,16 +20,24 @@ export const AuthContext: Context<{
 
 export const ProfileContext: Context<{
   profile: Profile,
-  setProfile: Function
+  setProfile: any
 }> = createContext({
-  profile: {},
+  profile: null,
   setProfile: () => {}
 })
 
 export const ClassesContext: Context<{
   classes: Class[],
-  setClasses: Function,
+  setClasses: (a: any) => void,
 }> = createContext({
   classes: [],
-  setClasses: Function
+  setClasses: () => {}
+})
+
+export const UsersContext: Context<{
+  users: { [key: string]: any },
+  setUsers: (a: any) => void
+}> = createContext({
+  users: {},
+  setUsers: () => {}
 })

@@ -29,7 +29,7 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../nav
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
 import { app } from '../firebase';
-import { ProfileContext, SchoolContext, AuthContext, ClassesContext } from '../contexts';
+import { ProfileContext, SchoolContext, AuthContext, ClassesContext, UsersContext } from '../contexts';
 import { useContext } from 'react';
 import { getFirestore, doc, Firestore, onSnapshot, collection } from 'firebase/firestore';
 import { Profile } from '../types';
@@ -49,6 +49,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [profile, setProfile] = React.useState<any>(null);
   const [school, setSchool] = React.useState<any>(null);
   const [classes, setClasses] = React.useState<any[]>([]);
+  const [users, setUsers] = React.useState<{[key: string]: any}>({});
   
   React.useEffect(() => {
     const unsubAuth = onAuthStateChanged(fbAuth, user => {
@@ -134,11 +135,13 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       <ProfileContext.Provider value={{ profile, setProfile }}>
         <SchoolContext.Provider value={{ school, setSchool }}>
           <ClassesContext.Provider value={{ classes, setClasses }}>
-            <NavigationContainer
-              linking={LinkingConfiguration}
-              theme={METheme}>
-              <RootNavigator/>
-            </NavigationContainer>
+            <UsersContext.Provider value={{ users, setUsers }}>
+              <NavigationContainer
+                linking={LinkingConfiguration}
+                theme={METheme}>
+                <RootNavigator/>
+              </NavigationContainer>
+            </UsersContext.Provider>
           </ClassesContext.Provider>
         </SchoolContext.Provider>
       </ProfileContext.Provider>
