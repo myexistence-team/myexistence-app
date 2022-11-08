@@ -39,6 +39,8 @@ import QRScanner from '../screens/QRScanner';
 import ClassPage from '../screens/ClassPage';
 import HistoryPage from '../screens/HistoryPage';
 import ExcusePage from '../screens/ExcusePage';
+import { ProfileRoles } from '../constants/constants';
+import AdminReferralPage from '../screens/AdminReferralPage';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
@@ -169,7 +171,14 @@ function RootNavigator(props: any) {
     >
       {
         auth && profile ? (
-          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+          <>
+            {
+              [ProfileRoles.ADMIN, ProfileRoles.SUPER_ADMIN].includes(ProfileRoles[profile.role]) ? 
+                <Stack.Screen name='AdminReferralPage' component={AdminReferralPage} options={{ headerShown: false }}/> 
+                :
+                <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+            }
+          </>
         ) : auth && !profile ? (
           <Stack.Screen name="RegisterAccount" component={RegisterAccount} options={{ headerShown: false }}/>
         ) : (

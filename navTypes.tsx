@@ -28,6 +28,7 @@ export type RootStackParamList = {
     classId: string,
   },
   RegisterAccount: undefined,
+  AdminReferralPage: undefined,
   Modal: undefined;
   NotFound: undefined;
 };
