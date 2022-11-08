@@ -2,7 +2,7 @@ import { View, Text } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { HistoryScreenProps } from '../../navTypes'
 import { useNavigation } from '@react-navigation/native';
-import { ProfileContext } from '../../contexts';
+import { ProfileContext, UsersContext } from '../../contexts';
 import { Class, Log } from '../../types';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase';
@@ -28,9 +28,10 @@ export default function HistoryDetailsPage({
 }: HistoryScreenProps) {
   const navigation = useNavigation();
   const { profile } = useContext(ProfileContext);
+  const { users, setUsers } = useContext(UsersContext);
   const [log, setLog] = useState<Log | any>(null);
   const [classroom, setClassroom] = useState<Class | any>(null);
-  const [teacher, setTeacher] = useState<any>(null);
+  const teacher = users[log?.teacherId];
 
   function loadData() {
     setLog(null);
@@ -70,15 +71,17 @@ export default function HistoryDetailsPage({
             setClassroom(classSnap.data());
           }
         })
-        getDoc(doc(
-          firestore, 
-          'users', 
-          logSnap.data().teacherId,
-        )).then((teacherSnap) => {
-          if (teacherSnap.exists()) {
-            setTeacher(teacherSnap.data());
-          }
-        })
+        if (!teacher) {
+          getDoc(doc(
+            firestore, 
+            'users', 
+            logSnap.data().teacherId,
+          )).then((teacherSnap) => {
+            if (teacherSnap.exists()) {
+              setUsers((prevUsers: any) => ({ ...prevUsers, [teacherSnap.id]: teacherSnap.data() }));
+            }
+          })
+        }
       }
     })
   }
@@ -151,7 +154,7 @@ export default function HistoryDetailsPage({
             </Text>
 
             {
-              log.schedule.openedAt && log.schedule.teacherId && (
+              log.schedule.openedAt && log.teacherId && (
                 <>
                   <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sesi Kelas</Text>
                   <Text style={textStyles.body2}>Guru</Text>
