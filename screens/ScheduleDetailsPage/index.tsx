@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { Fragment, useContext, useEffect, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { ScheduleScreenProps } from '../../navTypes'
@@ -128,6 +128,26 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       .finally(() => {
         setChangingStatus(null);
       })
+  }
+
+  function handleOpenOrCloseClassConfirm(openMethod: ScheduleOpenMethods) {
+    Alert.alert(
+      schedule?.status === ScheduleStasuses.OPENED ? 'Tutup Jadwal' : 'Buka Jadwal',
+      `Apakah Anda yakin ingin ${schedule?.status === ScheduleStasuses.OPENED ? 'menutup' : 'membuka'} jadwal?`,
+      [
+        {
+          text: 'Batal',
+          style: 'cancel',
+          onPress: () => {}
+        },
+        {
+          text: 'Ya',
+          onPress: () => {
+            handleOpenOrCloseClass(openMethod);
+          }
+        }
+      ]
+    )
   }
 
   useEffect(() => {
@@ -282,7 +302,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           style={{
                             marginVertical: 8
                           }}
-                          onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.QR_CODE)}
+                          onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
                           isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
                           variant={schedule.status === ScheduleStasuses.CLOSED ? 'contained' : 'outline'}
                           color={schedule.status === ScheduleStasuses.CLOSED ? 'primary' : 'danger'}
@@ -294,7 +314,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           schedule.status !== ScheduleStasuses.OPENED && (
                             <MEButton
                               size='lg'
-                              onPress={() => handleOpenOrCloseClass(ScheduleOpenMethods.CALLOUT)}
+                              onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.CALLOUT)}
                               isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
                               iconStart='hand-paper'
                             >
