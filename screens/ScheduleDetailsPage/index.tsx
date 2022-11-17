@@ -1,5 +1,5 @@
 import { View, Text, Alert } from 'react-native'
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { ScheduleScreenProps } from '../../navTypes'
 import { textStyles } from '../../constants/Styles'
@@ -7,17 +7,20 @@ import moment from 'moment'
 import MEHeader from '../../components/MEHeader'
 import { Schedule } from '../../types'
 import MESpinner from '../../components/MESpinner'
-import { collection, collectionGroup, doc, DocumentReference, getDoc, getDocs, limit, onSnapshot, query, Unsubscribe, where } from 'firebase/firestore'
+import { collection, collectionGroup, limit, onSnapshot, query, Unsubscribe, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { AuthContext, ClassesContext, ProfileContext } from '../../contexts'
+import { AuthContext, ClassesContext, LocationContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { DAYS_ARRAY, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
-import { closeSchedule, openSchedule } from '../../actions/scheduleActions'
+import { AbsentStasuses, DAYS_ARRAY, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
+import { closeSchedule, createUpdateStudentPresenceFromCallout, openSchedule } from '../../actions/scheduleActions'
 import MEPressableText from '../../components/MEPressableText'
 import ScheduleOpenQRCode from './ScheduleOpenQRCode'
 import ScheduleOpenStudentCallouts from './ScheduleOpenStudentCallouts'
 import HistoryCard from '../../components/HistoryCard'
+import ScheduleOpenGeolocation from './ScheduleOpenGeolocation'
+import { getLocationDistance } from '../../utils/utilFunctions'
+import Colors from '../../constants/Colors'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -26,7 +29,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { profile } = useContext(ProfileContext);
   const { classes } = useContext(ClassesContext);
   const { auth } = useContext(AuthContext);
-  const [schedule, setSchedule] = useState<Schedule | any>(null);
+  const { location, getLocation, startForegroundLocation } = useContext(LocationContext);
+  const [schedule, setSchedule] = useState<Schedule | null>(null);
   const [qrCode, setQRCode] = useState<any>(null);
   const [absentCount, setAbsentCount] = useState(0);
   const [studentIds, setStudentIds] = useState<string[]>([]);
@@ -54,8 +58,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
           setSchedule({
             ...scheduleData,
             classId: classObj.id,
-            className: classObj.name,
-            classDescription: classObj.description,
+            className: classObj?.name,
+            classDescription: classObj?.description,
           });
           setStudentIds(classObj.studentIds || []);
         }
@@ -99,6 +103,9 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   useEffect(() => {
     if (schedule) {
       if (schedule.status === ScheduleStasuses.OPENED) {
+        if (schedule.openMethod === ScheduleOpenMethods.GEOLOCATION && schedule.location) {
+          startForegroundLocation();
+        }
         const unsubQRCodes = loadQRCodes();
         return () => unsubQRCodes();
       } else {
@@ -116,24 +123,40 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   }, [scheduleId])
 
   const [changingStatus, setChangingStatus] = useState<any>(null);
-  function handleOpenOrCloseClass(openMethod: ScheduleOpenMethods) {
+  async function handleOpenOrCloseClass(openMethod: ScheduleOpenMethods) {
     setChangingStatus(openMethod);
-    (schedule && schedule?.status === ScheduleStasuses.OPENED ? closeSchedule : openSchedule)(
-      profile.schoolId,
-      schedule?.classId || classId,
+    var location = undefined;
+    if (openMethod === ScheduleOpenMethods.GEOLOCATION) {
+      location = await getLocation();
+    }
+    await (schedule && schedule?.status === ScheduleStasuses.OPENED ? closeSchedule : openSchedule)({
+      schoolId: profile.schoolId,
+      classId: schedule?.classId || classId,
       scheduleId,
-      auth.uid,
-      openMethod
-    )
-      .finally(() => {
-        setChangingStatus(null);
-      })
+      teacherId: auth.uid,
+      openMethod,
+      location
+    })
+    setChangingStatus(null);
+  }
+
+  const [geoPresenceLoading, setGeoPresenceLoading] = useState(false);
+  async function handleGeolocationPresence() {
+    setGeoPresenceLoading(true);
+    await createUpdateStudentPresenceFromCallout({
+      classId,
+      scheduleId,
+      schoolId: profile.schoolId,
+      status: AbsentStasuses.PRESENT,
+      studentId: auth.uid,
+    });
+    setGeoPresenceLoading(false);
   }
 
   function handleOpenOrCloseClassConfirm(openMethod: ScheduleOpenMethods) {
     Alert.alert(
-      schedule?.status === ScheduleStasuses.OPENED ? 'Tutup Jadwal' : 'Buka Jadwal',
-      `Apakah Anda yakin ingin ${schedule?.status === ScheduleStasuses.OPENED ? 'menutup' : 'membuka'} jadwal?`,
+      schedule?.status === ScheduleStasuses.OPENED ? 'Tutup Sesi' : 'Buka Sesi',
+      `Apakah Anda yakin ingin ${schedule?.status === ScheduleStasuses.OPENED ? 'menutup' : 'membuka'} sesi kelas?`,
       [
         {
           text: 'Batal',
@@ -155,6 +178,17 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       handleOpenOrCloseClass(toggleOpen);
     }
   }, [toggleOpen])
+
+  const distance: number = useMemo(() => {
+    if (schedule?.location && location) {
+      return getLocationDistance(location, { 
+        latitude: schedule.location.latitude,
+        longitude: schedule.location.longitude,
+      })
+    } else {
+      return 999;
+    }
+  }, [schedule, location]);
 
   return (
     <MEContainer
@@ -241,7 +275,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           )) : (
                             <>                      
                               {
-                                schedule.status === ScheduleStasuses.OPENED && (
+                                schedule.status === ScheduleStasuses.OPENED ? 
+                                schedule.openMethod === ScheduleOpenMethods.QR_CODE ? (
                                   <MEButton
                                   iconStart="qrcode"
                                   size='lg'
@@ -255,7 +290,34 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                   >
                                     Pindai QR Code
                                   </MEButton>
-                                )
+                                ) : (
+                                  <>
+                                    <MEButton
+                                      iconStart="check"
+                                      size='lg'
+                                      style={{
+                                        marginTop: 8
+                                      }}
+                                      disabled={distance > 1}
+                                      onPress={handleGeolocationPresence}
+                                    >
+                                      Hadir
+                                    </MEButton>
+                                    {
+                                      distance > 1 && (
+                                        <Text 
+                                          style={[textStyles.body2, { 
+                                            textAlign: 'center', 
+                                            marginVertical: 8, 
+                                            color: Colors.light.red 
+                                          }]}
+                                        >
+                                          Anda sedang tidak ada di sekitar lokasi kelas!
+                                        </Text>
+                                      )
+                                    }
+                                  </>
+                                ) : null
                               }
                               <MEButton
                                 size='lg'
@@ -284,41 +346,68 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                             classId={schedule.classId}
                             absentCount={absentCount}
                             studentCount={studentIds.length}
-                          /> : studentIds.length > 0 && (
+                          /> : schedule.openMethod === ScheduleOpenMethods.CALLOUT && studentIds.length > 0 ? (
                             <ScheduleOpenStudentCallouts
                               studentIds={studentIds}
                               scheduleId={scheduleId}
                               classId={schedule.classId}
                             />  
+                          ) : (
+                            <ScheduleOpenGeolocation
+                              studentIds={studentIds}
+                              scheduleId={scheduleId}
+                              classId={schedule.classId}
+                            />
                           ) : null
                         }
                         {
-                          schedule.status === ScheduleStasuses.CLOSED && (
-                            <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
-                          )
-                        }
-                        <MEButton
-                          size='lg'
-                          style={{
-                            marginVertical: 8
-                          }}
-                          onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
-                          isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
-                          variant={schedule.status === ScheduleStasuses.CLOSED ? 'contained' : 'outline'}
-                          color={schedule.status === ScheduleStasuses.CLOSED ? 'primary' : 'danger'}
-                          iconStart={schedule.status === ScheduleStasuses.CLOSED ? 'qrcode' : 'window-close'}
-                        >
-                          { schedule.status === ScheduleStasuses.CLOSED ? 'QR Code' : 'Tutup Kelas' }
-                        </MEButton>
-                        {
-                          schedule.status !== ScheduleStasuses.OPENED && (
+                          schedule.status !== ScheduleStasuses.OPENED ? (
+                            <>
+                              <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
+                              <MEButton
+                                size='lg'
+                                style={{
+                                  marginVertical: 8
+                                }}
+                                onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.GEOLOCATION)}
+                                isLoading={changingStatus === ScheduleOpenMethods.GEOLOCATION}
+                                iconStart='map-marked-alt'
+                              >
+                                Deteksi Lokasi
+                              </MEButton>
+                              <MEButton
+                                size='lg'
+                                style={{
+                                  marginBottom: 8
+                                }}
+                                onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
+                                isLoading={changingStatus === ScheduleOpenMethods.QR_CODE}
+                                iconStart='qrcode'
+                              >
+                                QR Code
+                              </MEButton>
+                              <MEButton
+                                size='lg'
+                                onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.CALLOUT)}
+                                isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
+                                iconStart='hand-paper'
+                              >
+                                Panggil Pelajar
+                              </MEButton>
+                            </>
+                          ) : (
                             <MEButton
                               size='lg'
-                              onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.CALLOUT)}
-                              isLoading={changingStatus === ScheduleOpenMethods.CALLOUT}
-                              iconStart='hand-paper'
+                              style={{
+                                marginVertical: 8
+                              }}
+                              onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
+                              isLoading={changingStatus !== null}
+                              variant='outline'
+                              color='danger'
+                              iconStart='window-close'
                             >
-                              Panggil Pelajar
+                              Tutup Sesi
                             </MEButton>
                           )
                         }
