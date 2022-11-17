@@ -19,10 +19,10 @@ export const AuthContext: Context<{
 })
 
 export const ProfileContext: Context<{
-  profile?: Profile,
+  profile: Profile,
   setProfile: (a?: any) => any,
 }> = createContext({
-  profile: undefined,
+  profile: null,
   setProfile: () => {}
 })
 

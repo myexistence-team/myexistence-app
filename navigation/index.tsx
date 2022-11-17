@@ -29,7 +29,7 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../nav
 import LinkingConfiguration from './LinkingConfiguration';
 import WelcomePage from '../screens/WelcomePage';
 import { app } from '../firebase';
-import { ProfileContext, SchoolContext, AuthContext, ClassesContext, UsersContext } from '../contexts';
+import { ProfileContext, SchoolContext, AuthContext, ClassesContext, UsersContext, LocationContext } from '../contexts';
 import { useContext } from 'react';
 import { getFirestore, doc, Firestore, onSnapshot, collection } from 'firebase/firestore';
 import { Profile } from '../types';
@@ -41,9 +41,49 @@ import HistoryPage from '../screens/HistoryPage';
 import ExcusePage from '../screens/ExcusePage';
 import { ProfileRoles } from '../constants/constants';
 import AdminReferralPage from '../screens/AdminReferralPage';
+import * as Location from 'expo-location';
+import { defineTask, isTaskDefined } from 'expo-task-manager';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
+
+let foregroundSubscription: any = null;
+const TASK_NAME = "BACKGROUND_LOCATION_TASK";
+
+// Defining task for location tracking
+defineTask(TASK_NAME, async ({ data, error }) => {
+  if (error) {
+    console.error(error);
+    return;
+  }
+  if (data) {
+		/* Data object example:
+      {
+        locations: [
+          {
+            coords: {
+              accuracy: 22.5,
+              altitude: 61.80000305175781,
+              altitudeAccuracy: 1.3333333730697632,
+              heading: 0,
+              latitude: 36.7384187,
+              longitude: 3.3464008,
+              speed: 0,
+            },
+            timestamp: 1640286402303,
+          },
+        ],
+      };
+    */
+    const { locations } = data;
+    const location = locations[0];
+
+    if (location) {
+      // Do something with location...
+      console.log("BACKGROUND LOCATION", location);
+    }
+  }
+});
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   const [isInitializing, setIsInitializing] = React.useState(true);
@@ -52,7 +92,11 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [school, setSchool] = React.useState<any>(null);
   const [classes, setClasses] = React.useState<any[]>([]);
   const [users, setUsers] = React.useState<{[key: string]: any}>({});
+  const [backgroundStatus, requestBackgroundPermission] = Location.useBackgroundPermissions();
+  const [foregroundStatus, requestForegroundPermission] = Location.useForegroundPermissions();
+  const [location, setLocation] = React.useState<any>(null);
   
+  // Subscribe to auth changes
   React.useEffect(() => {
     const unsubAuth = onAuthStateChanged(fbAuth, user => {
       setIsInitializing(true);
@@ -68,9 +112,10 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     return () => unsubAuth();
   }, [])
 
+  // Subscribe changes to profile
   React.useEffect(() => {
     if (auth && auth.uid) {
-      const unsubscrubeProfile = onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
+      const unsubsProfile = onSnapshot(doc(firestore, 'users', auth.uid), (docSnap) => {
         if (docSnap.exists()) {
           const profile = docSnap.data();
           setProfile({
@@ -82,15 +127,16 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
           setIsInitializing(false);
         }
       })
-      return () => unsubscrubeProfile();
+      return () => unsubsProfile();
     } else {
       setProfile(null);
     }
   }, [auth])
   
+  // Subscribe changes to school and classes
   React.useEffect(() => {
     if (profile && profile.schoolId) {
-      const unsubProfile = onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
+      const unsubSchool = onSnapshot(doc(firestore, 'schools', profile.schoolId), (docSnap) => {
         if (docSnap.exists()) {
           const school = docSnap.data();
           setSchool({
@@ -110,11 +156,105 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         }
       })
       return () => {
-        unsubProfile();
+        unsubSchool();
         unsubClasses();
       };
     } else {
+      setClasses([]);
       setSchool(null);
+    }
+  }, [profile])
+
+  React.useEffect(() => {
+    const requestPermissions = async () => {
+      const foreground = await Location.requestForegroundPermissionsAsync();
+      if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
+    }
+    requestPermissions();
+  }, [])
+
+  async function startForegroundLocation() {
+    const { granted } = await Location.getForegroundPermissionsAsync();
+    if (!granted) {
+      console.log("Location tracking denied!");
+      return;
+    }
+    if (foregroundSubscription) stopForegroundLocation();
+    foregroundSubscription = await Location.watchPositionAsync(
+      { 
+        accuracy: Location.Accuracy.BestForNavigation,
+        distanceInterval: 1
+      }, 
+      (location) => {
+        const { coords: { latitude, longitude } } = location;
+        setLocation({ latitude, longitude });
+      }
+    )
+  }
+
+  function stopForegroundLocation() {
+    foregroundSubscription.remove();
+    setLocation(null);
+  }
+
+  async function startBackgroundLocation() {
+    // Don't track position if permission is not granted
+    const { granted } = await Location.getBackgroundPermissionsAsync()
+    if (!granted) {
+      console.log("Location tracking denied");
+      const newBackgroundPermission = await Location.requestBackgroundPermissionsAsync();
+      if (newBackgroundPermission.status !== 'granted') {
+        return;
+      }
+    }
+
+    // Make sure the task is defined otherwise do not start tracking
+    const taskDefined = isTaskDefined(TASK_NAME);
+    if (!taskDefined) {
+      console.log("Task is not defined");
+      return;
+    }
+
+    // Don't track if it is already running in background
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME)
+    if (hasStarted) {
+      console.log("Background location update already started");
+      return;
+    }
+
+    await Location.startLocationUpdatesAsync(TASK_NAME, {
+      accuracy: Location.Accuracy.Balanced,
+      showsBackgroundLocationIndicator: true,
+      timeInterval: 5000,
+      foregroundService: {
+        notificationTitle: "Hadir sedang melacak lokasi Anda",
+        notificationBody: "Hadir memastikan Anda ada di sekitar kelas selama jadwal berlangsung.",
+        notificationColor: Colors.light.blue,
+      },
+    })
+  }
+
+  async function stopBackgroundLocation() {
+    const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
+    if (hasStarted) {
+      await Location.stopLocationUpdatesAsync(TASK_NAME);
+      console.log("Location tracking stopped");
+    }
+  }
+
+  async function getLocation() {
+    const loc = await Location.getCurrentPositionAsync();
+    const newLoc = { 
+      latitude: loc.coords.latitude, 
+      longitude: loc.coords.longitude, 
+    }
+    setLocation(newLoc);
+    return newLoc;
+  }
+
+  React.useEffect(() => {
+    if (profile?.role === ProfileRoles.STUDENT && profile?.currentScheduleId) {
+      startForegroundLocation();
     }
   }, [profile])
 
@@ -138,11 +278,23 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         <SchoolContext.Provider value={{ school, setSchool }}>
           <ClassesContext.Provider value={{ classes, setClasses }}>
             <UsersContext.Provider value={{ users, setUsers }}>
-              <NavigationContainer
-                linking={LinkingConfiguration}
-                theme={METheme}>
-                <RootNavigator/>
-              </NavigationContainer>
+              <LocationContext.Provider 
+                value={{ 
+                  location, 
+                  setLocation,
+                  startBackgroundLocation,
+                  startForegroundLocation,
+                  stopBackgroundLocation,
+                  stopForegroundLocation,
+                  getLocation,
+                }}
+              >
+                <NavigationContainer
+                  linking={LinkingConfiguration}
+                  theme={METheme}>
+                  <RootNavigator/>
+                </NavigationContainer>
+              </LocationContext.Provider>
             </UsersContext.Provider>
           </ClassesContext.Provider>
         </SchoolContext.Provider>
