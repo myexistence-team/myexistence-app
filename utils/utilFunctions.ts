@@ -41,3 +41,12 @@ export function getStatusColor(status: string) {
       return Colors.light.black;
   }
 }
+
+export function getLocationDistance(
+  { latitude: latitudeA, longitude: longitudeA }: { latitude: number, longitude: number },
+  { latitude: latitudeB, longitude: longitudeB }: { latitude: number, longitude: number },
+) {
+  const a = latitudeA - latitudeB;
+  const b = latitudeA - latitudeB;
+  return Math.sqrt(a*a + b*b);
+}
