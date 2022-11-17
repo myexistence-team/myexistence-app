@@ -10,8 +10,7 @@ import MESpinner from '../../components/MESpinner';
 import Colors from '../../constants/Colors';
 import { AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
 import { textStyles } from '../../constants/Styles';
-import { ProfileContext, SchoolContext } from '../../contexts';
-import { ExcuseStatusesEnum } from '../../enums';
+import { ProfileContext } from '../../contexts';
 import { firestore } from '../../firebase';
 
 export default function ScheduleOpenStudentCallouts({
@@ -58,14 +57,6 @@ export default function ScheduleOpenStudentCallouts({
   const waitingForPresences = studentLogs.filter((sl) => sl.status !== AbsentStasuses.EXCUSED || sl?.excuseStatus !== ExcuseStatuses.WAITING);
 
   const [currentIdx, setCurrentIdx] = useState(Math.max(0, studentLogs.length - 1));
-
-  // useEffect(() => {
-  //     if (studentLogs.length === students.length) {
-  //       setCurrentIdx(-1);
-  //     } else {
-  //       setCurrentIdx(Math.max(0, studentLogs.length - 1));
-  //     }
-  // }, [studentLogsState.length, students.length])
 
   const currentStudent = students[currentIdx];
   const currentStudentLogIdx = studentLogsState.findIndex((sl) => sl.studentId === currentStudent?.id);
@@ -123,7 +114,6 @@ export default function ScheduleOpenStudentCallouts({
                 scheduleId,
                 classId
               },  
-              initial: false
             }
           })
         }}
