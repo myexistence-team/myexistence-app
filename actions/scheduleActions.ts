@@ -1,6 +1,7 @@
 import { FirebaseError } from "firebase/app";
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
+import { addDoc, collection, doc, GeoPoint, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import { Alert } from "react-native";
 import { AbsentStasuses, ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "../constants/constants";
 import { QRCodesErrors, SchedulesError } from "../errors";
 import { app, firestore } from "../firebase";
@@ -177,13 +178,42 @@ export async function createExcuseRequest(
   }
 }
 
-export async function openSchedule(
+export async function openSchedule(args: {
   schoolId: string,
   classId: string,
   scheduleId: string,
   teacherId: string,
-  openMethod: ScheduleOpenMethods
-) {
+  openMethod: ScheduleOpenMethods,
+  location?: {
+    latitude: number,
+    longitude: number,
+  }
+}) {
+  const {
+    scheduleId, schoolId, classId, openMethod, teacherId, location
+  } = args;
+
+  if (!location && openMethod === ScheduleOpenMethods.GEOLOCATION) {
+    Alert.alert(
+      "Lokasi Tidak Terdeteksi",
+      "Mohon aktifkan lokasi Anda untuk membuka kelas menggunakan geolocation",
+      [
+        {
+          text: "Coba Lagi",
+          onPress: () => {
+            return;
+          }
+        }, {
+          text: "OK",
+          onPress: () => {
+            openSchedule(args);
+          }
+        },
+      ]
+    )
+    return;
+  }
+  
   const batch = writeBatch(firestore);
   const schedulePath = [
     schoolId,
@@ -232,7 +262,8 @@ export async function openSchedule(
         status: ScheduleStasuses.OPENED,
         openMethod,
         openedAt: new Date(),
-        openedBy: teacherId
+        openedBy: teacherId,
+        location: new GeoPoint(location.latitude, location.longitude),
       }
     )
 
@@ -247,12 +278,12 @@ export async function openSchedule(
   }
 }
 
-export async function closeSchedule(
+export async function closeSchedule({ classId,scheduleId,schoolId,teacherId }: {
   schoolId: string,
   classId: string,
   scheduleId: string,
   teacherId: string
-) {
+}) {
   const schedulePath = [
     schoolId,
     'classes',
@@ -267,6 +298,7 @@ export async function closeSchedule(
       ...schedulePath
     ), {
       status: ScheduleStasuses.CLOSED,
+      location: null
     }
   );
   const batch = writeBatch(firestore);
