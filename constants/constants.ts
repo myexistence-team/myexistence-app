@@ -42,6 +42,7 @@ export enum ScheduleStasuses {
 export enum ScheduleOpenMethods {
   QR_CODE = "QR_CODE",
   CALLOUT = "CALLOUT",
+  GEOLOCATION = "GEOLOCATION",
 }
 
 export enum ExcuseTypes {
