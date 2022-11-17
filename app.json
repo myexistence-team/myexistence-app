@@ -31,14 +31,23 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.myexistance.hadir"
+      "bundleIdentifier": "com.myexistance.hadir",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.myexistance.hadir"
+      "package": "com.myexistance.hadir",
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
