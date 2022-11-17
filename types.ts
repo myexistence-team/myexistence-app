@@ -1,5 +1,5 @@
-import { DocumentReference, Timestamp } from "firebase/firestore"
-import { ExcuseStatuses, ScheduleOpenMethods } from "./constants/constants"
+import { DocumentReference, GeoPoint, Timestamp } from "firebase/firestore"
+import { ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "./constants/constants"
 
 export type BaseType = {
   id: string,
@@ -43,7 +43,9 @@ export type Schedule = BaseType & {
   end: Date,
   tolerance: number,
   classId: string,
-  openMethod?: ScheduleOpenMethods
+  status: ScheduleStasuses,
+  openMethod?: ScheduleOpenMethods,
+  location?: GeoPoint,
 }
 
 export type Class = BaseType & {
