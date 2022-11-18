@@ -52,7 +52,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
         const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
         unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
-          setStudentLogs(docs.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+          setStudentLogs(docs.docs.map((doc) => ({ 
+            ...doc.data(), 
+            id: doc.id,
+            isCurrent: true
+          })));
         });
         if (classObj) {
           setSchedule({
@@ -270,7 +274,6 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                             <HistoryCard
                               history={studentLog}
                               key={slIdx}
-                              clickable={false}
                             />
                           )) : (
                             <>                      
