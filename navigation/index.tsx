@@ -43,6 +43,7 @@ import { ProfileRoles } from '../constants/constants';
 import AdminReferralPage from '../screens/AdminReferralPage';
 import * as Location from 'expo-location';
 import { defineTask, isTaskDefined } from 'expo-task-manager';
+import NotVerified from '../screens/NotVerified';
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
@@ -327,8 +328,9 @@ function RootNavigator(props: any) {
             {
               [ProfileRoles.ADMIN, ProfileRoles.SUPER_ADMIN].includes(ProfileRoles[profile.role]) ? 
                 <Stack.Screen name='AdminReferralPage' component={AdminReferralPage} options={{ headerShown: false }}/> 
-                :
-                <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+                : !profile.isVerified 
+                ? <Stack.Screen name="NotVerified" component={NotVerified} options={{ headerShown: false }} />
+                : <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
             }
           </>
         ) : auth && !profile ? (

@@ -10,6 +10,7 @@ import { signOut, signUpFromGoogle } from '../../actions/authActions';
 import { object, string } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FirestoreError } from 'firebase/firestore';
+import MEControlledSelect from '../../components/MEControlledSelect';
 
 export default function RegisterAccount() {
   const { auth } = useContext(AuthContext);
@@ -17,7 +18,8 @@ export default function RegisterAccount() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const registerSchema = object().shape({
-    schoolId: string().required().strict()
+    schoolId: string().required().strict(),
+    role: string().required(),
   })
   const { control, watch, handleSubmit } = useForm({
     resolver: yupResolver(registerSchema)
@@ -25,7 +27,7 @@ export default function RegisterAccount() {
 
   function onSubmit(data: any) {
     setIsSubmitting(true)
-    signUpFromGoogle(auth, data.schoolId)
+    signUpFromGoogle(auth, data)
       .then((profile) => {
         setProfile(profile);
       })
@@ -40,12 +42,21 @@ export default function RegisterAccount() {
   return (
     <MEContainer>
       <Text style={[textStyles.heading3, { marginBottom: 8, marginTop: 64 }]}>Anda belum terdaftar</Text>
-      <Text style={[textStyles.body2]}>Sepertinya Anda belum daftar. Silahkan pilih sekolah Anda.</Text>
+      <Text style={[textStyles.body2, { marginBottom: 16 }]}>Sepertinya Anda belum daftar. Silahkan pilih sekolah dan peran Anda.</Text>
       <MEFirestoreSelect
         control={control}
         name='schoolId'
         listName='schools'
-        label={false}
+        label='Sekolah'
+      />
+      <MEControlledSelect
+        control={control}
+        label='Peran'
+        name='role'
+        options={[
+          { value: 'TEACHER', label: 'Pengajar' },
+          { value: 'STUDENT', label: 'Pelajar' },
+        ]}
       />
       <MEButton
         size='lg'
