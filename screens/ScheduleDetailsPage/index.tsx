@@ -200,7 +200,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       refreshing={!Boolean(schedule)}
     >
       <MEHeader
-        title='Detail Jadwal'
+        title='Detail Sesi'
       />
       {
         !schedule ? (
@@ -262,7 +262,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                         initial: false
                       })
                     }}
-                  >Lihat Jadwal</MEPressableText>
+                  >Lihat Sesi Kelas</MEPressableText>
                 </>
               ) : (
                 <>

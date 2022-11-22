@@ -63,7 +63,7 @@ export async function createPresenceInSchedule(
     if (schedule.status !== ScheduleStasuses.OPENED) {
       throw new FirebaseError(
         SchedulesError.SCHDEULE_HAS_NOT_OPENED,
-        'Jadwal belum dibuka atau sudah berakhir.'
+        'Sesi kelas belum dibuka atau sudah berakhir.'
       )
     } else {
       await updateDoc(userRef, {
@@ -105,7 +105,7 @@ export async function createPresenceInSchedule(
   } else {
     throw new FirebaseError(
       SchedulesError.SCHDEULE_NOT_FOUND,
-      'Jadwal tidak ditemukan.'
+      'Sesi kelas tidak ditemukan.'
     )
   }
 }
@@ -173,7 +173,7 @@ export async function createExcuseRequest(
   } else {
     throw new FirebaseError(
       SchedulesError.SCHDEULE_NOT_FOUND,
-      'Jadwal tidak ditemukan.'
+      'Sesi kelas tidak ditemukan.'
     )
   }
 }
@@ -273,7 +273,7 @@ export async function openSchedule(args: {
   } else {
     throw new FirebaseError(
       SchedulesError.SCHDEULE_NOT_FOUND,
-      'Jadwal tidak ditemukan!'
+      'Sesi kelas tidak ditemukan!'
     )
   }
 }

@@ -126,7 +126,7 @@ export default function HistoryDetailsPage({
             </MEPressableText>
             <Text style={[textStyles.body1, {marginBottom: 32}]}>{classroom?.description}</Text>
 
-            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Jadwal</Text>
+            <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Sesi Kelas</Text>
 
             <Text style={textStyles.body2}>Hari</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
