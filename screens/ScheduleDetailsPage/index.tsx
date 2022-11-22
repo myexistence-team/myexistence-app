@@ -245,9 +245,9 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
             {
               profile.currentScheduleId && scheduleId !== profile.currentScheduleId ? (
                 <>
-                  <Text style={[textStyles.body1, { textAlign: 'center', marginBottom: 8 }]}>Anda sudah memiliki kelas yang aktif.</Text>
+                  <Text style={[textStyles.body1, { textAlign: 'center', marginBottom: 8, color: Colors.light.grey }]}>Sudah ada sesi kelas yang berlangsung.</Text>
                   <MEPressableText 
-                    style={[textStyles.body1, { textAlign: 'center' }]}
+                    style={[textStyles.body1, { textAlign: 'center', fontFamily: 'manrope-bold' }]}
                     onPress={() => {
                       navigation.navigate('Root', {
                         screen: 'SchedulesPage',

@@ -101,7 +101,7 @@ export default function ScheduleCard({
       </Text>
       {
         profile.currentScheduleId && schedule.id === profile.currentScheduleId ? (
-          <Text style={[textStyles.body2, { textAlign: 'center' }]}>Kelas sedang aktif</Text>
+          <Text style={[textStyles.body2, { textAlign: 'center', marginTop: 8, fontFamily: 'manrope-bold' }]}>Kelas sedang aktif</Text>
         ) : !profile.currentScheduleId ? (
           <>
             {
