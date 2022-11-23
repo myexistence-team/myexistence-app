@@ -323,7 +323,6 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                 ) : null
                               }
                               <MEButton
-                                size='lg'
                                 variant='outline'
                                 style={{
                                   marginTop: 8
@@ -332,7 +331,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                   classId: schedule.classId, scheduleId
                                 })}
                               >
-                                Izin
+                                Izin Kelas
                               </MEButton>
                             </>
                           )
