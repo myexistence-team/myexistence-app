@@ -114,7 +114,7 @@ export default function ExcusePage({
         isLoading={isSubmitting} 
         onPress={handleSubmit(onSubmit)}
       >
-        Simpan Permintaan Izin
+        Kirim Permintaan Izin
       </MEButton>
     </MEContainer>
   )
