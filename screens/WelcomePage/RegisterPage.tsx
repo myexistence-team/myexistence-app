@@ -8,14 +8,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import MEControlledTextInput from '../../components/MEControlledTextInput';
 import MEButton from '../../components/MEButton';
 import { FirebaseError } from 'firebase/app';
-import MEControlledSelect from '../../components/MEControlledSelect';
 import MEFirestoreSelect from '../../components/MEFirestoreSelect';
 import { signUp } from '../../actions/authActions';
-
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import { AuthContext } from '../../contexts';
-import googleClientIds from '../../googleClientIds';
 
 export default function RegisterPage() {
 
@@ -26,7 +20,7 @@ export default function RegisterPage() {
     email: string().email().required().strict(),
     password: string().required().strict(),
     repassword: string().required().strict(),
-    role: string().required().strict(),
+    // role: string().required().strict(),
     schoolId: string().required().strict(),
   })
   const { control, handleSubmit, watch } = useForm({
@@ -51,7 +45,7 @@ export default function RegisterPage() {
       >
         <MEHeader title='Daftar'/>
         <View>
-          <MEControlledSelect
+          {/* <MEControlledSelect
             control={control}
             name='role'
             options={[
@@ -59,7 +53,7 @@ export default function RegisterPage() {
               { value: 'STUDENT', label: 'Pelajar' },
             ]}
             label='Daftar Sebagai'
-          />
+          /> */}
           <MEFirestoreSelect
             control={control}
             name='schoolId'
@@ -74,6 +68,8 @@ export default function RegisterPage() {
           <MEControlledTextInput
             name='email'
             control={control}
+            autoComplete='email'
+            keyboardType='email-address'
             autoCapitalize='none'
           />
           <MEControlledTextInput

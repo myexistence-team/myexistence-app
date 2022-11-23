@@ -19,7 +19,7 @@ export default function RegisterAccount() {
 
   const registerSchema = object().shape({
     schoolId: string().required().strict(),
-    role: string().required(),
+    // role: string().required(),
   })
   const { control, watch, handleSubmit } = useForm({
     resolver: yupResolver(registerSchema)
@@ -49,7 +49,7 @@ export default function RegisterAccount() {
         listName='schools'
         label='Sekolah'
       />
-      <MEControlledSelect
+      {/* <MEControlledSelect
         control={control}
         label='Peran'
         name='role'
@@ -57,7 +57,7 @@ export default function RegisterAccount() {
           { value: 'TEACHER', label: 'Pengajar' },
           { value: 'STUDENT', label: 'Pelajar' },
         ]}
-      />
+      /> */}
       <MEButton
         size='lg'
         isLoading={isSubmitting}
