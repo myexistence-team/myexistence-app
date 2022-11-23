@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as 
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where, writeBatch } from "firebase/firestore"
 import { Profile } from "../types"
 import { auth, firestore } from "../firebase"
+import { ProfileRoles } from "../constants/constants"
 
 export const signIn = async (
   email: string, 
@@ -21,7 +22,6 @@ export const signUp = async (
     email: string, 
     password?: string, 
     repassword?: string,
-    role: "TEACHER" | "STUDENT",
     schoolId: string,
   }
 ): Promise<void> => {
@@ -30,21 +30,23 @@ export const signUp = async (
   const existingUserQuery = query(
     usersRef, 
     where('email', "==", newCred.email), 
-    where('role', "==", newCred.role), 
+    where('role', "in", ["TEACHER", "STUDENT"]), 
     where('schoolId', "==", newCred.schoolId), 
   );
   const existingUsers = await getDocs(existingUserQuery);
 
   var newUser = { ...newCred };
-  const idsField = newCred.role === "STUDENT" ? 'studentIds' : 'teacherIds';
+  var idsField: string = '';
   if (!existingUsers.empty) {
     newUser = { ...existingUsers.docs[0].data(), ...newUser };
+    idsField = existingUsers.docs[0].data().role === ProfileRoles.STUDENT ? 'studentIds' : 'teacherIds';
     await deleteDoc(doc(firestore, 'users', existingUsers.docs[0].id));
   }
   
   const newAuth = await createUserWithEmailAndPassword(auth, newUser.email, newUser.password);
   
   if (!existingUsers.empty) {
+    // Update all class studentIds or teacherIds
     const classesRef = collection(firestore, "schools", newCred.schoolId, "classes");
     const classesSnaps = (await getDocs(query(classesRef, where(
       idsField, 
@@ -55,10 +57,26 @@ export const signUp = async (
       for (const classSnap of classesSnaps) {
         const classData = classSnap.data();
         const newClassData = {
-          ...classData,
           [idsField]: classData[idsField].filter((id: string) => id !== existingUsers.docs[0].id).concat(newAuth.user.uid)
         }
-        batch.set(classSnap.ref, newClassData)
+        batch.update(classSnap.ref, newClassData)
+      }
+    }
+
+    // Update all logs for students
+    if (existingUsers.docs[0].data().role === "STUDENT") {
+      const logsRef = collection(firestore, "schools", newCred.schoolId, "logs");
+      const logSnaps = (await getDocs(query(logsRef, where(
+        'studentId', 
+        "==", 
+        existingUsers.docs[0].id
+      )))).docs;
+      if (logSnaps.length) {
+        for (const logSnap of logSnaps) {
+          batch.update(logSnap.ref, {
+            studentId: newAuth.user.uid
+          })
+        }
       }
     }
   }
@@ -69,6 +87,7 @@ export const signUp = async (
   const newUserPayload = {
     ...newUser,
     isVerified: newUser.isVerified || false,
+    hasRegistered: true,
     createdBy: newAuth.user.uid,
     updatedBy: newAuth.user.uid,
     createdAt: new Date(),
@@ -83,7 +102,6 @@ export const signUp = async (
 
 export const signUpFromGoogle = async (user: any, data: {
   schoolId: string,
-  role: string
 }): Promise<any> => {
   const usersRef = collection(firestore, 'users');
   const existingUserQuery = query(
@@ -96,9 +114,11 @@ export const signUpFromGoogle = async (user: any, data: {
   const batch = writeBatch(firestore);
 
   var newUser = { ...data };
-  const idsField = data.role === "STUDENT" ? 'studentIds' : 'teacherIds';
   if (!existingUsers.empty) {
     newUser = { ...existingUsers.docs[0].data() };
+    const idsField = existingUsers.docs[0].data().role === "STUDENT" ? 'studentIds' : 'teacherIds';
+    
+    // Update all class studentIds or teacherIds
     const classesRef = collection(firestore, "schools", data.schoolId, "classes");
     const classesSnaps = (await getDocs(query(classesRef, where(
       idsField, 
@@ -109,12 +129,29 @@ export const signUpFromGoogle = async (user: any, data: {
       for (const classSnap of classesSnaps) {
         const classData = classSnap.data();
         const newClassData = {
-          ...classData,
           [idsField]: classData[idsField].filter((id: string) => id !== existingUsers.docs[0].id).concat(user.uid)
         }
-        batch.set(classSnap.ref, newClassData)
+        batch.update(classSnap.ref, newClassData)
       }
     }
+      
+    if (existingUsers.docs[0].data().role === "STUDENT") {
+      const logsRef = collection(firestore, "schools", data.schoolId, "logs");
+      const logSnaps = (await getDocs(query(logsRef, where(
+        'studentId', 
+        "==", 
+        existingUsers.docs[0].id
+      )))).docs;
+      if (logSnaps.length) {
+        for (const logSnap of logSnaps) {
+          batch.update(logSnap.ref, {
+            studentId: user.uid
+          })
+        }
+      }
+    }
+
+    // Update all logs of students
     await deleteDoc(doc(firestore, 'users', existingUsers.docs[0].id));
   }
 
