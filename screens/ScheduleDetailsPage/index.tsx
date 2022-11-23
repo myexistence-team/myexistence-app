@@ -12,7 +12,7 @@ import { firestore } from '../../firebase'
 import { AuthContext, ClassesContext, LocationContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { AbsentStasuses, DAYS_ARRAY, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
+import { AbsentStasuses, DAYS_ARRAY, MAX_DISTACE, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
 import { closeSchedule, createUpdateStudentPresenceFromCallout, openSchedule } from '../../actions/scheduleActions'
 import MEPressableText from '../../components/MEPressableText'
 import ScheduleOpenQRCode from './ScheduleOpenQRCode'
@@ -21,6 +21,7 @@ import HistoryCard from '../../components/HistoryCard'
 import ScheduleOpenGeolocation from './ScheduleOpenGeolocation'
 import { getLocationDistance } from '../../utils/utilFunctions'
 import Colors from '../../constants/Colors'
+import useGetDistance from '../../hooks/useGetDistance'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -183,16 +184,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     }
   }, [toggleOpen])
 
-  const distance: number = useMemo(() => {
-    if (schedule?.location && location) {
-      return getLocationDistance(location, { 
-        latitude: schedule.location.latitude,
-        longitude: schedule.location.longitude,
-      })
-    } else {
-      return 999;
-    }
-  }, [schedule, location]);
+  const distance: number = useGetDistance(schedule?.location);
 
   return (
     <MEContainer
@@ -301,13 +293,14 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                       style={{
                                         marginTop: 8
                                       }}
-                                      disabled={distance > 1}
+                                      disabled={distance > MAX_DISTACE}
                                       onPress={handleGeolocationPresence}
+                                      isLoading={geoPresenceLoading}
                                     >
                                       Hadir
                                     </MEButton>
                                     {
-                                      distance > 1 && (
+                                      distance > MAX_DISTACE && (
                                         <Text 
                                           style={[textStyles.body2, { 
                                             textAlign: 'center', 

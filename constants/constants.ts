@@ -62,3 +62,5 @@ export enum ProfileRoles {
   TEACHER = 'TEACHER',
   STUDENT = 'STUDENT',
 }
+
+export const MAX_DISTACE = 1;

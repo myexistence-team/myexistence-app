@@ -34,17 +34,17 @@ export default function ClassCard(props: {
          }}
         >            
             <MECard 
-            style={{
-                marginBottom: 16
-            }}>
+                style={{
+                    marginBottom: 16
+                }}>
                 <Text
-                style={[textStyles.body1, {
-                    fontFamily: 'manrope-bold',
-                    marginBottom: 8,
-                }]}
-                >{classRoom.name}</Text>
+                    style={[textStyles.body1, {
+                        fontFamily: 'manrope-bold',
+                        marginBottom: 8,
+                    }]}
+                    >{classRoom.name}</Text>
                 <Text
-                style={[textStyles.body3]}
+                    style={[textStyles.body3]}
                 >{classRoom.description}</Text>
             </MECard>
         </Pressable>

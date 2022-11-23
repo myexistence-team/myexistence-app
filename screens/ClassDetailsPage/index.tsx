@@ -168,7 +168,11 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
               <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 4, }]}>Sesi</Text>
                 {
                   schedules.map((s: any, idx: number) => (
-                    <ClassScheduleCard schedule={s} key={idx}/>
+                    <ClassScheduleCard 
+                      schedule={s} 
+                      key={idx}
+                      classId={classId}
+                    />
                   ))
                 }
             </>              

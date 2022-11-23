@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import React from 'react'
+import React, { useContext, useState } from 'react'
 import MECard from './MECard';
 import { textStyles } from '../constants/Styles';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -7,19 +7,39 @@ import Colors from '../constants/Colors';
 import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
-import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
-import { DAYS_ARRAY, ScheduleStasuses } from '../constants/constants';
+import { AbsentStasuses, DAYS_ARRAY, MAX_DISTACE, ScheduleOpenMethods, ScheduleStasuses } from '../constants/constants';
+import { AuthContext, ProfileContext } from '../contexts';
+import useGetDistance from '../hooks/useGetDistance';
+import { createUpdateStudentPresenceFromCallout } from '../actions/scheduleActions';
 
 export default function ClassScheduleCard({
   schedule,
-  disableScanButton
+  disableScanButton,
+  classId
 }: {
   schedule: any & {
     start: Date
   },
+  classId: string,
   disableScanButton?: boolean
 }) {
+  const { profile } = useContext(ProfileContext);
+  const { auth } = useContext(AuthContext);
   const navigation = useNavigation();
+  const distance: number = useGetDistance(schedule?.location);
+
+  const [geoPresenceLoading, setGeoPresenceLoading] = useState(false);
+  async function handleGeolocationPresence() {
+    setGeoPresenceLoading(true);
+    await createUpdateStudentPresenceFromCallout({
+      classId,
+      scheduleId: schedule.id,
+      schoolId: profile.schoolId,
+      status: AbsentStasuses.PRESENT,
+      studentId: auth.uid,
+    });
+    setGeoPresenceLoading(false);
+  }
 
   return (
     <MECard
@@ -87,7 +107,7 @@ export default function ClassScheduleCard({
         {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
       </Text>
       {
-        (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED ? (
+        (disableScanButton === undefined || disableScanButton === false) && schedule.status === ScheduleStasuses.OPENED && !profile.currentScheduleId ? (
           <View
           style={{
               flexDirection: 'row',
@@ -98,7 +118,6 @@ export default function ClassScheduleCard({
               style={[
                 { 
                   flex: 2,
-                  marginRight: 8
                 }
               ]}
             >
@@ -115,28 +134,41 @@ export default function ClassScheduleCard({
                   Izin
               </MEButton>
             </View>
-            <View
-              style={[
-                { 
-                  flex: 3,
-                }
-              ]}
-            >
-              <MEButton
-              iconStart="qrcode"
-              style={[
-                { 
-                  marginLeft: 4
-                }
-              ]}
-              onPress={() => navigation.navigate('Scanner', {
-                  scheduleId: schedule.id,
-                  schedule
-              })}
-              >
-              Pindai QR Code
-              </MEButton>
-            </View>
+            {
+              schedule.openMethod !== ScheduleOpenMethods.CALLOUT && (
+                <View
+                  style={[
+                    { 
+                      flex: 3,
+                      marginLeft: 8
+                    }
+                  ]}
+                >
+                  {
+                    schedule.openMethod === ScheduleOpenMethods.QR_CODE ? (
+                      <MEButton
+                        iconStart="qrcode"
+                        onPress={() => navigation.navigate('Scanner', {
+                            scheduleId: schedule.id,
+                            schedule
+                        })}
+                      >
+                        Pindai QR Code
+                      </MEButton>
+                    ) : (
+                      <MEButton
+                        iconStart="check"
+                        isLoading={geoPresenceLoading}
+                        onPress={handleGeolocationPresence}
+                        disabled={distance > MAX_DISTACE}
+                      >
+                        Hadir
+                      </MEButton>
+                    )
+                  }
+                </View>
+              ) 
+            }
           </View>
         ) : null
       }
