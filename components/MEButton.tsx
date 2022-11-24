@@ -63,14 +63,14 @@ function getButtonStyleBySize(size: string) {
   }
 }
 
-const getButtonStyles = (size: string, color: string) => StyleSheet.create({
+const getButtonStyles = (size: string, color: string, fullWidth: boolean) => StyleSheet.create({
   contained: {
     backgroundColor: getColorHex(color),
     color: color === 'white' ? Colors.light.tint : '#fff',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    width: fullWidth ? '100%' : undefined,
     borderRadius: 8,
     shadowColor: '#000',
     shadowOffset: {
@@ -83,7 +83,7 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
   },
   outline: {
     color: getColorHex(color),
-    width: '100%',
+    width: fullWidth ? '100%' : undefined,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -93,7 +93,7 @@ const getButtonStyles = (size: string, color: string) => StyleSheet.create({
     ...getButtonStyleBySize(size),
   },
   ghost: {
-    width: '100%',
+    width: fullWidth ? '100%' : undefined,
     color: getColorHex(color),
     flexDirection: 'row',
     justifyContent: 'center',
@@ -107,6 +107,7 @@ export default function MEButton(props: PressableProps & {
   variant?: 'contained' | 'outline' | 'ghost',
   size?: 'sm' | 'md' | 'lg',
   color?: 'primary' | 'secondary' | 'danger' | 'success' | 'white' | string,
+  fullWidth?: boolean,
   style?: ViewStyle,
   textStyle?: TextStyle,
   iconStart?: string,
@@ -123,6 +124,7 @@ export default function MEButton(props: PressableProps & {
     isLoading,
     iconStart,
     disabled,
+    fullWidth = true,
     ...rest
   } = props;
 
@@ -135,12 +137,12 @@ export default function MEButton(props: PressableProps & {
       style={{
         borderRadius: 8,
         overflow: 'hidden',
-        width: '100%'
+        width: fullWidth ? '100%' : undefined
       }}
     >
       <Pressable 
         style={({ pressed }) => ([
-          getButtonStyles(size, color)[variant], 
+          getButtonStyles(size, color, fullWidth)[variant], 
           pressed ? {
             opacity: 0.75,
             transform: [{ scale: 0.99 }]
@@ -156,7 +158,7 @@ export default function MEButton(props: PressableProps & {
         {
           isLoading ? (
             <ActivityIndicator
-              color={getButtonStyles(size, color)[variant].color}
+              color={getButtonStyles(size, color, fullWidth)[variant].color}
               // size={33}
               size={getSpinnerSize(size)}
             />
@@ -177,7 +179,7 @@ export default function MEButton(props: PressableProps & {
                     <FontAwesome5
                       name={iconStart}
                       size={18}
-                      color={getButtonStyles(size, color)[variant].color}
+                      color={getButtonStyles(size, color, fullWidth)[variant].color}
                     />
                   </View>
                 ) : null
@@ -186,7 +188,7 @@ export default function MEButton(props: PressableProps & {
                 style={[
                   getTextStyleBySize(size), 
                   { 
-                    color: getButtonStyles(size, color)[variant].color,
+                    color: getButtonStyles(size, color, fullWidth)[variant].color,
                     flexDirection: 'row',
                   },
                   textStyle
