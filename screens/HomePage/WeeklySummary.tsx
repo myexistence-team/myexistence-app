@@ -66,7 +66,7 @@ export default function WeeklySummary() {
   ]
 
   return (
-    <View>
+    <View style={{ paddingBottom: 16 }}>
       {
         isLoading ? (
           <MESpinner/>
