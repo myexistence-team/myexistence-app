@@ -17,8 +17,11 @@ import { Log } from '../../types'
 import { useForm } from 'react-hook-form'
 import MEFirestoreSelect from '../../components/MEFirestoreSelect'
 import moment from 'moment'
+import MECard from '../../components/MECard'
+import { useNavigation } from '@react-navigation/native'
 
 export default function SummaryDetails() {
+  const navigation = useNavigation();
   const { auth } = useContext(AuthContext);
   const { profile } = useContext(ProfileContext);
   const [dateStart, setDateStart] = useState(getStartOfWeek());
@@ -37,7 +40,7 @@ export default function SummaryDetails() {
       `schools/${profile.schoolId}/logs`),
       where('studentId', '==', auth.uid),
       ...getValues('classId') ? [where('classId', '==', getValues('classId'))] : [],
-      orderBy('time', 'desc'),
+      orderBy('time', 'asc'),
       where('time', '>=', dateStart),
       where('time', '<=', dateEnd),
     );
@@ -112,7 +115,7 @@ export default function SummaryDetails() {
   const pieChartData = [
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logsCountByStatus?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Absen", count: logsCountByStatus?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambapnat", count: logsCountByStatus?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambat", count: logsCountByStatus?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logsCountByStatus?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
   ]
 
@@ -121,12 +124,12 @@ export default function SummaryDetails() {
     datasets: [
       {
         data: Object.values(logsCountByDate).map((l) => l[0]),
-        color: (opacity = 1) => Colors.light.green,
+        color: () => Colors.light.green,
         strokeWidth: 2,
       },
       {
         data: Object.values(logsCountByDate).map((l) => l[1]),
-        color: (opacity = 1) => Colors.light.red,
+        color: () => Colors.light.red,
         strokeWidth: 2,
       },
     ],
@@ -232,12 +235,107 @@ export default function SummaryDetails() {
           <MESpinner/>
         ) : (
           <>
+            <View style={{ marginVertical: 36 }}>
+              <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <MECard
+                    onPress={() => {
+                      navigation.navigate('Root', {
+                        screen: 'HistoryPage',
+                        params: {
+                          screen: 'History',
+                          params: {
+                            status: AbsentStasuses.PRESENT
+                          }
+                        }
+                      })
+                    }}
+                  >
+                    <Text style={[textStyles.heading5, { textAlign: 'center', color: Colors.light.green }]}>
+                      Hadir
+                    </Text>
+                    <Text style={[textStyles.heading5, { textAlign: 'center' }]}>
+                      {logsCountByStatus?.[AbsentStasuses.PRESENT]?.length || 0}
+                    </Text>
+                  </MECard>
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <MECard
+                    onPress={() => {
+                      navigation.navigate('Root', {
+                        screen: 'HistoryPage',
+                        params: {
+                          screen: 'History',
+                          params: {
+                            status: AbsentStasuses.LATE
+                          }
+                        }
+                      })
+                    }}
+                  >
+                    <Text style={[textStyles.heading5, { textAlign: 'center', color: Colors.light.orange }]}>
+                      Terlambat
+                    </Text>
+                    <Text style={[textStyles.heading5, { textAlign: 'center' }]}>
+                      {logsCountByStatus?.[AbsentStasuses.LATE]?.length || 0}
+                    </Text>
+                  </MECard>
+                </View>
+              </View>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <MECard
+                    onPress={() => {
+                      navigation.navigate('Root', {
+                        screen: 'HistoryPage',
+                        params: {
+                          screen: 'History',
+                          params: {
+                            status: AbsentStasuses.EXCUSED
+                          }
+                        }
+                      })
+                    }}
+                  >
+                    <Text style={[textStyles.heading5, { textAlign: 'center', color: Colors.light.yellows.yellow2 }]}>
+                      Izin
+                    </Text>
+                    <Text style={[textStyles.heading5, { textAlign: 'center' }]}>
+                      {logsCountByStatus?.[AbsentStasuses.EXCUSED]?.length || 0}
+                    </Text>
+                  </MECard>
+                </View>
+                <View style={{ flex: 1, marginLeft: 8 }}>
+                  <MECard
+                    onPress={() => {
+                      navigation.navigate('Root', {
+                        screen: 'HistoryPage',
+                        params: {
+                          screen: 'History',
+                          params: {
+                            status: AbsentStasuses.ABSENT
+                          }
+                        }
+                      })
+                    }}
+                  >
+                    <Text style={[textStyles.heading5, { textAlign: 'center', color: Colors.light.red }]}>
+                      Absen
+                    </Text>
+                    <Text style={[textStyles.heading5, { textAlign: 'center' }]}>
+                      {logsCountByStatus?.[AbsentStasuses.ABSENT]?.length || 0}
+                    </Text>
+                  </MECard>
+                </View>
+              </View>
+            </View>
             <PieChart
               backgroundColor='transparent'
               accessor='count'
               width={Dimensions.get("window").width}
               height={240}
               data={pieChartData}
+              fromZero
               chartConfig={{
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 labelColor: Colors.light.black,
@@ -261,7 +359,7 @@ export default function SummaryDetails() {
                   }}
                   style={{
                     paddingRight: 0,
-                    // paddingLeft: 0,
+                    marginTop: 36
                   }}
                 />
               )
