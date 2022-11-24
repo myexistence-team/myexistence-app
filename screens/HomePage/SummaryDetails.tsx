@@ -11,8 +11,9 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import { AuthContext, ProfileContext } from '../../contexts'
 import { AbsentStasuses } from '../../constants/constants'
-import { PieChart } from 'react-native-chart-kit'
+import { LineChart, PieChart } from 'react-native-chart-kit'
 import MESpinner from '../../components/MESpinner'
+import { Log } from '../../types'
 
 export default function SummaryDetails() {
   const { auth } = useContext(AuthContext);
@@ -20,7 +21,8 @@ export default function SummaryDetails() {
   const [dateStart, setDateStart] = useState(getStartOfWeek());
   const [dateEnd, setDateEnd] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [logCounts, setLogCounts] = useState<{ [key: string]: any[] }>({});
+  const [logsCountByStatus, setLogsCountsByStatus] = useState<{ [key: string]: any[] }>({});
+  const [logsCountByDate, setLogsCountsByDate] = useState<{ [key: string]: any[] }>({});
   const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
   function loadData() {
@@ -34,11 +36,26 @@ export default function SummaryDetails() {
       where('time', '<=', dateEnd),
     );
     getDocs(studentLogsQuery).then((docSnaps) => {
-      const docsData = docSnaps.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      }))
-      const logsGrouped = groupBy(docsData, 'status');
-      setLogCounts(logsGrouped);
+      const logs = docSnaps.docs.map((doc) => {
+        const time: Date = doc.data().time.toDate();
+        const timeStr = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+
+        return {
+          ...doc.data(), 
+          id: doc.id,
+          time: new Date(timeStr),
+          timeStr,
+        }
+      })
+      var groupedByDate: any = groupBy(logs, 'timeStr');
+      for (const groupedDateStr of Object.keys(groupedByDate)) {
+        groupedByDate[groupedDateStr] = [
+          groupedByDate[groupedDateStr].filter((l: Log) => l.status === AbsentStasuses.PRESENT).length,
+          groupedByDate[groupedDateStr].filter((l: Log) => l.status === AbsentStasuses.ABSENT).length,
+        ]
+      }
+      setLogsCountsByDate(groupedByDate);
+      setLogsCountsByStatus(groupBy(logs, 'status'));
     }).finally(() => {
       setIsLoading(false);
     })
@@ -86,11 +103,28 @@ export default function SummaryDetails() {
   }
 
   const pieChartData = [
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logCounts?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Absen", count: logCounts?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambapnat", count: logCounts?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logCounts?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logsCountByStatus?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Absen", count: logsCountByStatus?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambapnat", count: logsCountByStatus?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logsCountByStatus?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
   ]
+
+  const data = {
+    labels: Object.keys(logsCountByDate),
+    datasets: [
+      {
+        data: Object.values(logsCountByDate).map((l) => l[0]),
+        color: (opacity = 1) => Colors.light.green,
+        strokeWidth: 2,
+      },
+      {
+        data: Object.values(logsCountByDate).map((l) => l[1]),
+        color: (opacity = 1) => Colors.light.red,
+        strokeWidth: 2,
+      },
+    ],
+    legend: ["Hadir", "Absen"]
+  };
 
   return (
     <MEContainer>
@@ -167,17 +201,43 @@ export default function SummaryDetails() {
         isLoading ? (
           <MESpinner/>
         ) : (
-          <PieChart
-            backgroundColor='transparent'
-            accessor='count'
-            width={Dimensions.get("window").width}
-            height={240}
-            data={pieChartData}
-            chartConfig={{
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: Colors.light.black,
-            }}
-          />
+          <>
+            <PieChart
+              backgroundColor='transparent'
+              accessor='count'
+              width={Dimensions.get("window").width}
+              height={240}
+              data={pieChartData}
+              chartConfig={{
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: Colors.light.black,
+              }}
+            />
+            {
+              data.labels.length > 0 && (
+                <LineChart
+                  withHorizontalLabels={false}
+                  withVerticalLabels={false}
+                  withHorizontalLines={false}
+                  withOuterLines={false}
+                  data={data}
+                  width={Dimensions.get("window").width - 16}
+                  height={220}
+                  bezier
+                  transparent
+                  chartConfig={{
+                    color: (opacity = 1) => Colors.light.black,
+                    useShadowColorFromDataset: true,
+                  }}
+                  style={{
+                    overflow: 'hidden',
+                    paddingRight: 0,
+                    paddingLeft: 0,
+                  }}
+                />
+              )
+            }
+          </>
         )
       }
     </MEContainer>
