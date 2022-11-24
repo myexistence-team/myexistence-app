@@ -1,11 +1,8 @@
 import { Text } from "react-native";
 import { View } from "../../components/Themed";
 import { textStyles } from "../../constants/Styles";
-import historyMocks from "../../mocks/historyMocks";
 import React, { useContext, useEffect, useState } from 'react'
 import HistoryCard from "../../components/HistoryCard";
-import Colors from "../../constants/Colors";
-import { Log } from "../../types";
 import MEButton from "../../components/MEButton";
 import { useNavigation } from "@react-navigation/native";
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";

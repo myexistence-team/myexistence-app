@@ -4,9 +4,7 @@ import { textStyles } from '../../constants/Styles'
 import MEButton from '../../components/MEButton';
 import ScheduleCard from '../../components/ScheduleCard';
 import { useNavigation } from '@react-navigation/native';
-import { Schedule } from '../../types';
 import MESpinner from '../../components/MESpinner';
-import Colors from '../../constants/Colors';
 import { collectionGroup, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
 import { ClassesContext, ProfileContext } from '../../contexts';
 import { firestore } from '../../firebase';
