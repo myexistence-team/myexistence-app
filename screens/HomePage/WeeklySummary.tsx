@@ -10,6 +10,7 @@ import { AbsentStasuses } from '../../constants/constants';
 import { PieChart } from 'react-native-chart-kit';
 import Colors from '../../constants/Colors';
 import moment from 'moment';
+import MEButton from '../../components/MEButton';
 
 export default function WeeklySummary() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +67,7 @@ export default function WeeklySummary() {
   ]
 
   return (
-    <View style={{ paddingBottom: 16 }}>
+    <View style={{ paddingBottom: 64 }}>
       {
         isLoading ? (
           <MESpinner/>
@@ -88,6 +89,11 @@ export default function WeeklySummary() {
               // center={[110, 0]}
               // hasLegend={false}
             />
+            <MEButton
+              variant='outline'
+            >
+              Tampilkan Detil
+            </MEButton>
           </>
         )
       }
