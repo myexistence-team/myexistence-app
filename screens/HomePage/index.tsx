@@ -4,32 +4,32 @@ import { textStyles } from '../../constants/Styles'
 import MECard from '../../components/MECard'
 import NextSchedules from './NextSchedules'
 import { RootTabScreenProps } from '../../navTypes'
-import { AuthContext, ProfileContext } from '../../contexts'
+import { ProfileContext } from '../../contexts'
 import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
-import { collection, collectionGroup, doc, documentId, DocumentReference, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from 'firebase/firestore'
+import { collection, collectionGroup, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import Colors from '../../constants/Colors'
 import ScheduleCard from '../../components/ScheduleCard'
 import MESpinner from '../../components/MESpinner'
-import { getCurrentScheduleTime } from '../../utils/getters'
 import { ScheduleStasuses } from '../../constants/constants'
 import { useNavigation } from '@react-navigation/native'
+import WeeklySummary from './WeeklySummary'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const navigation = useNavigation();
 
   const [currentSchedule, setCurrentSchedule] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   
   
   function loadHomePageData() {    
-    const nowScheduleDate = getCurrentScheduleTime();
+    console.log("LOADING")
+    setIsLoading(true);
     if (profile.classIds?.length) {
-      setIsLoading(true);
       if (profile.currentScheduleId) {
         const currentScheduleQuery = query(
           collectionGroup(firestore, 'schedules'),
@@ -59,6 +59,9 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
         })
       } else {
         setCurrentSchedule(null);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300)
       }
     } else {
       setIsLoading(false);
@@ -197,6 +200,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                     }
                     <NextSchedules/>
                     <History/>
+                    <WeeklySummary/>
                   </>
                 )
               }
