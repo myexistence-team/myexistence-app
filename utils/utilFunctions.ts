@@ -1,6 +1,6 @@
 import Colors from "../constants/Colors";
 
-export const groupBy = function(xs: any[], key: string) {
+export function groupBy(xs: any[], key: string): {[key: string]: any[]} {
   return xs.reduce(function(rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;
@@ -75,7 +75,7 @@ export function getStartOfWeek() {
 
 export function getStartOfMonth() {
   const firstOfMonth = new Date();
-  firstOfMonth.setDate(0);
+  firstOfMonth.setDate(1);
   return firstOfMonth;
 }
 
