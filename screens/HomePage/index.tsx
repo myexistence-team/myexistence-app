@@ -20,18 +20,14 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function HomePage(props: RootTabScreenProps<"Home">) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
-  const { auth } = useContext(AuthContext);
   const navigation = useNavigation();
 
   const [currentSchedule, setCurrentSchedule] = useState<any>(null);
-  const [schedules, setSchedules] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
   
   function loadHomePageData() {    
     const nowScheduleDate = getCurrentScheduleTime();
-    var excludedScheduleId: string | undefined;
     if (profile.classIds?.length) {
       setIsLoading(true);
       if (profile.currentScheduleId) {
@@ -47,7 +43,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
               currentScheduleId: null
             })
           } else {
-            excludedScheduleId = profile.currentScheduleId;
+            // excludedScheduleId = profile.currentScheduleId;
             getDoc(doc(firestore, `schools/${profile.schoolId}/classes/${schedule.classId}`)).then((classSnap) => {
               const classObj: Class | any = classSnap.data();
               const convertedSchedule = {
@@ -57,65 +53,13 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                 class: null
               }
               setCurrentSchedule(convertedSchedule);
+              setIsLoading(false);
             })
           }
         })
       } else {
         setCurrentSchedule(null);
       }
-      const todayInt = (new Date()).getDay();
-      const schedulesQuery = query(
-        collectionGroup(firestore, 'schedules'), 
-        where('classId', 'in', profile.classIds),
-        where('day', '>=', todayInt),
-        orderBy('day', 'asc'),
-        orderBy('start', 'asc'),
-        limit(excludedScheduleId ? 6 : 5),
-      );
-      const classesQuery = query(collection(
-        firestore, 
-        `schools/${profile.schoolId}/classes`),
-        where(documentId(), 'in', profile.classIds),
-      );
-      const logsQuery = query(collection(
-        firestore, 
-        `schools/${profile.schoolId}/logs`),
-        where('studentId', '==', auth.uid),
-        orderBy('time', 'desc'),
-        limit(5)
-      );
-
-      getDocs(classesQuery).then((docs) => {
-        const classObjs: any = {};
-        docs.forEach((doc) => {
-          classObjs[doc.id] = doc.data();
-        })
-        getDocs(schedulesQuery).then((docs) => {
-          const docsArr: any[] = [];
-          docs.forEach((doc) => {
-            const classObj = classObjs[doc.data().classId];
-            docsArr.push({ 
-              ...doc.data(),
-              id: doc.id,
-              className: classObj?.name,
-              classDescription: classObj?.description,
-              class: null
-            });
-          })
-          setSchedules(docsArr.filter((s) => s.id !== excludedScheduleId));
-          setIsLoading(false);
-        })
-      }) 
-      getDocs(logsQuery).then((docSnaps) => {
-        const docsArr: any[] = [];
-        docSnaps.docs.forEach((doc) => {
-          docsArr.push({
-            ...doc.data(),
-            id: doc.id
-          });
-        })
-        setLogs(docsArr);
-      })
     } else {
       setIsLoading(false);
     }
@@ -241,18 +185,18 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                   <>
                     {
                       currentSchedule ? (
-                        <>
+                        <View style={{ marginBottom: 16 }}>
                           <Text style={[textStyles.heading3, { marginBottom: 16 }]}>Sedang Berlangsung</Text>
                           <ScheduleCard
                             schedule={currentSchedule}
                             disableScanButton={true}
                             disableCountdown={true}
                           />
-                        </>
+                        </View>
                       ) : null
                     }
-                    <NextSchedules schedules={schedules}/>
-                    <History logs={logs}/>
+                    <NextSchedules/>
+                    <History/>
                   </>
                 )
               }
