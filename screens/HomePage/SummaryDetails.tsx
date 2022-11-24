@@ -14,6 +14,9 @@ import { AbsentStasuses } from '../../constants/constants'
 import { LineChart, PieChart } from 'react-native-chart-kit'
 import MESpinner from '../../components/MESpinner'
 import { Log } from '../../types'
+import { useForm } from 'react-hook-form'
+import MEFirestoreSelect from '../../components/MEFirestoreSelect'
+import moment from 'moment'
 
 export default function SummaryDetails() {
   const { auth } = useContext(AuthContext);
@@ -25,12 +28,15 @@ export default function SummaryDetails() {
   const [logsCountByDate, setLogsCountsByDate] = useState<{ [key: string]: any[] }>({});
   const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
+  const { control, getValues } = useForm();
+
   function loadData() {
     setIsLoading(true);
     const studentLogsQuery = query(collection(
       firestore, 
       `schools/${profile.schoolId}/logs`),
       where('studentId', '==', auth.uid),
+      ...getValues('classId') ? [where('classId', '==', getValues('classId'))] : [],
       orderBy('time', 'desc'),
       where('time', '>=', dateStart),
       where('time', '<=', dateEnd),
@@ -38,12 +44,13 @@ export default function SummaryDetails() {
     getDocs(studentLogsQuery).then((docSnaps) => {
       const logs = docSnaps.docs.map((doc) => {
         const time: Date = doc.data().time.toDate();
-        const timeStr = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+        const timeString = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`;
+        const timeStr = moment(time).format("D MMM");
 
         return {
           ...doc.data(), 
           id: doc.id,
-          time: new Date(timeStr),
+          time: new Date(timeString),
           timeStr,
         }
       })
@@ -131,6 +138,12 @@ export default function SummaryDetails() {
       <MEHeader
         title='Detail Ringkasan'
       />
+      <MEFirestoreSelect
+        control={control}
+        name='classId'
+        listName='classes'
+        label='Kelas'
+      />
       <View style={{ flexDirection: 'row', marginBottom: 16 }}>
         <MEButton 
           fullWidth={false}
@@ -217,8 +230,8 @@ export default function SummaryDetails() {
               data.labels.length > 0 && (
                 <LineChart
                   withHorizontalLabels={false}
-                  withVerticalLabels={false}
                   withHorizontalLines={false}
+                  verticalLabelRotation={15}
                   withOuterLines={false}
                   data={data}
                   width={Dimensions.get("window").width - 16}
@@ -230,9 +243,8 @@ export default function SummaryDetails() {
                     useShadowColorFromDataset: true,
                   }}
                   style={{
-                    overflow: 'hidden',
                     paddingRight: 0,
-                    paddingLeft: 0,
+                    // paddingLeft: 0,
                   }}
                 />
               )
