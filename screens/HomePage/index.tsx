@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { textStyles } from '../../constants/Styles'
 import MECard from '../../components/MECard'
 import NextSchedules from './NextSchedules'
-import { RootTabScreenProps } from '../../navTypes'
+import { HomePageParamList, RootTabScreenProps } from '../../navTypes'
 import { ProfileContext } from '../../contexts'
 import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
@@ -17,8 +17,36 @@ import MESpinner from '../../components/MESpinner'
 import { ScheduleStasuses } from '../../constants/constants'
 import { useNavigation } from '@react-navigation/native'
 import WeeklySummary from './WeeklySummary'
+import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack'
+import SummaryDetails from './SummaryDetails'
 
-export default function HomePage(props: RootTabScreenProps<"Home">) {
+const Stack = createNativeStackNavigator<HomePageParamList>();
+
+export default function HomePage({}: RootTabScreenProps<"HomePage">) {
+  return (
+    <Stack.Navigator
+      initialRouteName='Home'
+    >
+      <Stack.Screen
+        name='Home'
+        component={Home}
+        options={{
+          header: () => null
+        }}
+      />
+      <Stack.Screen
+        name='SummaryDetails'
+        component={SummaryDetails}
+        options={{
+          header: () => null
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+export function Home({
+}: NativeStackScreenProps<HomePageParamList, 'Home'>) {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const navigation = useNavigation();
 
@@ -109,7 +137,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
           }}
           onPress={() => {
             navigation.navigate('Root', {
-              screen: 'ProfilePage',
+              screen: 'ProfilePage'
             })
           }}
         >
@@ -162,8 +190,7 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                 navigation.navigate('Root', {
                   screen: 'ProfilePage',
                   params: {
-                    screen: 'EditProfile',
-                    initial: false
+                    screen: 'EditProfile'
                   }
                 })
               }}

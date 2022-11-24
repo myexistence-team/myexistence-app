@@ -97,8 +97,13 @@ export type HistoryPageParamList = {
   }
 }
 
+export type HomePageParamList = {
+  Home: undefined,
+  SummaryDetails: undefined,
+}
+
 export type RootTabParamList = {
-  Home: undefined;
+  HomePage: NavigatorScreenParams<HomePageParamList> | undefined;
   SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
   HistoryPage: NavigatorScreenParams<HistoryPageParamList> | undefined,
   ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,

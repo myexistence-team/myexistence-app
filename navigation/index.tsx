@@ -360,14 +360,14 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="Home"
+      initialRouteName="HomePage"
       screenOptions={{
         tabBarActiveTintColor: Colors.light.tint,
       }}>
       <BottomTab.Screen
-        name="Home"
+        name="HomePage"
         component={HomePage}
-        options={({ navigation }: RootTabScreenProps<'Home'>) => ({
+        options={({ navigation }: RootTabScreenProps<'HomePage'>) => ({
           title: 'Beranda',
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerShown: false,
