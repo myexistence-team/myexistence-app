@@ -28,7 +28,7 @@ export default function SummaryDetails() {
   const [logsCountByDate, setLogsCountsByDate] = useState<{ [key: string]: any[] }>({});
   const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
-  const { control, getValues } = useForm();
+  const { control, getValues, reset } = useForm();
 
   function loadData() {
     setIsLoading(true);
@@ -138,12 +138,29 @@ export default function SummaryDetails() {
       <MEHeader
         title='Detail Ringkasan'
       />
-      <MEFirestoreSelect
-        control={control}
-        name='classId'
-        listName='classes'
-        label='Kelas'
-      />
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1, marginLeft: 8 }}>
+          <MEFirestoreSelect
+            control={control}
+            name='classId'
+            listName='classes'
+            label={false}
+            placeholder="Pilih Kelas"
+          />
+        </View>
+        <View style={{
+          marginTop: 8
+        }}>
+          <MEButton
+            variant='ghost'
+            size='sm'
+            fullWidth={false}
+            onPress={() => reset()}
+          >
+            ✖
+          </MEButton>
+        </View>
+      </View>
       <View style={{ flexDirection: 'row', marginBottom: 16 }}>
         <MEButton 
           fullWidth={false}
