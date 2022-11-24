@@ -1,8 +1,9 @@
 import { View, Text, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import MEControlledSelect, { MEControlledSelectProps } from './MEControlledSelect'
 import { firestore } from '../firebase';
 import { collection, getDocs, query, where, WhereFilterOp } from 'firebase/firestore';
+import { ProfileContext } from '../contexts';
 
 export default function MEFirestoreSelect({
   control,
@@ -18,12 +19,17 @@ export default function MEFirestoreSelect({
   valueKey?: string,
   labelKey?: string,
 }) {
+  const { profile } = useContext(ProfileContext);
   const [options, setOptions] = useState<{ value: string| number, label: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   async function getData() {
     setIsLoading(true);
-    var docsRef = collection(firestore, listName);
+    if (['schools', 'users'].includes(listName)) {
+      var docsRef = collection(firestore, listName);
+    } else {
+      var docsRef = collection(firestore, 'schools', profile.schoolId, listName);
+    }
     var docsQueries = query(docsRef)
     if (whereQuery && whereQuery.length) {
       docsQueries = query(docsRef, ...whereQuery.map((w) => where(w[0], w[1], w[2])));
