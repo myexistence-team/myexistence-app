@@ -54,3 +54,34 @@ export function getLocationDistance(
 export const getDays = (year: number, month: number) => {
   return new Date(year, month, 0).getDate();
 };
+
+export function getStartOfWeek() {
+  const firstDayOfWeek = new Date();
+  const todayDate = firstDayOfWeek.getDate();
+  const todayInt = firstDayOfWeek.getDay();
+  var lastWeekDate = todayDate - todayInt;
+  if (lastWeekDate < 1) {
+    lastWeekDate += getDays(firstDayOfWeek.getFullYear(), firstDayOfWeek.getMonth());
+    var prevMonth = firstDayOfWeek.getMonth() - 1;
+    if (prevMonth < 0) prevMonth = 12;
+    firstDayOfWeek.setMonth(prevMonth);
+  }
+  firstDayOfWeek.setHours(0);
+  firstDayOfWeek.setMinutes(0);
+  firstDayOfWeek.setSeconds(0);
+  firstDayOfWeek.setDate(lastWeekDate);
+  return firstDayOfWeek;
+}
+
+export function getStartOfMonth() {
+  const firstOfMonth = new Date();
+  firstOfMonth.setDate(0);
+  return firstOfMonth;
+}
+
+export function getStartOfYear() {
+  const firstOfYear = new Date();
+  firstOfYear.setDate(1);
+  firstOfYear.setMonth(0)
+  return firstOfYear;
+}

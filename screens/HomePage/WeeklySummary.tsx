@@ -5,37 +5,26 @@ import { textStyles } from '../../constants/Styles';
 import { AuthContext, ProfileContext } from '../../contexts';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebase';
-import { getDays, groupBy } from '../../utils/utilFunctions';
+import { getStartOfWeek, groupBy } from '../../utils/utilFunctions';
 import { AbsentStasuses } from '../../constants/constants';
 import { PieChart } from 'react-native-chart-kit';
 import Colors from '../../constants/Colors';
 import moment from 'moment';
 import MEButton from '../../components/MEButton';
+import { useNavigation } from '@react-navigation/native';
 
 export default function WeeklySummary() {
+  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const { auth } = useContext(AuthContext);
   const { profile } = useContext(ProfileContext);
   const [logCounts, setLogCounts] = useState<{ [key: string]: any[] }>({});
   const [firstDate, setFirstDate] = useState<Date | null>(null);
-
+ 
   
   function loadData() {
     setIsLoading(true);
-    const firstDayOfWeek = new Date();
-    const todayDate = firstDayOfWeek.getDate();
-    const todayInt = firstDayOfWeek.getDay();
-    var lastWeekDate = todayDate - todayInt;
-    if (lastWeekDate < 1) {
-      lastWeekDate += getDays(firstDayOfWeek.getFullYear(), firstDayOfWeek.getMonth());
-      var prevMonth = firstDayOfWeek.getMonth() - 1;
-      if (prevMonth < 0) prevMonth = 12;
-      firstDayOfWeek.setMonth(prevMonth);
-    }
-    firstDayOfWeek.setHours(0);
-    firstDayOfWeek.setMinutes(0);
-    firstDayOfWeek.setSeconds(0);
-    firstDayOfWeek.setDate(lastWeekDate);
+    const firstDayOfWeek = getStartOfWeek();
     setFirstDate(firstDayOfWeek);
     const studentLogsQuery = query(collection(
       firestore, 
@@ -60,10 +49,10 @@ export default function WeeklySummary() {
   }, []);
 
   const pieChartData = [
-    {legendFontSize: 12, legendFontColor: "#000000", name: "Hadir", count: logCounts?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
-    {legendFontSize: 12, legendFontColor: "#000000", name: "Absen", count: logCounts?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
-    {legendFontSize: 12, legendFontColor: "#000000", name: "Terlambat", count: logCounts?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
-    {legendFontSize: 12, legendFontColor: "#000000", name: "Izin", count: logCounts?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logCounts?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Absen", count: logCounts?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambapnat", count: logCounts?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logCounts?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
   ]
 
   return (
@@ -85,12 +74,17 @@ export default function WeeklySummary() {
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                 labelColor: Colors.light.black,
               }}
-              // absolute
-              // center={[110, 0]}
-              // hasLegend={false}
             />
             <MEButton
               variant='outline'
+              onPress={() => {
+                navigation.navigate('Root', {
+                  screen: 'HomePage',
+                  params: {
+                    screen: 'SummaryDetails'
+                  }
+                })
+              }}
             >
               Tampilkan Detil
             </MEButton>
