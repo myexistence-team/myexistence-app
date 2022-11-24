@@ -9,7 +9,7 @@ import { Class, Profile } from '../../types'
 import MEButton from '../../components/MEButton'
 import { signOut } from '../../actions/authActions'
 import History from './History'
-import { collection, collectionGroup, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
+import { collectionGroup, doc, getDoc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import Colors from '../../constants/Colors'
 import ScheduleCard from '../../components/ScheduleCard'
@@ -198,9 +198,9 @@ export default function HomePage(props: RootTabScreenProps<"Home">) {
                         </View>
                       ) : null
                     }
+                    <WeeklySummary/>
                     <NextSchedules/>
                     <History/>
-                    <WeeklySummary/>
                   </>
                 )
               }
