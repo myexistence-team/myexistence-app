@@ -1,6 +1,6 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { HistoryPageParamList } from "../../navTypes";
-import React, { Fragment, useContext, useEffect, useState } from 'react';
+import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
+import { HistoryPageParamList, HistoryScreenProps } from "../../navTypes";
+import React, { useContext, useEffect, useState } from 'react';
 import MEContainer from "../../components/MEContainer";
 import { Text, View } from "react-native";
 import { textStyles } from "../../constants/Styles";
@@ -13,9 +13,12 @@ import HistoryCard from "../../components/HistoryCard";
 import HistoryDetailsPage from "../HistoryDetailsPage";
 import { AbsentStasuses, DAYS_ARRAY, ProfileRoles } from "../../constants/constants";
 import { groupBy } from "../../utils/utilFunctions";
-import MECard from "../../components/MECard";
-import moment from "moment";
 import TeacherHistoryCard from "../../components/TeacherHistoryCard";
+import { useForm } from "react-hook-form";
+import MEControlledSelect from "../../components/MEControlledSelect";
+import { PresenceStatusEnum } from "../../enums";
+import MEFirestoreSelect from "../../components/MEFirestoreSelect";
+import MEButton from "../../components/MEButton";
 
 const Stack = createNativeStackNavigator<HistoryPageParamList>();
 
@@ -42,7 +45,9 @@ export default function HistoryPage() {
   )
 }
 
-export function History() {
+export function History({
+  route
+}: NativeStackScreenProps<HistoryPageParamList, 'History'>) {
   const { profile } = useContext(ProfileContext);
   const { auth } = useContext(AuthContext);
   const { classes } = useContext(ClassesContext);
@@ -52,21 +57,27 @@ export function History() {
   const [isLoading, setIsLoading] = useState(true);
   const [groupedLogs, setGroupedLogs] = useState<LogCountByClass[]>([]);
 
-  const studentLogsQuery = query(collection(
-    firestore, 
-    `schools/${profile.schoolId}/logs`),
-    where('studentId', '==', auth.uid),
-    orderBy('time', 'desc')
-  );
+  const { control, getValues, watch, reset, setValue } = useForm();
 
-  const teacherLogsQuery = query(collection(
-    firestore, 
-    `schools/${profile.schoolId}/logs`),
-    where('teacherId', '==', auth.uid),
-    orderBy('time', 'desc')
-  );
-  
+  useEffect(() => {
+    setValue('status', route?.params?.status);
+    setValue('classId', route?.params?.classId);
+    return () => {
+      reset();
+    }
+  }, [route?.params])
+
+
   function loadStudentData() {
+    const studentLogsQuery = query(collection(
+      firestore, 
+      `schools/${profile.schoolId}/logs`),
+      where('studentId', '==', auth.uid),
+      ...getValues('status') ? [where('status', '==', getValues('status'))] : [],
+      ...getValues('classId') ? [where('classId', '==', getValues('classId'))] : [],
+      orderBy('time', 'desc')
+    );
+
     if (profile.classIds?.length) {
       setIsLoading(true);
       getDocs(studentLogsQuery).then((docSnaps) => {
@@ -124,6 +135,12 @@ export function History() {
 
   function loadTeacherData() {
     if (profile.classIds?.length) {
+      const teacherLogsQuery = query(collection(
+        firestore, 
+        `schools/${profile.schoolId}/logs`),
+        where('teacherId', '==', auth.uid),
+        orderBy('time', 'desc')
+      );
       setIsLoading(true);
       getDocs(teacherLogsQuery).then((docSnaps) => {
         const docsArr: any[] = [];
@@ -162,7 +179,7 @@ export function History() {
 
   useEffect(() => {
     loadData();
-  }, [])
+  }, [watch('status'), watch('classId')])
 
   return (
     <MEContainer
@@ -175,6 +192,38 @@ export function History() {
         >
           Riwayat
         </Text>
+        <View style={{ marginBottom: 24 }}>
+          <MEControlledSelect
+            control={control}
+            name='status'
+            label='Filter'
+            placeholder="Pilih Status"
+            options={[
+              { value: AbsentStasuses.PRESENT, label: PresenceStatusEnum[AbsentStasuses.PRESENT] },
+              { value: AbsentStasuses.LATE, label: PresenceStatusEnum[AbsentStasuses.LATE] },
+              { value: AbsentStasuses.EXCUSED, label: PresenceStatusEnum[AbsentStasuses.EXCUSED] },
+              { value: AbsentStasuses.ABSENT, label: PresenceStatusEnum[AbsentStasuses.ABSENT] },
+            ]}
+          />
+          <MEFirestoreSelect
+            control={control}
+            name='classId'
+            listName='classes'
+            label={false}
+            placeholder="Pilih Kelas"
+          />
+          {
+            (watch('status') || watch('classId')) && (
+              <MEButton
+                size='sm'
+                variant='outline'
+                onPress={() => reset()}
+              >
+                Bersihkan Filter
+              </MEButton>
+            )
+          }
+        </View>
         {
           profile.role === ProfileRoles.STUDENT ? (
             <>

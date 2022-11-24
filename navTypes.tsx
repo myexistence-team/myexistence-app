@@ -7,7 +7,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Timestamp } from 'firebase/firestore';
-import { ScheduleOpenMethods } from './constants/constants';
+import { AbsentStasuses, ScheduleOpenMethods } from './constants/constants';
 import { Schedule } from './types';
 
 declare global {
@@ -89,7 +89,10 @@ export type ProfileParamList = {
 }
 
 export type HistoryPageParamList = {
-  History: undefined,
+  History: {
+    status?: AbsentStasuses,
+    classId?: string,
+  } | undefined,
   HistoryDetails: {
     logId: string,
     isCurrent?: boolean,
