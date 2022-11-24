@@ -55,7 +55,6 @@ export function Home({
   
   
   function loadHomePageData() {    
-    console.log("LOADING")
     setIsLoading(true);
     if (profile.classIds?.length) {
       if (profile.currentScheduleId) {
