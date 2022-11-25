@@ -22,14 +22,16 @@ export default function EditProfile() {
 
   const profileSchema = object().shape({
     displayName: string().required().strict(),
+    idNumber: string().required().strict(),
     description: string().required().strict(),
   })
-  const { control, handleSubmit, formState: {errors} } = useForm({
+  const { control, handleSubmit } = useForm({
     resolver: yupResolver(profileSchema),
     defaultValues: {
       displayName: profile.displayName,
       description: profile.description,
       role: profile.role,
+      idNumber: profile.idNumber,
       photoUrl: profile.photoUrl,
     }
   });
@@ -74,7 +76,7 @@ export default function EditProfile() {
         <MEControlledTextInput
           control={control}
           name='displayName'
-          label='Nama'
+          label='Nama Lengkap'
         />
         <MEControlledTextInput
           control={control}
@@ -82,6 +84,11 @@ export default function EditProfile() {
           label='Deskripsi'
           multiline={true}
           numberOfLines={4}
+        />
+        <MEControlledTextInput
+          control={control}
+          name='idNumber'
+          label='Nomor Induk'
         />
         <MEButton
           color='primary'

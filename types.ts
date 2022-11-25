@@ -19,7 +19,8 @@ export type Profile = BaseType & {
   description?: string,
   isVerified: boolean,
   classes: DocumentReference[],
-  currentScheduleId?: string
+  currentScheduleId?: string,
+  idNumber?: string
 }
 
 export type Teacher = BaseType & Profile & {

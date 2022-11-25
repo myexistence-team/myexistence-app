@@ -89,6 +89,10 @@ export function ProfileScreen() {
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
         {profile.email}
       </Text>
+      <Text style={[textStyles.body2]}>Nomor Induk</Text>
+      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+        {profile.idNumber}
+      </Text>
       <Text style={[textStyles.body2]}>Peran</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 24 }]}>
         {RoleEnum[profile.role]}

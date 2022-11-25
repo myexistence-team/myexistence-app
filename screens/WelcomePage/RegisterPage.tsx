@@ -19,6 +19,7 @@ export default function RegisterPage() {
     displayName: string().required().strict(),
     email: string().email().required().strict(),
     password: string().required().strict(),
+    idNumber: string().required().strict(),
     repassword: string().required().strict(),
     // role: string().required().strict(),
     schoolId: string().required().strict(),
@@ -62,7 +63,7 @@ export default function RegisterPage() {
           />
           <MEControlledTextInput
             name='displayName'
-            label='Nama'
+            label='Nama Lengkap'
             control={control}
           />
           <MEControlledTextInput
@@ -70,6 +71,12 @@ export default function RegisterPage() {
             control={control}
             autoComplete='email'
             keyboardType='email-address'
+            autoCapitalize='none'
+          />
+          <MEControlledTextInput
+            name='idNumber'
+            control={control}
+            label='Nomor Induk'
             autoCapitalize='none'
           />
           <MEControlledTextInput
