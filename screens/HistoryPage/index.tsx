@@ -10,10 +10,13 @@ import { ProfileRoles } from "../../constants/constants";
 import StudentHistory from "./StudentHistory";
 import TeacherHistory from "./TeacherHistory";
 import MESpinner from "../../components/MESpinner";
+import HistoryScheduleDetails from "./HistoryScheduleDetails";
 
 const Stack = createNativeStackNavigator<HistoryPageParamList>();
 
 export default function HistoryPage() {
+  const { profile } = useContext(ProfileContext);
+
   return (
     <Stack.Navigator
       initialRouteName='History'
@@ -25,13 +28,25 @@ export default function HistoryPage() {
           header: () => null
         }}
       />
-      <Stack.Screen 
-        name='HistoryDetails' 
-        component={HistoryDetailsPage}
-        options={{
-          headerShown: false,
-        }}
-      />
+      {
+        profile.role === ProfileRoles.STUDENT ? (
+          <Stack.Screen 
+            name='HistoryDetails' 
+            component={HistoryDetailsPage}
+            options={{
+              headerShown: false,
+            }}
+          />
+        ) : (
+          <Stack.Screen
+            name="HistoryScheduleDetails"
+            component={HistoryScheduleDetails}
+            options={{
+              headerShown: false,
+            }}
+          />
+        )
+      }
     </Stack.Navigator>
   )
 }

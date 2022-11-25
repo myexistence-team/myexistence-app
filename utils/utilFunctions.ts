@@ -85,3 +85,7 @@ export function getStartOfYear() {
   firstOfYear.setMonth(0)
   return firstOfYear;
 }
+
+export function percentage(partialValue: number, totalValue: number, isRounded?: boolean) {
+  return Math.floor((100 * partialValue) / totalValue);
+} 

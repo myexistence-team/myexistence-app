@@ -41,6 +41,7 @@ export default function TeacherHistory() {
             className: classes?.find((c) => c.id === a[0])?.name,
             counts: Object.entries(groupBy(a[1], 'scheduleId')).map((b: any) => ({
               scheduleId: b[0],
+              classId: a[0],
               schedule: b[1][0].schedule,
               presentCount: b[1].filter((log: Log) => log.status === AbsentStasuses.PRESENT).length,
               absentCount: b[1].filter((log: Log) => log.status === AbsentStasuses.ABSENT).length,

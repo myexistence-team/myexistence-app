@@ -39,10 +39,10 @@ export type LoginUser = {
 }
 
 export type Schedule = BaseType & {
-  className: string,
-  classDescription: string,
-  start: Date,
-  end: Date,
+  className?: string,
+  classDescription?: string,
+  start: Timestamp,
+  end: Timestamp,
   tolerance: number,
   classId: string,
   status: ScheduleStasuses,
@@ -96,6 +96,7 @@ export type LogCounts = {
 
 export type LogCountBySchedule = LogCounts & {
   scheduleId: string,
+  classId: string,
   schedule: any
 }
 

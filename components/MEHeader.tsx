@@ -10,7 +10,7 @@ export default function MEHeader({
   onBackPress,
   disableBackButton = false
 }: {
-  title: string,
+  title?: string,
   onBackPress?: Function,
   disableBackButton?: boolean
 }) {
@@ -34,7 +34,7 @@ export default function MEHeader({
           <FontAwesome5 color={Colors.light.tint} name='chevron-left' size={18}/>
         </Pressable>
       )}
-      <Text style={[textStyles.heading3]}>{title}</Text>
+      { title && <Text style={[textStyles.heading3]}>{title}</Text> }
     </View>
   )
 }

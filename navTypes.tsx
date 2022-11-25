@@ -93,6 +93,14 @@ export type HistoryPageParamList = {
     status?: AbsentStasuses,
     classId?: string,
   } | undefined,
+  HistoryScheduleDetails: {
+    classId: string,
+    scheduleId: string,
+  },  
+  HistoryLogsDetails: {
+    classId: string,
+    scheduleId: string
+  },
   HistoryDetails: {
     logId: string,
     isCurrent?: boolean,

@@ -10,18 +10,32 @@ import { FontAwesome5 } from '@expo/vector-icons'
 import {
   PieChart,
 } from "react-native-chart-kit";
+import { useNavigation } from '@react-navigation/native'
 
 export default function TeacherHistoryCard({
   scheduleLog
 } : {
   scheduleLog: LogCountBySchedule
 }) {
+  const navigation = useNavigation();
   return (
     <MECard 
       style={{ 
         marginBottom: 16,
         flexDirection: "row",
         justifyContent: 'space-between'
+      }}
+      onPress={() => {
+        navigation.navigate('Root', {
+          screen: 'HistoryPage',
+          params: {
+            screen: 'HistoryScheduleDetails',
+            params: {
+              scheduleId: scheduleLog.scheduleId,
+              classId: scheduleLog.classId,
+            }
+          }
+        })
       }}
     >
       <View>
