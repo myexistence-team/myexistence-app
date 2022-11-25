@@ -88,7 +88,7 @@ export function Home({
         setCurrentSchedule(null);
         setTimeout(() => {
           setIsLoading(false);
-        }, 300)
+        }, 1)
       }
     } else {
       setIsLoading(false);
