@@ -265,7 +265,8 @@ export default function SummaryDetails() {
                         params: {
                           screen: 'History',
                           params: {
-                            status: AbsentStasuses.PRESENT
+                            status: AbsentStasuses.PRESENT,
+                            classId: getValues('classId')
                           }
                         }
                       })
@@ -287,7 +288,8 @@ export default function SummaryDetails() {
                         params: {
                           screen: 'History',
                           params: {
-                            status: AbsentStasuses.LATE
+                            status: AbsentStasuses.LATE,
+                            classId: getValues('classId')
                           }
                         }
                       })
@@ -311,7 +313,8 @@ export default function SummaryDetails() {
                         params: {
                           screen: 'History',
                           params: {
-                            status: AbsentStasuses.EXCUSED
+                            status: AbsentStasuses.EXCUSED,
+                            classId: getValues('classId')
                           }
                         }
                       })
@@ -333,7 +336,8 @@ export default function SummaryDetails() {
                         params: {
                           screen: 'History',
                           params: {
-                            status: AbsentStasuses.ABSENT
+                            status: AbsentStasuses.ABSENT,
+                            classId: getValues('classId')
                           }
                         }
                       })
