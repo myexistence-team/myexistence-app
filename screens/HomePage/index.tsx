@@ -14,7 +14,7 @@ import { firestore } from '../../firebase'
 import Colors from '../../constants/Colors'
 import ScheduleCard from '../../components/ScheduleCard'
 import MESpinner from '../../components/MESpinner'
-import { ScheduleStasuses } from '../../constants/constants'
+import { ProfileRoles, ScheduleStasuses } from '../../constants/constants'
 import { useNavigation } from '@react-navigation/native'
 import WeeklySummary from './WeeklySummary'
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -226,7 +226,11 @@ export function Home({
                     }
                     <WeeklySummary/>
                     <NextSchedules/>
-                    <History/>
+                    {
+                      profile.role === ProfileRoles.STUDENT && (
+                        <History/>
+                      )
+                    }
                   </>
                 )
               }

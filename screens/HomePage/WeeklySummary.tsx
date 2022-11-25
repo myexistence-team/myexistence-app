@@ -6,7 +6,7 @@ import { AuthContext, ProfileContext } from '../../contexts';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import { getStartOfWeek, groupBy } from '../../utils/utilFunctions';
-import { AbsentStasuses } from '../../constants/constants';
+import { AbsentStasuses, ProfileRoles } from '../../constants/constants';
 import { PieChart } from 'react-native-chart-kit';
 import Colors from '../../constants/Colors';
 import moment from 'moment';
@@ -29,7 +29,7 @@ export default function WeeklySummary() {
     const studentLogsQuery = query(collection(
       firestore, 
       `schools/${profile.schoolId}/logs`),
-      where('studentId', '==', auth.uid),
+      where(profile.role === ProfileRoles.STUDENT ? 'studentId' : 'teacherId', '==', auth.uid),
       orderBy('time', 'desc'),
       where('time', '>=', firstDayOfWeek)
     );
@@ -51,7 +51,7 @@ export default function WeeklySummary() {
   const pieChartData = [
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logCounts?.[AbsentStasuses.PRESENT]?.length || 0, color: Colors.light.green },
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Absen", count: logCounts?.[AbsentStasuses.ABSENT]?.length || 0, color: Colors.light.red },
-    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambapnat", count: logCounts?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
+    {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambat", count: logCounts?.[AbsentStasuses.LATE]?.length || 0, color: Colors.light.orange },
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logCounts?.[AbsentStasuses.EXCUSED]?.length || 0, color: Colors.light.yellow },
   ]
 
@@ -78,15 +78,21 @@ export default function WeeklySummary() {
             <MEButton
               variant='outline'
               onPress={() => {
-                navigation.navigate('Root', {
-                  screen: 'HomePage',
-                  params: {
-                    screen: 'SummaryDetails'
-                  }
-                })
+                if (profile.role === ProfileRoles.STUDENT) {
+                  navigation.navigate('Root', {
+                    screen: 'HomePage',
+                    params: {
+                      screen: 'SummaryDetails'
+                    }
+                  })
+                } else {
+                  navigation.navigate('Root', {
+                    screen: 'HistoryPage'
+                  })
+                }
               }}
             >
-              Tampilkan Detil
+              Tampilkan {profile.role === ProfileRoles.STUDENT ? 'Detil' : 'Riwayat'}
             </MEButton>
           </>
         )
