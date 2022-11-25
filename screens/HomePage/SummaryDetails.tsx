@@ -19,6 +19,8 @@ import MEFirestoreSelect from '../../components/MEFirestoreSelect'
 import moment from 'moment'
 import MECard from '../../components/MECard'
 import { useNavigation } from '@react-navigation/native'
+import { Platform } from 'react-native'
+import MEAndroidDateTimePicker from '../../components/MEAndroidDateTimePicker'
 
 export default function SummaryDetails() {
   const navigation = useNavigation();
@@ -136,13 +138,15 @@ export default function SummaryDetails() {
     legend: ["Hadir", "Absen"]
   };
 
+  const offsetMarginLeft = Platform.OS === 'ios' ? 8 : 0;
+
   return (
     <MEContainer>
       <MEHeader
         title='Detail Ringkasan'
       />
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1, marginLeft: 8 }}>
+      <View style={{ flexDirection: 'row', marginLeft: offsetMarginLeft }}>
+        <View style={{ flex: 1 }}>
           <MEFirestoreSelect
             control={control}
             name='classId'
@@ -164,10 +168,9 @@ export default function SummaryDetails() {
           </MEButton>
         </View>
       </View>
-      <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+      <View style={{ flexDirection: 'row', marginBottom: 16, marginLeft: offsetMarginLeft }}>
         <MEButton 
           fullWidth={false}
-          style={{ marginLeft: 8 }}
           variant={quickDate === 'WEEK' ? undefined : 'outline'}
           onPress={() => handleQuickDateChange('WEEK')}
           size='sm'
@@ -195,29 +198,46 @@ export default function SummaryDetails() {
       </View>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 2 }}>
-          <Text style={[textStyles.body3, { marginLeft: 8, marginBottom: 8 }]}>Dari</Text>
-          <DateTimePicker
-            mode='date'
-            value={dateStart}
-            themeVariant='light'
-            maximumDate={new Date()}
-            textColor={Colors.light.black}
-            onChange={(_e, date) => date && handleDateStartChange(date)}
-          />
+          <Text style={[textStyles.body3, { marginLeft: offsetMarginLeft, marginBottom: 8 }]}>Dari</Text>
+          {
+            Platform.OS === 'ios' ? (
+              <DateTimePicker
+                mode='date'
+                value={dateStart}
+                maximumDate={new Date()}
+                textColor={Colors.light.black}
+                onChange={(_e, date) => date && handleDateStartChange(date)}
+              />
+            ) : (
+              <MEAndroidDateTimePicker
+                mode='date'
+                value={dateStart}
+                maximumDate={new Date()}
+                onChange={(_e, date) => date && handleDateStartChange(date)}
+              />
+            )
+          }
         </View>
-        <View style={{ flex: 2 }}>
-          <Text style={[textStyles.body3, { marginLeft: 8, marginBottom: 8 }]}>Sampai</Text>
-          <DateTimePicker
-            mode='date'
-            themeVariant='light'
-            value={dateEnd}
-            maximumDate={new Date()}
-            style={{
-              flex: 4,
-            }}
-            textColor={Colors.light.black}
-            onChange={(_e, date) => date && handleDateEndChange(date)}
-          />
+        <View style={{ flex: 2, marginLeft: Platform.OS === 'ios' ? 0 : 16 }}>
+          <Text style={[textStyles.body3, { marginLeft: offsetMarginLeft, marginBottom: 8 }]}>Sampai</Text>
+          {
+            Platform.OS === 'ios' ? (
+              <DateTimePicker
+                mode='date'
+                value={dateEnd}
+                maximumDate={new Date()}
+                textColor={Colors.light.black}
+                onChange={(_e, date) => date && handleDateEndChange(date)}
+              />
+            ) : (
+              <MEAndroidDateTimePicker
+                mode='date'
+                value={dateEnd}
+                maximumDate={new Date()}
+                onChange={(_e, date) => date && handleDateEndChange(date)}
+              />
+            )
+          }
         </View>
         <View style={{ flex: 2, paddingLeft: 8 }}>
           <Text style={[textStyles.body3, { marginLeft: 8, marginBottom: 8 }]}></Text>
