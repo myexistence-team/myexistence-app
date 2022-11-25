@@ -354,7 +354,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                             }}
                           >
                             <View style={{ marginBottom: 24 }}>
-                              <FontAwesome5 name='map-marked-alt' size={36} />
+                              <FontAwesome5 name='map-marker-alt' size={36} />
                               <Text style={[textStyles.heading5, { marginVertical: 16, textAlign: 'justify' }]}>Deteksi Lokasi</Text>
                               <Text style={textStyles.body2}>{GEOLOCATION_TUTORIAL}</Text>
                             </View>
@@ -417,7 +417,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                 }}
                                 onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.GEOLOCATION)}
                                 isLoading={changingStatus === ScheduleOpenMethods.GEOLOCATION}
-                                iconStart='map-marked-alt'
+                                iconStart='map-marker-alt'
                               >
                                 Deteksi Lokasi
                               </MEButton>
