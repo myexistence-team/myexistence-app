@@ -35,7 +35,6 @@ export default function TeacherHistory() {
         docSnaps.forEach((doc) => {
           docsArr.push({ ...doc.data(), id: doc.id });
         })
-        console.log(docsArr)
         const logsGroupedByClassCount: LogCountByClass[] = Object.entries(groupBy(docsArr, 'classId')).map((a: any) => {
           return {
             classId: a[0], 
