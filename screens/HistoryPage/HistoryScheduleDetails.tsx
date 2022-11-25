@@ -115,6 +115,7 @@ export default function HistoryScheduleDetails({
                 </Text>
               </View>
             </View>
+            <Text style={textStyles.body2}>Riwayat Sesi-Sesi</Text>
             {
               scheduleLogsGroup.map((l, lIdx) => (
                 <MECard
