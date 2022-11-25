@@ -44,6 +44,7 @@ import AdminReferralPage from '../screens/AdminReferralPage';
 import * as Location from 'expo-location';
 import { defineTask, isTaskDefined } from 'expo-task-manager';
 import NotVerified from '../screens/NotVerified';
+require('moment/locale/id.js');
 
 const firestore: Firestore = getFirestore(app);
 const fbAuth: Auth = getAuth(app);
