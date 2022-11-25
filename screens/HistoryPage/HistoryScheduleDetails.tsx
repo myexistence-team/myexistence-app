@@ -14,6 +14,8 @@ import MEHeader from '../../components/MEHeader'
 import MECard from '../../components/MECard'
 import { textStyles } from '../../constants/Styles'
 import MESpinner from '../../components/MESpinner'
+import { useNavigation } from '@react-navigation/native'
+import MEPressableText from '../../components/MEPressableText'
 
 export default function HistoryScheduleDetails({
   route: {
@@ -23,6 +25,7 @@ export default function HistoryScheduleDetails({
     }
   }
 }: NativeStackScreenProps<HistoryPageParamList, 'HistoryScheduleDetails'>) {
+  const navigation = useNavigation();
   const { classes } = useContext(ClassesContext);
   const { profile } = useContext(ProfileContext);
   const classroom = classes.find((c) => c.id === classId);
@@ -69,8 +72,6 @@ export default function HistoryScheduleDetails({
     })
   }
 
-  console.log(scheduleLogsGroup);
-
   useEffect(() => {
     loadData();
   }, [])
@@ -84,9 +85,22 @@ export default function HistoryScheduleDetails({
         ) : (
           <>
             <Text style={textStyles.body2}>Kelas</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+            <MEPressableText 
+              onPress={() => {
+                navigation.navigate('Root', {
+                  screen: 'ClassPage',
+                  params: {
+                    screen: 'ClassDetails',
+                    params: {
+                      classId
+                    }
+                  }
+                })
+              }}
+              style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}
+            >
               {classroom?.name}
-            </Text>
+            </MEPressableText>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1 }}>
                 <Text style={textStyles.body2}>Jam Mulai</Text>
@@ -109,6 +123,18 @@ export default function HistoryScheduleDetails({
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     marginBottom: 16
+                  }}
+                  onPress={() => {
+                    navigation.navigate('Root', {
+                      screen: 'HistoryPage',
+                      params: {
+                        screen: 'HistoryLogsDetails',
+                        params: {
+                          scheduleId,
+                          classId
+                        }
+                      }
+                    })
                   }}
                 >
                   <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>{l.dateStr}</Text>
