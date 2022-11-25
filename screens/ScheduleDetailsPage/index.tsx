@@ -1,4 +1,4 @@
-import { View, Text, Alert } from 'react-native'
+import { View, Text, Alert, Pressable, Modal } from 'react-native'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import MEContainer from '../../components/MEContainer'
 import { ScheduleScreenProps } from '../../navTypes'
@@ -12,7 +12,7 @@ import { firestore } from '../../firebase'
 import { AuthContext, ClassesContext, LocationContext, ProfileContext } from '../../contexts'
 import MEButton from '../../components/MEButton'
 import { useNavigation } from '@react-navigation/native'
-import { AbsentStasuses, DAYS_ARRAY, MAX_DISTACE, ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
+import { AbsentStasuses, CALLOUT_TUTORIAL, DAYS_ARRAY, GEOLOCATION_TUTORIAL, MAX_DISTACE, ProfileRoles, QR_CODE_TUTORIAL, ScheduleOpenMethods, ScheduleStasuses } from '../../constants/constants'
 import { closeSchedule, createUpdateStudentPresenceFromCallout, openSchedule } from '../../actions/scheduleActions'
 import MEPressableText from '../../components/MEPressableText'
 import ScheduleOpenQRCode from './ScheduleOpenQRCode'
@@ -22,6 +22,7 @@ import ScheduleOpenGeolocation from './ScheduleOpenGeolocation'
 import { getLocationDistance } from '../../utils/utilFunctions'
 import Colors from '../../constants/Colors'
 import useGetDistance from '../../hooks/useGetDistance'
+import { FontAwesome5 } from '@expo/vector-icons'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -186,6 +187,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   const distance: number = useGetDistance(schedule?.location);
 
+  const [showInfo, setShowInfo] = useState(false);
+
   return (
     <MEContainer
       onRefresh={loadData}
@@ -332,6 +335,47 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       </>
                     ) : (
                       <>
+                        <Modal
+                          animationType='slide'
+                          presentationStyle='pageSheet'
+                          onRequestClose={() => {
+                            setShowInfo(false)
+                          }}
+                          onDismiss={() => {
+                            setShowInfo(false)
+                          }}
+                          visible={showInfo}
+                        >
+                          <View
+                            style={{
+                              flex: 1,
+                              padding: 24,
+                              paddingTop: 48,
+                            }}
+                          >
+                            <View style={{ marginBottom: 24 }}>
+                              <FontAwesome5 name='map-marked-alt' size={36} />
+                              <Text style={[textStyles.heading5, { marginVertical: 16, textAlign: 'justify' }]}>Deteksi Lokasi</Text>
+                              <Text style={textStyles.body2}>{GEOLOCATION_TUTORIAL}</Text>
+                            </View>
+                            <View style={{ marginBottom: 24 }}>
+                              <FontAwesome5 name='qrcode' size={36} />
+                              <Text style={[textStyles.heading5, { marginVertical: 16, textAlign: 'justify' }]}>QR Code</Text>
+                              <Text style={textStyles.body2}>{QR_CODE_TUTORIAL}</Text>
+                            </View>
+                            <View style={{ marginBottom: 24 }}>
+                              <FontAwesome5 name='hand-paper' size={36} />
+                              <Text style={[textStyles.heading5, { marginVertical: 16, textAlign: 'justify' }]}>Panggil Pelajar</Text>
+                              <Text style={textStyles.body2}>{CALLOUT_TUTORIAL}</Text>
+                            </View>
+                            <MEButton
+                              variant='outline'
+                              onPress={() => setShowInfo(false)}
+                            >
+                              Dimengerti
+                            </MEButton>
+                          </View>
+                        </Modal>
                         {
                           (schedule.status === ScheduleStasuses.OPENED)
                           ? schedule.openMethod === ScheduleOpenMethods.QR_CODE 
@@ -358,7 +402,14 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                         {
                           schedule.status !== ScheduleStasuses.OPENED ? (
                             <>
-                              <Text style={[textStyles.body2, { textAlign: 'center' }]}>Buka kelas dengan cara</Text>
+                              <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+                                <Text style={[textStyles.body2, { textAlign: 'center', marginRight: 8 }]}>Buka kelas dengan cara</Text>
+                                <Pressable
+                                  onPress={() => setShowInfo(true)}
+                                >
+                                  <FontAwesome5 name='info-circle' color={Colors.light.blue} size={16}/>
+                                </Pressable>
+                              </View>
                               <MEButton
                                 size='lg'
                                 style={{

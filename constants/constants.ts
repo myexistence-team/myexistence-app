@@ -64,3 +64,9 @@ export enum ProfileRoles {
 }
 
 export const MAX_DISTACE = 1;
+
+export const GEOLOCATION_TUTORIAL = `Pelajar hanya bisa mencatat kehadiran diri jika berada di sekitar lokasi pembukaan sesi atau lokasi sekolah. Metode ini adalah yang paling praktis untuk pengajar.`
+
+export const QR_CODE_TUTORIAL = `Pelajar perlu memindai QR Code yang ditampilkanpada perangkat ini. QR Code yang ditampilkan akan berubah setiap kali pelajar memindainya. Metode ini adalah yang paling akurat dan aman.`
+
+export const CALLOUT_TUTORIAL = `Metode adalah bentuk digital dari metode pemanggilan pelajar tradisional. Anda perlu memanggil  pelajar satu per satu untuk mencatat kehadirannya melalui aplikasi ini. `
