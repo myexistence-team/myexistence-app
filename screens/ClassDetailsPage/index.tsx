@@ -53,7 +53,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
           if (notStoredIds.length) {
             const studentSnaps = await getDocs(
               query(collection(firestore,`users`),
-              where(documentId(), 'in', notStoredIds), limit(3)
+              where(documentId(), 'in', notStoredIds)
             ))
             const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: b.data() }), {});
             setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));

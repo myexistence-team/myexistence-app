@@ -44,7 +44,10 @@ export default function HistoryScheduleDetails({
       'schedules',
       scheduleId,
     )).then((doc) => {
-      setSchedule(doc.data());
+      setSchedule({
+        ...doc.data(),
+        class: null
+      });
       getDocs(query(
         collection(
           firestore,
@@ -62,7 +65,12 @@ export default function HistoryScheduleDetails({
         }));
         const groupedByDate = Object.entries(groupBy(groupedLogs, 'dateStr')).map((a) => ({
           dateStr: a[0],
+          closedAt: a[1][0].schedule.closedAt,
+          openedAt: a[1][0].schedule.openedAt,
           presentCount: a[1].filter((b: Log) => b.status === AbsentStasuses.PRESENT).length,
+          absentCount: a[1].filter((b: Log) => b.status === AbsentStasuses.ABSENT).length,
+          excusedCount: a[1].filter((b: Log) => b.status === AbsentStasuses.EXCUSED).length,
+          lateCount: a[1].filter((b: Log) => b.status === AbsentStasuses.LATE).length,
           totalCount: a[1].length,
         }));
         setScheduleLogsGroup(groupedByDate);
@@ -82,7 +90,7 @@ export default function HistoryScheduleDetails({
       {
         isLoading ? (
           <MESpinner/>
-        ) : (
+        ) : schedule && scheduleLogsGroup.length && (
           <>
             <Text style={textStyles.body2}>Kelas</Text>
             <MEPressableText 
@@ -131,8 +139,9 @@ export default function HistoryScheduleDetails({
                       params: {
                         screen: 'HistoryLogsDetails',
                         params: {
-                          scheduleId,
-                          classId
+                          schedule,
+                          classId,
+                          logsCounts: l
                         }
                       }
                     })

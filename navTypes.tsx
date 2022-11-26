@@ -98,8 +98,18 @@ export type HistoryPageParamList = {
     scheduleId: string,
   },  
   HistoryLogsDetails: {
+    schedule: Schedule,
     classId: string,
-    scheduleId: string
+    logsCounts: {
+      dateStr: string,
+      openedAt: Timestamp,
+      closedAt: Timestamp,
+      presentCount: number,
+      absentCount: number,
+      excusedCount: number,
+      lateCount: number,
+      totalCount: number,
+    }
   },
   HistoryDetails: {
     logId: string,

@@ -11,6 +11,7 @@ import StudentHistory from "./StudentHistory";
 import TeacherHistory from "./TeacherHistory";
 import MESpinner from "../../components/MESpinner";
 import HistoryScheduleDetails from "./HistoryScheduleDetails";
+import HistoryLogsDetails from "./HistoryLogsDetails";
 
 const Stack = createNativeStackNavigator<HistoryPageParamList>();
 
@@ -38,13 +39,22 @@ export default function HistoryPage() {
             }}
           />
         ) : (
-          <Stack.Screen
-            name="HistoryScheduleDetails"
-            component={HistoryScheduleDetails}
-            options={{
-              headerShown: false,
-            }}
-          />
+          <>
+            <Stack.Screen
+              name="HistoryScheduleDetails"
+              component={HistoryScheduleDetails}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="HistoryLogsDetails"
+              component={HistoryLogsDetails}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
         )
       }
     </Stack.Navigator>
