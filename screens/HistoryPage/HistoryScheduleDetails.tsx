@@ -58,7 +58,7 @@ export default function HistoryScheduleDetails({
       )).then((docSnaps) => {
         const groupedLogs = docSnaps.docs.map((doc) => ({
           ...doc.data(),
-          dateStr: moment(doc.data().time.toDate()).format('LL'),
+          dateStr: moment(doc.data().time.toDate()).format('dddd, LL'),
         }));
         const groupedByDate = Object.entries(groupBy(groupedLogs, 'dateStr')).map((a) => ({
           dateStr: a[0],
@@ -115,7 +115,7 @@ export default function HistoryScheduleDetails({
                 </Text>
               </View>
             </View>
-            <Text style={textStyles.body2}>Riwayat Sesi-Sesi</Text>
+            <Text style={[textStyles.body2, { marginBottom: 16 }]}>Riwayat Sesi-Sesi</Text>
             {
               scheduleLogsGroup.map((l, lIdx) => (
                 <MECard
