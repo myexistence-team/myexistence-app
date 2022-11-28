@@ -111,6 +111,7 @@ export const signUp = async (
 
 export const signUpFromGoogle = async (user: any, data: {
   schoolId: string,
+  role: string,
 }): Promise<any> => {
   const usersRef = collection(firestore, 'users');
   const existingUserQuery = query(
