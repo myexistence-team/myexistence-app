@@ -104,7 +104,7 @@ export default function StudentHistory({
 
   useEffect(() => {
     loadStudentData();
-  }, [])
+  }, [watch('status'), watch('classId')])
 
   return (
     <>

@@ -17,6 +17,7 @@ export type Profile = BaseType & {
   photoUrl?: string,
   classIds: string[],
   description?: string,
+  hasRegistered: boolean,
   isVerified: boolean,
   classes: DocumentReference[],
   currentScheduleId?: string,

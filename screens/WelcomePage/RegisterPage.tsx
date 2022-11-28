@@ -10,6 +10,7 @@ import MEButton from '../../components/MEButton';
 import { FirebaseError } from 'firebase/app';
 import MEFirestoreSelect from '../../components/MEFirestoreSelect';
 import { signUp } from '../../actions/authActions';
+import MEControlledSelect from '../../components/MEControlledSelect';
 
 export default function RegisterPage() {
 
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     password: string().required().strict(),
     idNumber: string().required().strict(),
     repassword: string().required().strict(),
-    // role: string().required().strict(),
+    role: string().required().strict(),
     schoolId: string().required().strict(),
   })
   const { control, handleSubmit, watch } = useForm({
@@ -46,7 +47,7 @@ export default function RegisterPage() {
       >
         <MEHeader title='Daftar'/>
         <View>
-          {/* <MEControlledSelect
+          <MEControlledSelect
             control={control}
             name='role'
             options={[
@@ -54,7 +55,7 @@ export default function RegisterPage() {
               { value: 'STUDENT', label: 'Pelajar' },
             ]}
             label='Daftar Sebagai'
-          /> */}
+          />
           <MEFirestoreSelect
             control={control}
             name='schoolId'

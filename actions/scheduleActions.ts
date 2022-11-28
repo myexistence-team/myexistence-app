@@ -263,7 +263,9 @@ export async function openSchedule(args: {
         openMethod,
         openedAt: new Date(),
         openedBy: teacherId,
-        location: new GeoPoint(location.latitude, location.longitude),
+        ...location ? {
+          location: new GeoPoint(location.latitude, location.longitude),
+        } : {}
       }
     )
 

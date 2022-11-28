@@ -4,6 +4,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where, writ
 import { Profile } from "../types"
 import { auth, firestore } from "../firebase"
 import { ProfileRoles } from "../constants/constants"
+import { AuthError } from "../errors"
 
 export const signIn = async (
   email: string, 
@@ -23,6 +24,7 @@ export const signUp = async (
     password?: string, 
     repassword?: string,
     schoolId: string,
+    role: string,
   }
 ): Promise<void> => {
   const batch = writeBatch(firestore);
@@ -38,6 +40,12 @@ export const signUp = async (
   var newUser = { ...newCred };
   var idsField: string = '';
   if (!existingUsers.empty) {
+    if (existingUsers.docs[0].data().hasRegistered) {
+      throw new FirebaseError(
+        AuthError.USER_ALREADY_REGISTERED,
+        'Anda sudah pernah terdaftar sebelumnya. Mohon lakukan login dengan email yang digunakan.'
+      );
+    }
     newUser = { ...existingUsers.docs[0].data(), ...newUser };
     idsField = existingUsers.docs[0].data().role === ProfileRoles.STUDENT ? 'studentIds' : 'teacherIds';
     await deleteDoc(doc(firestore, 'users', existingUsers.docs[0].id));
@@ -87,6 +95,7 @@ export const signUp = async (
   const newUserPayload = {
     ...newUser,
     isVerified: newUser.isVerified || false,
+    classIds: newUser.classIds || [],
     hasRegistered: true,
     createdBy: newAuth.user.uid,
     updatedBy: newAuth.user.uid,

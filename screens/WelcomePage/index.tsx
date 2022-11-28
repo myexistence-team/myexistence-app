@@ -80,6 +80,17 @@ function Welcome() {
         backgroundColor: Colors.light.blues.blue4,
       }}
     >
+      <Text
+        style={[
+          textStyles.heading4,
+          {
+            color: 'white',
+            marginBottom: 36
+          }
+        ]}
+      >
+        Selamat Datang!
+      </Text>
       <Image
         source={require('../../assets/images/icon-white.png')}
         style={{

@@ -67,7 +67,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
 
   const classesQuery = query(
     collection(firestore, `schools/${profile.schoolId}/classes`),
-    where(documentId(), 'in', profile.classIds)
+    ...profile.classIds?.length ? [where(documentId(), 'in', profile.classIds)] : []
   );
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 

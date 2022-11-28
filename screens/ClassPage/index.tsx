@@ -1,14 +1,10 @@
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isLoading } from "expo-font";
-import { collection, documentId, getDocs, query, where } from "firebase/firestore";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { Text } from "react-native";
 import ClassesCard from "../../components/ClassCard";
 import MEContainer from "../../components/MEContainer";
-import MESpinner from "../../components/MESpinner";
 import { textStyles } from "../../constants/Styles";
 import { ClassesContext, ProfileContext } from "../../contexts";
-import { firestore } from "../../firebase";
 import { ClassParamList } from "../../navTypes";
 import { Profile } from "../../types";
 import ClassDetailsPage from "../ClassDetailsPage";
@@ -42,6 +38,7 @@ export default function ClassPage() {
 function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
   const { profile } : { profile: Profile } = useContext(ProfileContext);
   const { classes } = useContext(ClassesContext);
+  const filteredClasses = classes?.filter((c) => profile.classIds?.includes(c.id));
 
   return (
     <MEContainer>
@@ -54,12 +51,12 @@ function Classes({ }: NativeStackScreenProps<ClassParamList, "Classes">) {
             Anda belum terdaftar di kelas apapun.
           </Text>
         ) : 
-        !classes.length? (
+        !filteredClasses.length? (
           <Text style={[textStyles.body2]}>
             Anda belum terdaftar di kelas apapun.
           </Text>
         ) : 
-        classes.map((c: any, idx: number) => (
+        filteredClasses.map((c: any, idx: number) => (
           <ClassesCard classRoom={c} key={idx}/>
         ))
       }
