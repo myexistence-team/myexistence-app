@@ -8,6 +8,7 @@ import { ClassesContext, ProfileContext } from "../../contexts";
 import { ClassParamList } from "../../navTypes";
 import { Profile } from "../../types";
 import ClassDetailsPage from "../ClassDetailsPage";
+import ClassDetailsStudents from "../ClassDetailsPage/ClassDetailsStudents";
 
 const Stack = createNativeStackNavigator<ClassParamList>();
 
@@ -26,6 +27,13 @@ export default function ClassPage() {
       <Stack.Screen
         name="ClassDetails"
         component={ClassDetailsPage}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name='ClassDetailsStudents'
+        component={ClassDetailsStudents}
         options={{
           headerShown: false,
         }}

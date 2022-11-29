@@ -135,6 +135,10 @@ export type ClassParamList ={
   Classes: undefined,
   ClassDetails: {
     classId: string,
+  },
+  ClassDetailsStudents: {
+    classId: string,
+    studentIds: string[]
   }
 }
 

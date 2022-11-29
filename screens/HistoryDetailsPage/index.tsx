@@ -78,7 +78,7 @@ export default function HistoryDetailsPage({
             logSnap.data().teacherId,
           )).then((teacherSnap) => {
             if (teacherSnap.exists()) {
-              setUsers((prevUsers: any) => ({ ...prevUsers, [teacherSnap.id]: teacherSnap.data() }));
+              setUsers((prevUsers: any) => ({ ...prevUsers, [teacherSnap.id]: { ...teacherSnap.data(), id: teacherSnap.id } }));
             }
           })
         }

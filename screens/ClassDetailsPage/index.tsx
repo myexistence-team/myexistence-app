@@ -1,20 +1,21 @@
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import React, { useContext, useEffect, useState } from "react";
 import { Text } from "react-native";
 import ClassScheduleCard from "../../components/ClassScheduleCard";
 import MEContainer from "../../components/MEContainer";
 import MEHeader from "../../components/MEHeader";
+import MEPressableText from "../../components/MEPressableText";
 import MESpinner from "../../components/MESpinner";
 import { textStyles } from "../../constants/Styles";
 import { ProfileContext, UsersContext } from "../../contexts";
 import { firestore } from "../../firebase";
-import { ClassScreenProps } from "../../navTypes";
+import { ClassParamList } from "../../navTypes";
 import { Class } from "../../types";
 
-export default function ClassDetailsPage({ route }: ClassScreenProps) {
+export default function ClassDetailsPage({ route, navigation }: NativeStackScreenProps<ClassParamList, "ClassDetails">) {
   const { classId } = route.params;
-  const navigation = useNavigation();
   
   const { profile } = useContext(ProfileContext);
   const { users, setUsers } = useContext(UsersContext);
@@ -55,7 +56,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
               query(collection(firestore,`users`),
               where(documentId(), 'in', notStoredIds)
             ))
-            const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: b.data() }), {});
+            const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
             setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
           }
         }
@@ -68,7 +69,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
               query(collection(firestore, `users`),
               where(documentId(), 'in', classroom.teacherIds)
             ))
-            const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: b.data() }), {});
+            const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
             setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
           }
         }
@@ -144,7 +145,7 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
 
               <Text style={[textStyles.body2, {marginTop: 16, marginBottom: 4}]}>Pelajar</Text>
                 { classRoom.studentIds.length ?
-                  (classRoom.studentIds.map((sId: string) => {
+                  (classRoom.studentIds.filter((_s: any, sIdx: number) => sIdx < 3).map((sId: string) => {
                     const student = users[sId]
                     return (
                       <Text key={sId} style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>
@@ -159,8 +160,17 @@ export default function ClassDetailsPage({ route }: ClassScreenProps) {
                 }
                 { 
                   classRoom.studentIds.length > 3 ?  (
-                    <Text style={[textStyles.body3, {marginTop: 12, marginBottom: 4}]}
-                    >{classRoom.studentIds.length - 3} lainnya</Text>
+                    <MEPressableText 
+                      style={[textStyles.body1, {marginTop: 8, marginBottom: 4}]}
+                      onPress={() => {
+                        navigation.navigate('ClassDetailsStudents', {
+                          classId: classId,
+                          studentIds: classRoom.studentIds
+                        })
+                      }}
+                    >
+                      {classRoom.studentIds.length - 3} lainnya
+                    </MEPressableText>
                   ) : null
                 }
               
