@@ -4,7 +4,8 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
-    "build-apk": "eas build --platform android --profile preview",
+    "build-android": "eas build --platform android --profile preview",
+    "build-ios": "eas build --platform ios --profile preview",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
