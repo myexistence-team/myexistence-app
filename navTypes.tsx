@@ -34,6 +34,14 @@ export type RootStackParamList = {
   NotFound: undefined;
 };
 
+export type RootTabParamList = {
+  HomePage: NavigatorScreenParams<HomePageParamList> | undefined;
+  SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
+  HistoryPage: NavigatorScreenParams<HistoryPageParamList> | undefined,
+  ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
+  ClassPage: NavigatorScreenParams<ClassParamList> | undefined,
+};
+
 export type WelcomeParamList = {
   Welcome: undefined,
   Register: { role: string },
@@ -113,6 +121,7 @@ export type HistoryPageParamList = {
   },
   HistoryDetails: {
     logId: string,
+    scheduleId: string,
     isCurrent?: boolean,
     classId: string,
   }
@@ -122,14 +131,6 @@ export type HomePageParamList = {
   Home: undefined,
   SummaryDetails: undefined,
 }
-
-export type RootTabParamList = {
-  HomePage: NavigatorScreenParams<HomePageParamList> | undefined;
-  SchedulesPage: NavigatorScreenParams<ScheduleParamList> | undefined,
-  HistoryPage: NavigatorScreenParams<HistoryPageParamList> | undefined,
-  ProfilePage: NavigatorScreenParams<ProfileParamList> | undefined,
-  ClassPage: NavigatorScreenParams<ClassParamList> | undefined,
-};
 
 export type ClassParamList ={
   Classes: undefined,
