@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo } from "react"
 import { LocationContext } from "../contexts"
 import { getLocationDistance } from "../utils/utilFunctions";
 
-export default function useGetDistance(locationToCompare: {
+export default function useGetDistance(locationToCompare?: {
   latitude: number,
   longitude: number
 }) {
