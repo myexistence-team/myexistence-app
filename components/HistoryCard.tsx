@@ -44,6 +44,7 @@ export default function HistoryCard(props: { history: Log, clickable?: boolean }
               logId: history.id,
               isCurrent: history.isCurrent,
               classId: history.classId,
+              scheduleId: history.scheduleId
             },
             initial: false,
           },

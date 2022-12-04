@@ -40,12 +40,13 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   function loadData() {
     setSchedule(null);
+    setStudentLogs([]);
     const schedulesQuery = query(
       collectionGroup(firestore, 'schedules'),
       where('id', '==', scheduleId),
       limit(1)
     );
-    var unsubStudentLogs: Unsubscribe | null = null;
+    var unsubStudentLogs: Unsubscribe | undefined = undefined;
     const unsubSchedule = onSnapshot(schedulesQuery, (scheduleSnaps) => {
       if (!scheduleSnaps.empty) {
         const scheduleData = scheduleSnaps.docs[0].data();
@@ -54,11 +55,13 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
         const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
         unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
-          setStudentLogs(docs.docs.map((doc) => ({ 
-            ...doc.data(), 
-            id: doc.id,
-            isCurrent: true
-          })));
+          if (!docs.empty) {
+            setStudentLogs(docs.docs.map((doc) => ({ 
+              ...doc.data(), 
+              id: doc.id,
+              isCurrent: true
+            })));
+          }
         });
         if (classObj) {
           setSchedule({
@@ -124,7 +127,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     const { unsubSchedule, unsubStudentLogs } = loadData();
     return () => {
       if (unsubSchedule) unsubSchedule();
-      if (unsubStudentLogs !== null) unsubStudentLogs();
+      if (unsubStudentLogs !== undefined) unsubStudentLogs();
     }
   }, [scheduleId])
 
