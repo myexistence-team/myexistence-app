@@ -147,8 +147,8 @@ export default function HistoryScheduleDetails({
                     })
                   }}
                 >
-                  <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>{l.dateStr}</Text>
-                  <Text style={[textStyles.body1]}>{percentage(l.presentCount, l.totalCount)}% Hadir</Text>
+                  <Text style={[textStyles.body2, { fontFamily: 'manrope-bold' }]}>{l.dateStr}</Text>
+                  <Text style={[textStyles.body3]}>{percentage(l.presentCount, l.totalCount)}% Hadir</Text>
                 </MECard>
               ))
             }
