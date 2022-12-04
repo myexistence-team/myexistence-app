@@ -13,6 +13,7 @@ import moment from 'moment'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import MESpinner from '../../components/MESpinner'
+import { ProfileRoles } from '../../constants/constants'
 
 export default function ClassDetailsStudents({
   route: {
@@ -52,7 +53,7 @@ export default function ClassDetailsStudents({
   }
 
   useEffect(() => {
-    loadData();
+    if (profile.role === ProfileRoles.TEACHER) loadData();
   }, [])
 
   return (
@@ -66,7 +67,11 @@ export default function ClassDetailsStudents({
           <MESpinner/>
         ) : (
           <>
-            <Text style={[textStyles.body2, { marginBottom: 16 }]}>Data kehadiran dihitung dari {moment(startOfWeek).format('LL')}.</Text>
+            {
+              profile.role === ProfileRoles.TEACHER && (
+                <Text style={[textStyles.body2, { marginBottom: 16 }]}>Data kehadiran dihitung dari {moment(startOfWeek).format('LL')}.</Text>
+              )
+            }
             {
               students?.map((s, sIdx) => (
                 <ClassDetailsStudentCard

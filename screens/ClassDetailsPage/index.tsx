@@ -44,39 +44,39 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
         'classes', 
         classId
       )))
+
       if (classSnap.exists()) {          
         const classroom = classSnap.data();
         setClass(classroom);
         setIsLoading(false);
 
-        // Get Students
-        if (classroom.studentIds.length != 0) {   
-          const notStoredIds: string[] = classroom.studentIds.filter((sId: string) => !Object.keys(users).includes(sId));
-          if (notStoredIds.length) {
-            const studentSnaps = await getDocs(
-              query(collection(firestore,`users`),
-              where(documentId(), 'in', notStoredIds)
-            ))
-            const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
-            setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
-          }
-        }
-
-        // Get Teacher
-        if (classroom.teacherIds.length != 0) {      
-          const notStoredIds: string[] = classroom.teacherIds.filter((tId: string) => !Object.keys(users).includes(tId));
-          if (notStoredIds.length) {
-            const teacherSnaps = await getDocs(
-              query(collection(firestore, `users`),
-              where(documentId(), 'in', classroom.teacherIds)
-            ))
-            const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
-            setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
-          }
-        }
-
         // Get Schedules
         if (classroom) {
+          // Get Students
+          if (classroom.studentIds.length) {   
+            const notStoredIds: string[] = classroom.studentIds.filter((sId: string) => !Object.keys(users).includes(sId));
+            if (notStoredIds.length) {
+              const studentSnaps = await getDocs(
+                query(collection(firestore,`users`),
+                where(documentId(), 'in', notStoredIds)
+              ))
+              const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
+              setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
+            }
+          }
+  
+          // Get Teacher
+          if (classroom.teacherIds.length) {      
+            const notStoredIds: string[] = classroom.teacherIds.filter((tId: string) => !Object.keys(users).includes(tId));
+            if (notStoredIds.length) {
+              const teacherSnaps = await getDocs(
+                query(collection(firestore, `users`),
+                where(documentId(), 'in', classroom.teacherIds)
+              ))
+              const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
+              setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
+            }
+          }
           const scheduleSnaps = await getDocs(scheduleQuery)
           const docsArr: any[] = [];
           scheduleSnaps.forEach((doc) => {
@@ -91,7 +91,6 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
         }
         setIsLoading(false);
       }
-      
     } else {
       setIsLoading(false);
     }
