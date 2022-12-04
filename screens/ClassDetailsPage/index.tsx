@@ -4,6 +4,7 @@ import { collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, wh
 import React, { useContext, useEffect, useState } from "react";
 import { Text } from "react-native";
 import ClassScheduleCard from "../../components/ClassScheduleCard";
+import MEButton from "../../components/MEButton";
 import MEContainer from "../../components/MEContainer";
 import MEHeader from "../../components/MEHeader";
 import MEPressableText from "../../components/MEPressableText";
@@ -142,38 +143,18 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
                     </Text>
                   )
                 }
-
-              <Text style={[textStyles.body2, {marginTop: 16, marginBottom: 4}]}>Pelajar</Text>
-                { classRoom.studentIds.length ?
-                  (classRoom.studentIds.filter((_s: any, sIdx: number) => sIdx < 3).map((sId: string) => {
-                    const student = users[sId]
-                    return (
-                      <Text key={sId} style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>
-                        {student?.displayName} 
-                      </Text>
-                    )
-                  })) : (
-                    <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>
-                      - 
-                    </Text>
-                  )
-                }
-                { 
-                  classRoom.studentIds.length > 3 ?  (
-                    <MEPressableText 
-                      style={[textStyles.body1, {marginTop: 8, marginBottom: 4}]}
-                      onPress={() => {
-                        navigation.navigate('ClassDetailsStudents', {
-                          classId: classId,
-                          studentIds: classRoom.studentIds
-                        })
-                      }}
-                    >
-                      {classRoom.studentIds.length - 3} lainnya
-                    </MEPressableText>
-                  ) : null
-                }
-              
+                <MEButton
+                  onPress={() => {
+                    navigation.navigate('ClassDetailsStudents', {
+                      classId: classId,
+                      studentIds: classRoom.studentIds
+                    })
+                  }}
+                  variant='outline'
+                  style={{ marginTop: 16 }}
+                >
+                  {`Lihat Pelajar (${classRoom.studentIds.length})`}
+                </MEButton> 
 
               <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 4, }]}>Sesi</Text>
                 {
