@@ -1,5 +1,5 @@
 import { FirebaseError } from "firebase/app";
-import { addDoc, collection, doc, GeoPoint, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, GeoPoint, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where, writeBatch } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { Alert } from "react-native";
 import { AbsentStasuses, ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "../constants/constants";
@@ -474,4 +474,29 @@ export async function studentExcuseStatusChange({
   const studentLog = studentLogSnap.data();
   const newStudentLog = { ...studentLog, excuseStatus };
   await updateDoc(studentLogRef, newStudentLog);
+}
+
+export async function deleteStudentExcuse({
+  classId,
+  scheduleId,
+  schoolId,
+  studentLogId
+}: {
+  scheduleId: string,
+  classId: string,
+  schoolId: string,
+  studentLogId: string,
+}) {
+  const studentLogRef = doc(
+    firestore, 
+    "schools", 
+    schoolId, 
+    "classes", 
+    classId, 
+    "schedules", 
+    scheduleId, 
+    "studentLogs", 
+    studentLogId
+  );
+  await deleteDoc(studentLogRef);
 }
