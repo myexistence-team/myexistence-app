@@ -10,7 +10,7 @@ import MEContainer from '../../components/MEContainer';
 import MEHeader from '../../components/MEHeader';
 import MESpinner from '../../components/MESpinner';
 import { textStyles } from '../../constants/Styles';
-import { DAYS_ARRAY, AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
+import { DAYS_ARRAY, AbsentStasuses, ExcuseStatuses, ProfileRoles } from '../../constants/constants';
 import moment from 'moment';
 import Colors from '../../constants/Colors';
 import { ExcuseStatusesEnum, ExcuseTypeEnum, PresenceStatusEnum } from '../../enums';
@@ -268,7 +268,7 @@ export default function HistoryDetailsPage({
                   </Text>
 
                   {
-                    log.excuseStatus === ExcuseStatuses.WAITING && (
+                    profile.role === ProfileRoles.STUDENT && log.excuseStatus === ExcuseStatuses.WAITING && (
                       <MEButton
                         color='danger'
                         variant='outline'
