@@ -19,11 +19,13 @@ import MEButton from '../../components/MEButton'
 import MESpinner from '../../components/MESpinner'
 import moment from 'moment'
 import StudentDetailsLogCard from '../../components/StudentDetailsLogCard'
+import MEControlledSelect from '../../components/MEControlledSelect'
+import { PresenceStatusEnum } from '../../enums'
 
 export default function ClassDetailsStudentDetails({
   route: {
     params: {
-      classId,
+      classId: classIdParam,
       studentId
     }
   }
@@ -35,7 +37,12 @@ export default function ClassDetailsStudentDetails({
   const [dateStart, setDateStart] = useState(getStartOfWeek());
   const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
-  const { control } = useForm();
+  const { control, watch, reset } = useForm({
+    defaultValues: {
+      classId: null,
+      status: null
+    }
+  });
 
   function handleQuickDateChange(qDate: 'WEEK' | 'MONTH' | 'YEAR') {
     setQuickDate(qDate);
@@ -80,10 +87,12 @@ export default function ClassDetailsStudentDetails({
     loadData();
   }, [dateStart])
 
-  const presentCount = logs.filter((s: Log) => s.status === AbsentStasuses.PRESENT).length;
-  const lateCount = logs.filter((s: Log) => s.status === AbsentStasuses.LATE).length;
-  const excusedCount = logs.filter((s: Log) => s.status === AbsentStasuses.EXCUSED).length;
-  const absentCount = logs.length - presentCount - lateCount - excusedCount;
+  const filteredLogs = logs.filter((l) => (watch("status") ? l.status === watch("status") : true) && (watch("classId") ? l.classId === watch("classId") : true));
+  const logsFilteredByClass = logs.filter((l) => watch("classId") ? l.classId === watch("classId") : true);
+  const presentCount = logsFilteredByClass.filter((s: Log) => s.status === AbsentStasuses.PRESENT).length;
+  const lateCount = logsFilteredByClass.filter((s: Log) => s.status === AbsentStasuses.LATE).length;
+  const excusedCount = logsFilteredByClass.filter((s: Log) => s.status === AbsentStasuses.EXCUSED).length;
+  const absentCount = logsFilteredByClass.length - presentCount - lateCount - excusedCount;
 
   const pieChartData = [
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: presentCount || 0, color: Colors.light.green },
@@ -111,6 +120,32 @@ export default function ClassDetailsStudentDetails({
         label={false}
         placeholder="Pilih Kelas"
       />
+      <MEControlledSelect
+        control={control}
+        name='status'
+        label={false}
+        placeholder="Pilih Status"
+        options={[
+          { value: AbsentStasuses.PRESENT, label: PresenceStatusEnum[AbsentStasuses.PRESENT] },
+          { value: AbsentStasuses.LATE, label: PresenceStatusEnum[AbsentStasuses.LATE] },
+          { value: AbsentStasuses.EXCUSED, label: PresenceStatusEnum[AbsentStasuses.EXCUSED] },
+          { value: AbsentStasuses.ABSENT, label: PresenceStatusEnum[AbsentStasuses.ABSENT] },
+        ]}
+      />
+      {
+        (watch('status') || watch('classId')) && (
+          <MEButton
+            size='sm'
+            variant='outline'
+            onPress={() => reset()}
+            style={{ 
+              marginBottom: 16
+            }}
+          >
+            Bersihkan Filter
+          </MEButton>
+        )
+      }
       <View style={{ flexDirection: 'row', marginBottom: 8 }}>
         <MEButton
           fullWidth={false}
@@ -158,7 +193,7 @@ export default function ClassDetailsStudentDetails({
               }}
             />
             {
-              logs.map((l, lIdx) => (
+              filteredLogs.map((l, lIdx) => (
                 <StudentDetailsLogCard
                   key={lIdx}
                   log={l}
