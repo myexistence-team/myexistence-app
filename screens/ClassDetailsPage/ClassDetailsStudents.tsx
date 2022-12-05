@@ -8,12 +8,13 @@ import MEContainer from '../../components/MEContainer'
 import ClassDetailsStudentCard from '../../components/ClassDetailsStudentCard'
 import MEHeader from '../../components/MEHeader'
 import { textStyles } from '../../constants/Styles'
-import { getStartOfWeek, groupBy } from '../../utils/utilFunctions'
+import { getStartOfMonth, getStartOfWeek, getStartOfYear, groupBy } from '../../utils/utilFunctions'
 import moment from 'moment'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
 import MESpinner from '../../components/MESpinner'
 import { ProfileRoles } from '../../constants/constants'
+import MEButton from '../../components/MEButton'
 
 export default function ClassDetailsStudents({
   route: {
@@ -26,18 +27,38 @@ export default function ClassDetailsStudents({
   const { users } = useContext(UsersContext);
   const { profile } = useContext(ProfileContext);
   const students: Profile[] = studentIds.map((sId) => (users?.[sId]));
-  const startOfWeek = getStartOfWeek();
+  const [dateStart, setDateStart] = useState(getStartOfWeek());
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
   const [logsByStudent, setLogsByStudent] = useState<any>(null);
+  const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
+  function handleQuickDateChange(qDate: 'WEEK' | 'MONTH' | 'YEAR') {
+    setQuickDate(qDate);
+  }
+
+  useEffect(() => {
+    switch(quickDate) {
+      case 'MONTH':
+        setDateStart(getStartOfMonth());
+        break;
+      case 'YEAR':
+        setDateStart(getStartOfYear());
+        break;
+      case 'WEEK':
+        setDateStart(getStartOfWeek());
+        break;
+      default:
+        return;
+    }
+  }, [quickDate])
 
   function loadData() {
     const logsQuery = query(
       collection(firestore, 'schools', profile.schoolId, 'logs'),
       where('classId', '==', classId),
       where('studentId', 'in', studentIds),
-      where('time', '>=', startOfWeek)
+      where('time', '>=', dateStart)
     );
     setIsLoading(true);
     getDocs(logsQuery).then((docSnaps) => {
@@ -54,7 +75,7 @@ export default function ClassDetailsStudents({
 
   useEffect(() => {
     if (profile.role === ProfileRoles.TEACHER) loadData();
-  }, [])
+  }, [dateStart])
 
   return (
     <MEContainer
@@ -63,18 +84,51 @@ export default function ClassDetailsStudents({
     >
       <MEHeader/>
       {
+        profile.role === ProfileRoles.TEACHER && (
+          <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+            <MEButton
+              fullWidth={false}
+              variant={quickDate === 'WEEK' ? undefined : 'outline'}
+              onPress={() => handleQuickDateChange('WEEK')}
+              size='sm'
+            >
+              Minggu Ini
+            </MEButton>
+            <MEButton 
+              variant={quickDate === 'MONTH' ? undefined : 'outline'}
+              style={{ marginLeft: 8 }}
+              onPress={() => handleQuickDateChange('MONTH')}
+              fullWidth={false}
+              size='sm'
+            >
+              Bulan Ini
+            </MEButton>
+            <MEButton 
+              variant={quickDate === 'YEAR' ? undefined : 'outline'}
+              style={{ marginLeft: 8 }}
+              onPress={() => handleQuickDateChange('YEAR')}
+              fullWidth={false}
+              size='sm'
+            >
+              Tahun Ini
+            </MEButton>
+          </View>
+        )
+      }
+      {
         isLoading ? (
           <MESpinner/>
         ) : (
           <>
             {
               profile.role === ProfileRoles.TEACHER && (
-                <Text style={[textStyles.body2, { marginBottom: 16 }]}>Data kehadiran dihitung dari {moment(startOfWeek).format('LL')}.</Text>
+                <Text style={[textStyles.body2, { marginBottom: 16 }]}>Data kehadiran dihitung dari {moment(dateStart).format('LL')}.</Text>
               )
             }
             {
               students?.map((s, sIdx) => (
                 <ClassDetailsStudentCard
+                  classId={classId}
                   key={sIdx}
                   style={{
                     marginBottom: 16
