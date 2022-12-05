@@ -55,6 +55,7 @@ export async function createPresenceInSchedule(
       },
       scheduleId: scheduleSnap.id,
       studentId,
+      schoolId,
       classId,
       teacherId: schedule.openedBy,
       status: AbsentStasuses.PRESENT,
@@ -152,6 +153,7 @@ export async function createExcuseRequest(
         ...schedule.openedAt ? { openedAt: schedule.openedAt } : {}
       },
       scheduleId: scheduleSnap.id,
+      schoolId,
       studentId,
       classId,
       ...schedule.openedBy ? {teacherId: schedule.openedBy} : {},
@@ -424,6 +426,7 @@ export async function createUpdateStudentPresenceFromCallout({
         openedAt: schedule.openedAt,
       },
       scheduleId: scheduleSnap.id,
+      schoolId,
       studentId,
       classId,
       teacherId: schedule.openedBy,
