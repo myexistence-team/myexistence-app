@@ -29,16 +29,15 @@ export default function HistoryPage() {
           header: () => null
         }}
       />
+      <Stack.Screen 
+        name='HistoryDetails' 
+        component={HistoryDetailsPage}
+        options={{
+          headerShown: false,
+        }}
+      />
       {
-        profile.role === ProfileRoles.STUDENT ? (
-          <Stack.Screen 
-            name='HistoryDetails' 
-            component={HistoryDetailsPage}
-            options={{
-              headerShown: false,
-            }}
-          />
-        ) : (
+        profile.role === ProfileRoles.TEACHER && (
           <>
             <Stack.Screen
               name="HistoryScheduleDetails"
