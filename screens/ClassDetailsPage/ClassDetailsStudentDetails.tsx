@@ -18,6 +18,7 @@ import { getStartOfMonth, getStartOfWeek, getStartOfYear } from '../../utils/uti
 import MEButton from '../../components/MEButton'
 import MESpinner from '../../components/MESpinner'
 import moment from 'moment'
+import StudentDetailsLogCard from '../../components/StudentDetailsLogCard'
 
 export default function ClassDetailsStudentDetails({
   route: {
@@ -143,18 +144,28 @@ export default function ClassDetailsStudentDetails({
         isLoading ? (
           <MESpinner/>
         ) : (
-          <PieChart
-            backgroundColor='transparent'
-            accessor='count'
-            width={Dimensions.get("window").width}
-            height={240}
-            data={pieChartData}
-            fromZero
-            chartConfig={{
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              labelColor: Colors.light.black,
-            }}
-          />
+          <>
+            <PieChart
+              backgroundColor='transparent'
+              accessor='count'
+              width={Dimensions.get("window").width}
+              height={240}
+              data={pieChartData}
+              fromZero
+              chartConfig={{
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                labelColor: Colors.light.black,
+              }}
+            />
+            {
+              logs.map((l, lIdx) => (
+                <StudentDetailsLogCard
+                  key={lIdx}
+                  log={l}
+                />
+              ))
+            }
+          </>
         )
       }
     </MEContainer>
