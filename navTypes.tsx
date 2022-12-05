@@ -140,6 +140,10 @@ export type ClassParamList ={
   ClassDetailsStudents: {
     classId: string,
     studentIds: string[]
+  },
+  ClassDetailsStudentDetails: {
+    classId: string,
+    studentId: string
   }
 }
 

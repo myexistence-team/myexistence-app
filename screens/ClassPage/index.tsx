@@ -3,16 +3,20 @@ import React, { useContext } from "react";
 import { Text } from "react-native";
 import ClassesCard from "../../components/ClassCard";
 import MEContainer from "../../components/MEContainer";
+import { ProfileRoles } from "../../constants/constants";
 import { textStyles } from "../../constants/Styles";
 import { ClassesContext, ProfileContext } from "../../contexts";
 import { ClassParamList } from "../../navTypes";
 import { Profile } from "../../types";
 import ClassDetailsPage from "../ClassDetailsPage";
+import ClassDetailsStudentDetails from "../ClassDetailsPage/ClassDetailsStudentDetails";
 import ClassDetailsStudents from "../ClassDetailsPage/ClassDetailsStudents";
 
 const Stack = createNativeStackNavigator<ClassParamList>();
 
 export default function ClassPage() {
+  const { profile } = useContext(ProfileContext);
+
   return (
     <Stack.Navigator
     initialRouteName="Classes"
@@ -38,6 +42,17 @@ export default function ClassPage() {
           headerShown: false,
         }}
       />
+      {
+        profile.role === ProfileRoles.TEACHER && (
+          <Stack.Screen
+            name='ClassDetailsStudentDetails'
+            component={ClassDetailsStudentDetails}
+            options={{
+              headerShown: false,
+            }}
+          />
+        )
+      }
     </Stack.Navigator>
 
   )

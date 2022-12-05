@@ -35,7 +35,7 @@ export const ClassesContext: Context<{
 })
 
 export const UsersContext: Context<{
-  users: { [key: string]: any },
+  users: { [key: string]: Profile },
   setUsers: (a?: any) => any
 }> = createContext({
   users: {},
