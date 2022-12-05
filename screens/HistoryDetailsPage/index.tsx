@@ -188,7 +188,7 @@ export default function HistoryDetailsPage({
             {
               log.schedule.openedAt && log.teacherId && (
                 <>
-                  <Text style={textStyles.body2}>Guru</Text>
+                  <Text style={textStyles.body2}>Pengajar</Text>
                   <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
                     {teacher?.displayName}
                   </Text>
