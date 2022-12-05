@@ -5,6 +5,7 @@ import { textStyles } from '../../constants/Styles';
 import MEPressableText from '../../components/MEPressableText';
 import { useNavigation } from '@react-navigation/native';
 import { Schedule } from '../../types';
+import MEButton from '../../components/MEButton';
 
 export default function ScheduleOpenQRCode({
   qrCode, scheduleId, classId, absentCount = 0, studentCount = 0
@@ -29,15 +30,9 @@ export default function ScheduleOpenQRCode({
           </View>
         ) : null
       }
-      <Text style={[textStyles.body2, { textAlign: 'center' }]}>Pelajar Hadir</Text>
       {
         studentCount > 0 && absentCount > 0 && (
-          <MEPressableText
-            style={[textStyles.body1, { 
-              fontFamily: 'manrope-bold', 
-              marginBottom: 16,
-              textAlign: 'center'
-            }]}
+          <MEButton
             onPress={() => {
               navigation.navigate('Root', {
                 screen: 'SchedulesPage',
@@ -51,9 +46,10 @@ export default function ScheduleOpenQRCode({
                 }
               })
             }}
+            variant='outline'
           >
-            {studentCount - absentCount}/{studentCount}
-          </MEPressableText>
+            {`Lihat Pelajar (${studentCount - absentCount}/${studentCount})`}
+          </MEButton>
         )
       }
     </>

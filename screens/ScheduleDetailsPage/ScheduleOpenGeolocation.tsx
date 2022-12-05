@@ -6,6 +6,7 @@ import { ProfileContext } from '../../contexts';
 import { textStyles } from '../../constants/Styles';
 import MEPressableText from '../../components/MEPressableText';
 import { useNavigation } from '@react-navigation/native';
+import MEButton from '../../components/MEButton';
 
 export default function ScheduleOpenGeolocation({
   classId,
@@ -42,8 +43,7 @@ export default function ScheduleOpenGeolocation({
   }, [])
   return (
     <View>
-      <Text style={[textStyles.body2, { marginBottom: 8 }]}>Pelajar Tercatat</Text>
-      <MEPressableText
+      <MEButton
         onPress={() => {
           navigation.navigate('Root', {
             screen: 'SchedulesPage',
@@ -56,10 +56,10 @@ export default function ScheduleOpenGeolocation({
             }
           })
         }}
-        style={[textStyles.body1, { marginBottom: 16, fontFamily: 'manrope-bold' }]}
+        variant='outline'
       >
-        {studentLogs.length}/{studentIds.length}
-      </MEPressableText>
+        {`Lihat Pelajar (${studentLogs.length}/${studentIds.length})`}
+      </MEButton>
     </View>
   )
 }

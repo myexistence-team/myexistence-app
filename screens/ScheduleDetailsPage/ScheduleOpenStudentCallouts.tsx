@@ -101,32 +101,14 @@ export default function ScheduleOpenStudentCallouts({
     <View 
       style={{
         alignItems: 'center',
-        marginBottom: 16
       }}
     >
-      <MEPressableText 
-        onPress={() => {
-          navigation.navigate('Root', {
-            screen: 'SchedulesPage',
-            params: {
-              screen: 'SchedulePresences',
-              params: {
-                scheduleId,
-                classId
-              },  
-            }
-          })
-        }}
-        style={[textStyles.body1, { marginBottom: 16 }]}
-      >
-        {Math.min(currentIdx + 1, students.length)}/{students.length}
-      </MEPressableText>
       {
         students.length === 0 ? (
           <MESpinner/>
         ) : currentStudent ? (
           <>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
               <View style={{ flex: 1, alignItems: 'center' }}>
                 {
                   currentIdx > 0 && (
@@ -156,9 +138,6 @@ export default function ScheduleOpenStudentCallouts({
                 />
                 <Text style={[textStyles.heading4, { marginTop: 16 }]}>
                   {currentStudent.displayName}
-                </Text>
-                <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 24 }]}>
-                  Tercatat {waitingForPresences.length}/{students.length}
                 </Text>
               </View>
               <View style={{ flex: 1, alignItems: 'center' }}>
@@ -306,6 +285,24 @@ export default function ScheduleOpenStudentCallouts({
           </>
         )
       }
+      <MEButton
+        onPress={() => {
+          navigation.navigate('Root', {
+            screen: 'SchedulesPage',
+            params: {
+              screen: 'SchedulePresences',
+              params: {
+                scheduleId,
+                classId
+              },  
+            }
+          })
+        }}
+        variant='outline'
+        style={{ marginTop: 16 }}
+      >
+        Lihat Pelajar ({waitingForPresences.length}/{students.length})
+      </MEButton>
     </View>
   )
 }

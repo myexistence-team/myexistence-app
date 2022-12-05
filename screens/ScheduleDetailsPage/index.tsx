@@ -215,22 +215,18 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               {schedule.classDescription}
             </Text>
 
-            <Text style={textStyles.body2}>Hari</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-              {DAYS_ARRAY[schedule.day]}
-            </Text>
 
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Jam Mulai</Text>
+                <Text style={textStyles.body2}>Hari</Text>
                 <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(schedule.start.toDate()).format("HH:mm")}
+                  {DAYS_ARRAY[schedule.day]}
                 </Text>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={textStyles.body2}>Jam Selesai</Text>
+                <Text style={textStyles.body2}>Jam</Text>
                 <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                  {moment(schedule.end.toDate()).format("HH:mm")}
+                  {moment(schedule.start.toDate()).format("HH:mm")} - {moment(schedule.end.toDate()).format("HH:mm")}
                 </Text>
               </View>
             </View>
