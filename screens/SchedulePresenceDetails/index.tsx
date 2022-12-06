@@ -194,7 +194,7 @@ export default function SchedulePresenceDetails({
                     Absen
                   </MEButton>
                   <MEButton 
-                    color={Colors.light.yellows.yellow3}
+                    color={Colors.light.orange}
                     style={{ marginVertical: 16 }}
                     variant={log?.status !== AbsentStasuses.LATE ? 'outline' : undefined}
                     iconStart={log?.status === AbsentStasuses.LATE ? 'check' : undefined}

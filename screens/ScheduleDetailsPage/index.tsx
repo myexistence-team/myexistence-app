@@ -18,8 +18,6 @@ import MEPressableText from '../../components/MEPressableText'
 import ScheduleOpenQRCode from './ScheduleOpenQRCode'
 import ScheduleOpenStudentCallouts from './ScheduleOpenStudentCallouts'
 import HistoryCard from '../../components/HistoryCard'
-import ScheduleOpenGeolocation from './ScheduleOpenGeolocation'
-import { getLocationDistance } from '../../utils/utilFunctions'
 import Colors from '../../constants/Colors'
 import useGetDistance from '../../hooks/useGetDistance'
 import { FontAwesome5 } from '@expo/vector-icons'
@@ -395,19 +393,13 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                             classId={schedule.classId}
                             absentCount={absentCount}
                             studentCount={studentIds.length}
-                          /> : schedule.openMethod === ScheduleOpenMethods.CALLOUT && studentIds.length > 0 ? (
+                          /> : schedule.openMethod === ScheduleOpenMethods.CALLOUT ? (
                             <ScheduleOpenStudentCallouts
                               studentIds={studentIds}
                               scheduleId={scheduleId}
                               classId={schedule.classId}
                             />  
-                          ) : (
-                            <ScheduleOpenGeolocation
-                              studentIds={studentIds}
-                              scheduleId={scheduleId}
-                              classId={schedule.classId}
-                            />
-                          ) : null
+                          ) : null : null
                         }
                         {
                           schedule.status !== ScheduleStasuses.OPENED ? (
