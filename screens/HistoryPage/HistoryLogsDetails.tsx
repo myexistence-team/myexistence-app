@@ -1,8 +1,8 @@
 import { View, Text, Dimensions } from 'react-native'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { HistoryPageParamList } from '../../navTypes'
-import { ClassesContext } from '../../contexts'
+import { ClassesContext, UsersContext } from '../../contexts'
 import MEContainer from '../../components/MEContainer'
 import MEHeader from '../../components/MEHeader'
 import { textStyles } from '../../constants/Styles'
@@ -12,19 +12,28 @@ import { DAYS_ARRAY } from '../../constants/constants'
 import { useNavigation } from '@react-navigation/native'
 import Colors from '../../constants/Colors'
 import { PieChart } from 'react-native-chart-kit'
+import { collection, documentId, getDocs, query, where } from 'firebase/firestore'
+import { firestore } from '../../firebase'
+import MESpinner from '../../components/MESpinner'
+import StudentCard from '../../components/StudentCard'
 
 export default function HistoryLogsDetails({
   route: {
     params: {
       schedule,
       classId,
-      logsCounts
+      logsCounts,
+      logs
     }
   }
 }: NativeStackScreenProps<HistoryPageParamList, 'HistoryLogsDetails'>) {
   const navigation = useNavigation();
+  const { users, setUsers } = useContext(UsersContext);
   const { classes } = useContext(ClassesContext);
   const classroom = classes.find((c) => c.id === classId);
+  const students = classroom?.studentIds.map((sId) => users?.[sId])?.filter((s) => s !== undefined);
+  const [isLoading, setIsLoading] = useState(false);
+  console.log(logs.length)
 
   const pieChartData = [
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logsCounts.presentCount || 0, color: Colors.light.green },
@@ -32,6 +41,26 @@ export default function HistoryLogsDetails({
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Terlambat", count: logsCounts.lateCount || 0, color: Colors.light.orange },
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: logsCounts.excusedCount || 0, color: Colors.light.yellow },
   ];
+
+  async function loadData() {
+    if (classroom?.studentIds?.length) {
+      const notStoredIds: string[] = classroom.studentIds.filter((tId: string) => !Object.keys(users).includes(tId));
+      if (notStoredIds.length) {
+        setIsLoading(true);
+        const teacherSnaps = await getDocs(
+          query(collection(firestore, `users`),
+          where(documentId(), 'in', classroom.studentIds)
+        ))
+        const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
+        setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
+        setIsLoading(false);
+      }
+    }
+  }
+
+  useEffect(() => {
+    loadData();
+  }, [])
 
   return (
     <MEContainer>
@@ -106,6 +135,17 @@ export default function HistoryLogsDetails({
           labelColor: Colors.light.black,
         }}
       />
+      {
+        isLoading ? (
+          <MESpinner/>
+        ) : students?.map((s, sIdx) => (
+          <StudentCard
+            student={s}
+            log={logs.find((l) => l.studentId === s.id)}
+            key={sIdx}
+          />
+        ))
+      }
     </MEContainer>
   )
 }

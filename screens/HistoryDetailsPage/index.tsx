@@ -204,7 +204,7 @@ export default function HistoryDetailsPage({
               )
             }
 
-            <Text style={[textStyles.heading4, { marginBottom: 16, marginTop: 24 }]}>Kehadiran Anda</Text>
+            <Text style={[textStyles.heading4, { marginBottom: 16, marginTop: 24 }]}>Kehadiran</Text>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1 }}>
                 <Text style={textStyles.body2}>Status</Text>

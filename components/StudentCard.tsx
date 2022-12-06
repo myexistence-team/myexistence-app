@@ -3,17 +3,20 @@ import React from 'react'
 import MECard from './MECard'
 import { textStyles } from '../constants/Styles'
 import StatusIcon from './StatusIcon'
+import { Log } from '../types'
+import moment from 'moment'
+import { AbsentStasuses } from '../constants/constants'
 
 export default function StudentCard({
   student,
-  status,
-  onPress
+  onPress,
+  log
 }: {
   student: {
     displayName: string
   },
-  status?: string
-  onPress?: Function
+  onPress?: Function,
+  log?: Log,
 }) {
   return (
     <MECard
@@ -26,8 +29,15 @@ export default function StudentCard({
     >
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>{student.displayName}</Text>
       {
-        status && (
-          <StatusIcon status={status}/>
+        log && (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {
+              [AbsentStasuses.PRESENT, AbsentStasuses.LATE].includes(log.status) && (
+                <Text style={[textStyles.body3, { marginRight: 8 }]}>{moment(log.time.toDate()).format("HH:mm")}</Text>
+              )
+            }
+            <StatusIcon status={log.status}/>
+          </View>
         )
       }
     </MECard>

@@ -11,50 +11,47 @@ import { PresenceStatusEnum } from '../../enums';
 import { AbsentStasuses, ExcuseStatuses, ProfileRoles } from '../../constants/constants';
 import MEButton from '../../components/MEButton';
 import { createUpdateStudentPresenceFromCallout, studentExcuseStatusChange } from '../../actions/scheduleActions';
-import { ProfileContext } from '../../contexts';
+import { ClassesContext, ProfileContext, UsersContext } from '../../contexts';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase';
+import Colors from '../../constants/Colors';
+import { Log } from '../../types';
 
 export default function SchedulePresenceDetails({
   route: {
     params: {
-      logId,
       classId,
+      logId,
       scheduleId,
+      studentId,
       isStudentLog,
-      presence: presenceProp
+      log: logProp,
     }
   }
 }: NativeStackScreenProps<ScheduleParamList, "SchedulePresenceDetails">) {
   const { profile } = useContext(ProfileContext);
-  const [presence, setPresence] = useState<any>(presenceProp)
-  const {
-    className,
-    end,
-    start,
-    status,
-    studentName,
-    time,
-    excuse,
-    excuseStatus,
-    studentId
-  } = presence;
-
-  const studentLogRef = doc(
-    firestore, 
-    'schools',
-    profile.schoolId,
-    'classes',
-    classId,
-    'schedules',
-    scheduleId,
-    'studentLogs',
-    logId
-  );
+  const { classes } = useContext(ClassesContext);
+  const { users } = useContext(UsersContext);
+  const classroom = classes.find((c) => c.id === classId);
+  const student = users?.[studentId];
+  console.log(users)
+  const [log, setLog] = useState<Log | undefined>(logProp);
+  
   function loadData() {
+    const studentLogRef = doc(
+      firestore, 
+      'schools',
+      profile.schoolId,
+      'classes',
+      classId,
+      'schedules',
+      scheduleId,
+      'studentLogs',
+      logId
+    );
     if (logId) {
       const unsubLog = onSnapshot(studentLogRef, (doc) => {
-        setPresence((prev: any) => ({ ...prev, ...doc.data(), id: doc.id }));
+        setLog((prev: any) => ({ ...prev, ...doc.data(), id: doc.id }));
       })
       return unsubLog;
     }
@@ -72,7 +69,7 @@ export default function SchedulePresenceDetails({
     setExcuseStatusLoading(excuseStatus);
     await studentExcuseStatusChange({
       scheduleId, 
-      classId: presence.classId, 
+      classId, 
       schoolId: profile.schoolId,
       studentLogId: logId,
       excuseStatus,
@@ -100,23 +97,23 @@ export default function SchedulePresenceDetails({
       />
       <Text style={textStyles.body2}>Nama</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-        {studentName}
+        {student?.displayName}
       </Text>
       <Text style={textStyles.body2}>Kelas</Text>
       <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-        {className}
+        {classroom?.name}
       </Text>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
           <Text style={textStyles.body2}>Jam Mulai</Text>
           <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(start.toDate()).format("HH:mm")}
+            {moment(log?.schedule?.start?.toDate()).format("HH:mm")}
           </Text>
         </View>
         <View style={{ flex: 1 }}>
           <Text style={textStyles.body2}>Jam Selesai</Text>
           <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(end.toDate()).format("HH:mm")}
+            {moment(log?.schedule?.end?.toDate()).format("HH:mm")}
           </Text>
         </View>
       </View>
@@ -126,29 +123,29 @@ export default function SchedulePresenceDetails({
             <View style={{ flex: 1 }}>
               <Text style={textStyles.body2}>Kehadiran</Text>
               <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16, color: getStatusColor(status) }]}>
-                {PresenceStatusEnum[status]}
+                {PresenceStatusEnum[log?.status]}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
               <Text style={textStyles.body2}>Jam Kehadiran</Text>
               <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                {moment(time.toDate()).format("HH:mm")}
+                {moment(log?.time.toDate()).format("HH:mm")}
               </Text>
             </View>
           </View>
         ) : (
           <View>
             {
-              status === AbsentStasuses.EXCUSED && excuse ? (
+              log?.status === AbsentStasuses.EXCUSED && log?.excuse ? (
                 <>
                   <Text style={textStyles.body2}>Alasan Izin</Text>
                   <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-                    {excuse.message}
+                    {log?.excuse?.message}
                   </Text>
                   <Text style={textStyles.body2}>Bukti Izin</Text>
                   <Image
                     source={{
-                      uri: excuse.proofUrl
+                      uri: log?.excuse?.proofUrl
                     }}
                     style={{
                       width: '100%',
@@ -160,8 +157,8 @@ export default function SchedulePresenceDetails({
                     <View style={{ flex: 1, marginRight: 16 }}>
                       <MEButton 
                         color='danger'
-                        variant={excuseStatus !== ExcuseStatuses.REJECTED ? 'outline' : undefined}
-                        iconStart={excuseStatus === ExcuseStatuses.REJECTED ? 'check' : undefined}
+                        variant={log?.excuseStatus !== ExcuseStatuses.REJECTED ? 'outline' : undefined}
+                        iconStart={log?.excuseStatus === ExcuseStatuses.REJECTED ? 'check' : undefined}
                         isLoading={excuseStatusLoading === ExcuseStatuses.REJECTED}
                         onPress={() => handleExcuseStatusChange(ExcuseStatuses.REJECTED)}
                       >
@@ -171,8 +168,8 @@ export default function SchedulePresenceDetails({
                     <View style={{ flex: 1 }}>
                       <MEButton
                         color='success' 
-                        variant={excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
-                        iconStart={excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
+                        variant={log?.excuseStatus !== ExcuseStatuses.ACCEPTED ? 'outline' : undefined}
+                        iconStart={log?.excuseStatus === ExcuseStatuses.ACCEPTED ? 'check' : undefined}
                         isLoading={excuseStatusLoading === ExcuseStatuses.ACCEPTED}
                         onPress={() => handleExcuseStatusChange(ExcuseStatuses.ACCEPTED)}
                       >
@@ -182,30 +179,36 @@ export default function SchedulePresenceDetails({
                   </View>
                 </>
               ) : (
-                <View style={{ flexDirection: 'row' }}>
-                  <View style={{ flex: 1, marginRight: 16 }}>
-                    <MEButton 
-                      color='danger'
-                      variant={status !== AbsentStasuses.ABSENT ? 'outline' : undefined}
-                      iconStart={status === AbsentStasuses.ABSENT ? 'check' : undefined}
-                      isLoading={presenceLoading === AbsentStasuses.ABSENT}
-                      onPress={() => handleCreatePresence(AbsentStasuses.ABSENT)}
-                    >
-                      Absen
-                    </MEButton>
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <MEButton   
-                      color='success'
-                      variant={status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
-                      iconStart={status === AbsentStasuses.PRESENT ? 'check' : undefined}
-                      isLoading={presenceLoading === AbsentStasuses.PRESENT}
-                      onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
-                    >
-                      Hadir
-                    </MEButton>
-                  </View>
-                </View>
+                <>
+                  <MEButton 
+                    color='danger'
+                    variant={log?.status !== AbsentStasuses.ABSENT ? 'outline' : undefined}
+                    iconStart={log?.status === AbsentStasuses.ABSENT ? 'check' : undefined}
+                    isLoading={presenceLoading === AbsentStasuses.ABSENT}
+                    onPress={() => handleCreatePresence(AbsentStasuses.ABSENT)}
+                  >
+                    Absen
+                  </MEButton>
+                  <MEButton 
+                    color={Colors.light.yellows.yellow3}
+                    style={{ marginVertical: 16 }}
+                    variant={log?.status !== AbsentStasuses.LATE ? 'outline' : undefined}
+                    iconStart={log?.status === AbsentStasuses.LATE ? 'check' : undefined}
+                    isLoading={presenceLoading === AbsentStasuses.LATE}
+                    onPress={() => handleCreatePresence(AbsentStasuses.LATE)}
+                  >
+                    Terlambat
+                  </MEButton>
+                  <MEButton   
+                    color='success'
+                    variant={log?.status !== AbsentStasuses.PRESENT ? 'outline' : undefined}
+                    iconStart={log?.status === AbsentStasuses.PRESENT ? 'check' : undefined}
+                    isLoading={presenceLoading === AbsentStasuses.PRESENT}
+                    onPress={() => handleCreatePresence(AbsentStasuses.PRESENT)}
+                  >
+                    Hadir
+                  </MEButton>
+                </>
               )
             }
           </View>

@@ -4,15 +4,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ScheduleParamList } from '../../navTypes'
 import MEContainer from '../../components/MEContainer'
 import MEHeader from '../../components/MEHeader'
-import { collection, doc, documentId, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore'
+import { collection, documentId, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { ProfileContext } from '../../contexts'
+import { ClassesContext, ProfileContext, UsersContext } from '../../contexts'
 import MESpinner from '../../components/MESpinner'
 import StudentCard from '../../components/StudentCard'
 import { textStyles } from '../../constants/Styles'
-import MEPressableText from '../../components/MEPressableText'
 import { AbsentStasuses } from '../../constants/constants'
-import Colors from '../../constants/Colors'
 import { Log } from '../../types'
 
 export default function SchedulePresences({
@@ -25,54 +23,29 @@ export default function SchedulePresences({
   navigation
 }: NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">) {
   const [isLoading, setIsLoading] = useState(false);
-  const [classroom, setClassroom] = useState<any>(null);
-  const [status, setStatus] = useState<null | string>(null);
-  const [students, setStudents] = useState<any[]>([]);
-  const [filteredStudents, setFilteredStudents] = useState<any[]>([]);
   const [studentLogs, setStudentLogs] = useState<{[key: string]: Log}>({});
-
+  
   const {profile} = useContext(ProfileContext);
-
-  useEffect(() => {
-    if (status && Object.keys(studentLogs).length) {
-      var filteredStudentIds: string[] = []
-      if (status === AbsentStasuses.ABSENT) {
-        filteredStudentIds = students.map((s) => s.id).filter((sId) => !Object.keys(studentLogs).includes(sId));
-      } else {
-        filteredStudentIds = Object.entries(studentLogs).filter((l) => l[1].status === status).map((l) => l[0]);
-      }
-      setFilteredStudents(students.filter((s) => filteredStudentIds.includes(s.id)));
-    } else {
-      setFilteredStudents(students);
-    }
-  }, [studentLogs, students, status])
+  const {users, setUsers} = useContext(UsersContext);
+  const {classes} = useContext(ClassesContext);
+  const classroom = classes?.find((c) => c.id === classId);
+  const students = classroom?.studentIds?.map((sId) => users?.[sId]).filter((s) => s !== undefined) || [];
 
   function loadData() {
     setIsLoading(true);
-    getDoc(doc(
-      firestore, 
-      'schools',
-      profile.schoolId,
-      'classes',
-      classId
-    )).then((classSnap) => {
-      if (classSnap.exists()) {
-        setClassroom({ ...classSnap.data(), id: classSnap.id });
-        getDocs(query(collection(
-          firestore,
-          'users',
-        ), where(
-          documentId(), 
-          'in', 
-          classSnap.data().studentIds
-        ))).then((studentSnaps) => {
-          if (!studentSnaps.empty) {
-            setStudents(studentSnaps.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-            setIsLoading(false);
-          }
-        })
-      }
-    });
+    const notStoredIds: string[] = classroom?.studentIds.filter((sId: string) => !Object.keys(users).includes(sId)) || [];
+    if (notStoredIds.length) {
+      getDocs(
+        query(collection(firestore,`users`),
+        where(documentId(), 'in', notStoredIds)
+      )).then((studentSnaps) => {
+        const userObjs = studentSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
+        setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
+        setIsLoading(false);
+      })
+    } else {
+      setIsLoading(false);
+    }
     return onSnapshot(collection(
       firestore,
       'schools',
@@ -102,10 +75,6 @@ export default function SchedulePresences({
     return () => unsub();
   }, [])
 
-  function handleChangeStatus(stat: string) {
-    setStatus((prevStatus) => (prevStatus === stat ? null : stat));
-  }
-
   return (
     <MEContainer
       refreshing={isLoading}
@@ -114,96 +83,59 @@ export default function SchedulePresences({
       <MEHeader
         title={`Pelajar (${students.length})`}
       />
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', marginBottom: 16 }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={textStyles.body2}>Hadir</Text>
-          <MEPressableText 
-            style={[textStyles.body1, { 
-              fontFamily: 'manrope-bold', 
-              marginBottom: 16,
-              ...status === AbsentStasuses.PRESENT ? {
-                color: Colors.light.black 
-              } : {}
-            }]}
-            onPress={() => handleChangeStatus(AbsentStasuses.PRESENT)}
+          <Text 
+            style={[textStyles.body1]}
           >
             {presentCount}
-          </MEPressableText>
+          </Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={textStyles.body2}>Izin</Text>
-          <MEPressableText 
-            style={[textStyles.body1, { 
-              fontFamily: 'manrope-bold', 
-              marginBottom: 16,
-              ...status === AbsentStasuses.EXCUSED ? {
-                color: Colors.light.black 
-              } : {}
-            }]}
-            onPress={() => handleChangeStatus(AbsentStasuses.EXCUSED)}
+          <Text 
+            style={[textStyles.body1]}
           >
             {excusedCount}
-          </MEPressableText>
+          </Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={textStyles.body2}>Terlambat</Text>
-          <MEPressableText 
-            style={[textStyles.body1, { 
-              fontFamily: 'manrope-bold', 
-              marginBottom: 16,
-              ...status === AbsentStasuses.LATE ? {
-                color: Colors.light.black 
-              } : {}
-            }]}
-            onPress={() => handleChangeStatus(AbsentStasuses.LATE)}
+          <Text 
+            style={[textStyles.body1]}
           >
             {lateCount}
-          </MEPressableText>
+          </Text>
         </View>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={textStyles.body2}>Absen</Text>
-          <MEPressableText 
-            style={[textStyles.body1, { 
-              fontFamily: 'manrope-bold', 
-              marginBottom: 16,
-              ...status === AbsentStasuses.ABSENT ? {
-                color: Colors.light.black 
-              } : {}
-            }]}
-            onPress={() => handleChangeStatus(AbsentStasuses.ABSENT)}
+          <Text 
+            style={[textStyles.body1]}
           >
             {absentCount}
-          </MEPressableText>
+          </Text>
         </View>
       </View>
       {
-        isLoading && filteredStudents.length ? (
+        isLoading && !students.length && Object.keys(studentLogs).length ? (
           <MESpinner/>
         ) : (
           <>
             {
-              filteredStudents.map((s, idx) => (
+              students.map((s, idx) => (
                 <StudentCard 
                   key={idx} 
                   student={s} 
-                  status={studentLogs[s.id]?.status}
-                  onPress={!studentLogs[s.id] ? undefined : () => {
+                  log={studentLogs[s.id]}
+                  onPress={() => {
                     navigation.navigate('SchedulePresenceDetails', {
                       logId: studentLogs[s.id].id,
                       isStudentLog: true,
                       scheduleId,
                       classId,
-                      presence: {
-                        studentName: s.displayName,
-                        studentId: s.id,
-                        className: classroom.name,
-                        classId: studentLogs[s.id]?.classId,
-                        status: studentLogs[s.id]?.status,
-                        start: studentLogs[s.id]?.schedule.start,
-                        end: studentLogs[s.id]?.schedule.end,
-                        time: studentLogs[s.id]?.time,
-                        excuse: studentLogs[s.id]?.excuse,
-                      }
+                      studentId: s.id,
+                      log: studentLogs[s.id]
                     })
                   }}
                 />

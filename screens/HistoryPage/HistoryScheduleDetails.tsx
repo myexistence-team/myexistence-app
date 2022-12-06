@@ -67,6 +67,7 @@ export default function HistoryScheduleDetails({
           dateStr: a[0],
           closedAt: a[1][0].schedule.closedAt,
           openedAt: a[1][0].schedule.openedAt,
+          logs: a[1],
           presentCount: a[1].filter((b: Log) => b.status === AbsentStasuses.PRESENT).length,
           absentCount: a[1].filter((b: Log) => b.status === AbsentStasuses.ABSENT).length,
           excusedCount: a[1].filter((b: Log) => b.status === AbsentStasuses.EXCUSED).length,
@@ -141,7 +142,8 @@ export default function HistoryScheduleDetails({
                         params: {
                           schedule,
                           classId,
-                          logsCounts: l
+                          logsCounts: l,
+                          logs: l.logs
                         }
                       }
                     })

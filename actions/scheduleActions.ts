@@ -224,7 +224,7 @@ export async function openSchedule(args: {
     'schedules',
     scheduleId,
   ];
-  // const scheduleSnap = await getDoc(doc(firestore, 'schools', ...schedulePath));
+
   const classSnap = await getDoc(
     doc(
       firestore,

@@ -1,5 +1,5 @@
 import { DocumentReference, GeoPoint, Timestamp } from "firebase/firestore"
-import { ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "./constants/constants"
+import { AbsentStasuses, ExcuseStatuses, ScheduleOpenMethods, ScheduleStasuses } from "./constants/constants"
 
 export type BaseType = {
   id: string,
@@ -74,14 +74,14 @@ export type Log = {
   },
   excuse?: {
     proofUrl: string,
-    reason: string,
+    message: string,
   },
   excuseStatus?: ExcuseStatuses,
   studentId: string,
   teacherId: string,
   scheduleId: string,
   classId: string,
-  status: 'PRESENT' | 'ABSENT' | 'LATE' | 'EXCUSED' | string,
+  status: AbsentStasuses,
   time: Timestamp
 }
 

@@ -8,7 +8,7 @@ import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/n
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Timestamp } from 'firebase/firestore';
 import { AbsentStasuses, ScheduleOpenMethods } from './constants/constants';
-import { Schedule } from './types';
+import { Log, Schedule } from './types';
 
 declare global {
   namespace ReactNavigation {
@@ -77,17 +77,8 @@ export type ScheduleParamList = {
     logId: string,
     classId: string,
     scheduleId: string,
-    presence?: {
-      studentName: string,
-      studentId: string,
-      className: string,
-      classId: string,
-      status: string,
-      start: Timestamp,
-      end: Timestamp,
-      time: Timestamp,
-      excuse?: any
-    }
+    studentId: string,
+    log?: Log,
   }
 }
 
@@ -117,7 +108,8 @@ export type HistoryPageParamList = {
       excusedCount: number,
       lateCount: number,
       totalCount: number,
-    }
+    },
+    logs: Log[]
   },
   HistoryDetails: {
     logId: string,
