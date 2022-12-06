@@ -9,6 +9,7 @@ import { collection, getDocs, limit, orderBy, query, where } from "firebase/fire
 import { AuthContext, ProfileContext } from "../../contexts";
 import { firestore } from "../../firebase";
 import MESpinner from "../../components/MESpinner";
+import HistoryDetailsModal from "../HistoryDetailsModal";
 
 export default function History() {
   const navigation = useNavigation();
@@ -44,12 +45,19 @@ export default function History() {
     loadData()
   }, []);
 
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const selectedLog = logs?.find((l) => l.id === selectedLogId);
+
   return (
     <View 
       style={{
         paddingBottom: 64
       }}
     >
+      <HistoryDetailsModal
+        log={selectedLog}
+        setSelectedLogId={setSelectedLogId}
+      />
       {
         isLoading ? (
           <MESpinner/>
@@ -62,7 +70,13 @@ export default function History() {
             </Text>
             {
               logs.map((h, idx) => (
-                <HistoryCard history={h} key={idx}/>
+                <HistoryCard 
+                  history={h} 
+                  key={idx}
+                  onPress={() => {
+                    setSelectedLogId(h.id)
+                  }}
+                />
               ))
 
             }
