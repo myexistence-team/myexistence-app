@@ -10,7 +10,17 @@ import StatusIcon from './StatusIcon'
 import { useNavigation } from '@react-navigation/native'
 
 export default function StudentDetailsLogCard({
-  log: {
+  log,
+  showClass = true,
+  showSchedule = false,
+  onPress
+}: {
+  log: Log,
+  showClass?: boolean,
+  showSchedule?: boolean,
+  onPress?: Function
+}) {
+  const {
     id: logId,
     classId,
     schedule: {
@@ -19,14 +29,7 @@ export default function StudentDetailsLogCard({
     scheduleId,
     time,
     status
-  },
-  showClass = true,
-  showSchedule = false,
-}: {
-  log: Log,
-  showClass?: boolean,
-  showSchedule?: boolean
-}) {
+  } = log;
   const { classes } = useContext(ClassesContext);
   const classroom = classes?.find((c) => c.id === classId);
   const navigation = useNavigation();
@@ -36,20 +39,7 @@ export default function StudentDetailsLogCard({
       style={{ 
         marginBottom: 16
       }}
-      onPress={() => {
-        navigation.navigate('Root', {
-          screen: 'HistoryPage',
-          params: {
-            screen: 'HistoryDetails',
-            params: {
-              logId,
-              classId,
-              scheduleId,
-            },
-            initial: false
-          }
-        })
-      }}
+      onPress={onPress}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={[textStyles.body2, { fontFamily: 'manrope-bold', marginBottom: 8 }]}>{moment(time.toDate()).format("LL")}</Text>

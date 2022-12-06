@@ -54,7 +54,6 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type ScheduleScreenProps = NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">
-export type HistoryScreenProps = NativeStackScreenProps<HistoryPageParamList, "HistoryDetails">
 export type ClassScreenProps = NativeStackScreenProps<ClassParamList, "ClassDetails">
 export type ExcusePageScreenProps = NativeStackScreenProps<RootStackParamList, "ExcusePage">
 
@@ -111,12 +110,6 @@ export type HistoryPageParamList = {
     },
     logs: Log[]
   },
-  HistoryDetails: {
-    logId: string,
-    scheduleId: string,
-    isCurrent?: boolean,
-    classId: string,
-  }
 }
 
 export type HomePageParamList = {
@@ -136,6 +129,13 @@ export type ClassParamList ={
   ClassDetailsStudentDetails: {
     classId: string,
     studentId: string
+  },
+  ClassStudentPresenceDetails: {
+    logId: string,
+    log: Log,
+    scheduleId: string,
+    isCurrent?: boolean,
+    classId: string,
   }
 }
 

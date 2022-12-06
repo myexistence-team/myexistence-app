@@ -23,6 +23,7 @@ import { getLocationDistance } from '../../utils/utilFunctions'
 import Colors from '../../constants/Colors'
 import useGetDistance from '../../hooks/useGetDistance'
 import { FontAwesome5 } from '@expo/vector-icons'
+import HistoryDetailsModal from '../HistoryDetailsModal'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -192,11 +193,18 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   const [showInfo, setShowInfo] = useState(false);
 
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const selectedLog = studentLogs?.find((l) => l.id === selectedLogId);
+
   return (
     <MEContainer
       onRefresh={loadData}
       refreshing={!Boolean(schedule)}
     >
+      <HistoryDetailsModal
+        log={selectedLog}
+        setSelectedLogId={setSelectedLogId}
+      />
       <MEHeader
         title='Detail Sesi'
       />
@@ -268,6 +276,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                             <HistoryCard
                               history={studentLog}
                               key={slIdx}
+                              onPress={() => setSelectedLogId(studentLog.id)}
                             />
                           )) : (
                             <>                      

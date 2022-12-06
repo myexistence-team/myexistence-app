@@ -21,6 +21,7 @@ import moment from 'moment'
 import StudentDetailsLogCard from '../../components/StudentDetailsLogCard'
 import MEControlledSelect from '../../components/MEControlledSelect'
 import { PresenceStatusEnum } from '../../enums'
+import HistoryDetailsModal from '../HistoryDetailsModal'
 
 export default function ClassDetailsStudentDetails({
   route: {
@@ -101,8 +102,15 @@ export default function ClassDetailsStudentDetails({
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Izin", count: excusedCount || 0, color: Colors.light.yellow },
   ];
 
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const selectedLog = logs?.find((l) => l.id === selectedLogId);
+
   return (
     <MEContainer>
+      <HistoryDetailsModal
+        log={selectedLog}
+        setSelectedLogId={setSelectedLogId}
+      />
       <MEHeader/>
       <Text style={[textStyles.heading3, { marginBottom: 8 }]}>{student.displayName}</Text>
       <Text style={[textStyles.body1]}>{student.idNumber}</Text>
@@ -197,6 +205,9 @@ export default function ClassDetailsStudentDetails({
                 <StudentDetailsLogCard
                   key={lIdx}
                   log={l}
+                  onPress={() => {
+                    setSelectedLogId(l.id)
+                  }}
                 />
               ))
             }

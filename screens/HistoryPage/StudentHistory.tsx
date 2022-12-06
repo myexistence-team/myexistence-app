@@ -14,6 +14,7 @@ import { AbsentStasuses } from '../../constants/constants';
 import { PresenceStatusEnum } from '../../enums';
 import MEFirestoreSelect from '../../components/MEFirestoreSelect';
 import MEButton from '../../components/MEButton';
+import HistoryDetailsModal from '../HistoryDetailsModal';
 
 export default function StudentHistory({
   status,
@@ -106,8 +107,15 @@ export default function StudentHistory({
     loadStudentData();
   }, [watch('status'), watch('classId')])
 
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const selectedLog = [...logs, ...currentLogs]?.find((l) => l.id === selectedLogId);
+
   return (
     <>
+      <HistoryDetailsModal
+        log={selectedLog}
+        setSelectedLogId={setSelectedLogId}
+      />
       <View style={{ marginBottom: 24 }}>
         <MEControlledSelect
           control={control}
@@ -150,7 +158,11 @@ export default function StudentHistory({
             </Text>
             {
               currentLogs.map((l, idx) => (
-                <HistoryCard key={idx} history={l}/>
+                <HistoryCard 
+                  key={idx} 
+                  history={l}
+                  onPress={() => setSelectedLogId(l.id)}
+                />
               ))
             }
             <Text
@@ -170,7 +182,11 @@ export default function StudentHistory({
           <MESpinner/>
         ) : (
           logs.map((l, idx) => (
-            <HistoryCard key={idx} history={l}/>
+            <HistoryCard 
+              key={idx} 
+              history={l}
+              onPress={() => setSelectedLogId(l.id)}
+            />
           ))
         )
       }

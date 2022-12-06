@@ -23,8 +23,8 @@ function getExcuseStatusIconName(excuseStatus: ExcuseStatuses) {
   }
 }
 
-export default function HistoryCard(props: { history: Log, clickable?: boolean }) {
-  const { history, clickable = true } = props;
+export default function HistoryCard(props: { history: Log, clickable?: boolean, onPress: Function }) {
+  const { history, clickable = true, onPress } = props;
   const navigation = useNavigation();
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const { classes } = useContext(ClassesContext);
@@ -35,21 +35,7 @@ export default function HistoryCard(props: { history: Log, clickable?: boolean }
       style={{
         marginBottom: 16,
       }}
-      onPress={!clickable ? undefined : () => {
-        navigation.navigate("Root", {
-          screen: "HistoryPage",
-          params: {
-            screen: "HistoryDetails",
-            params: {
-              logId: history.id,
-              isCurrent: history.isCurrent,
-              classId: history.classId,
-              scheduleId: history.scheduleId
-            },
-            initial: false,
-          },
-        })
-      }}
+      onPress={onPress}
     >
       <View
         style={{

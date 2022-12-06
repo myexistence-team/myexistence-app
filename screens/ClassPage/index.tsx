@@ -11,6 +11,7 @@ import { Profile } from "../../types";
 import ClassDetailsPage from "../ClassDetailsPage";
 import ClassDetailsStudentDetails from "../ClassDetailsPage/ClassDetailsStudentDetails";
 import ClassDetailsStudents from "../ClassDetailsPage/ClassDetailsStudents";
+import SchedulePresenceDetails from "../SchedulePresenceDetails";
 
 const Stack = createNativeStackNavigator<ClassParamList>();
 
@@ -44,13 +45,22 @@ export default function ClassPage() {
       />
       {
         profile.role === ProfileRoles.TEACHER && (
-          <Stack.Screen
-            name='ClassDetailsStudentDetails'
-            component={ClassDetailsStudentDetails}
-            options={{
-              headerShown: false,
-            }}
-          />
+          <>
+            <Stack.Screen
+              name='ClassDetailsStudentDetails'
+              component={ClassDetailsStudentDetails}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name='ClassStudentPresenceDetails'
+              component={SchedulePresenceDetails}
+              options={{
+                headerShown: false
+              }}
+            />
+          </>
         )
       }
     </Stack.Navigator>

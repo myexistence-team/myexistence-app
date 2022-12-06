@@ -5,7 +5,6 @@ import MEContainer from "../../components/MEContainer";
 import { Text } from "react-native";
 import { textStyles } from "../../constants/Styles";
 import { ProfileContext } from "../../contexts";
-import HistoryDetailsPage from "../HistoryDetailsPage";
 import { ProfileRoles } from "../../constants/constants";
 import StudentHistory from "./StudentHistory";
 import TeacherHistory from "./TeacherHistory";
@@ -27,13 +26,6 @@ export default function HistoryPage() {
         component={History} 
         options={{
           header: () => null
-        }}
-      />
-      <Stack.Screen 
-        name='HistoryDetails' 
-        component={HistoryDetailsPage}
-        options={{
-          headerShown: false,
         }}
       />
       {
