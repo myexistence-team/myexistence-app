@@ -34,7 +34,6 @@ export default function SchedulePresenceDetails({
   const { users } = useContext(UsersContext);
   const classroom = classes.find((c) => c.id === classId);
   const student = users?.[studentId];
-  console.log(users)
   const [log, setLog] = useState<Log | undefined>(logProp);
   
   function loadData() {

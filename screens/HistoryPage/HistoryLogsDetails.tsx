@@ -16,6 +16,7 @@ import { collection, documentId, getDocs, query, where } from 'firebase/firestor
 import { firestore } from '../../firebase'
 import MESpinner from '../../components/MESpinner'
 import StudentCard from '../../components/StudentCard'
+import HistoryDetailsModal from '../HistoryDetailsModal'
 
 export default function HistoryLogsDetails({
   route: {
@@ -33,7 +34,6 @@ export default function HistoryLogsDetails({
   const classroom = classes.find((c) => c.id === classId);
   const students = classroom?.studentIds.map((sId) => users?.[sId])?.filter((s) => s !== undefined);
   const [isLoading, setIsLoading] = useState(false);
-  console.log(logs.length)
 
   const pieChartData = [
     {legendFontSize: 12, legendFontColor: Colors.light.black, name: "Hadir", count: logsCounts.presentCount || 0, color: Colors.light.green },
@@ -62,8 +62,15 @@ export default function HistoryLogsDetails({
     loadData();
   }, [])
 
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const selectedLog = logs?.find((l) => l.id === selectedLogId);
+
   return (
     <MEContainer>
+      <HistoryDetailsModal
+        log={selectedLog}
+        setSelectedLogId={setSelectedLogId}
+      />
       <MEHeader/>
       <Text style={[textStyles.heading4, { marginBottom: 16 }]}>Jadwal</Text>
       <Text style={textStyles.body2}>Kelas</Text>
@@ -84,21 +91,17 @@ export default function HistoryLogsDetails({
         {classroom?.name}
       </MEPressableText>
 
-      <Text style={textStyles.body2}>Hari</Text>
-      <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-        {DAYS_ARRAY[schedule?.start?.toDate().getDay()]}
-      </Text>
       <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Mulai</Text>
+        <View style={{ flex: 1 }}>          
+          <Text style={textStyles.body2}>Hari</Text>
           <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(schedule?.start?.toDate()).format("HH:mm")}
+            {DAYS_ARRAY[schedule?.start?.toDate().getDay()]}
           </Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Selesai</Text>
+          <Text style={textStyles.body2}>Jam</Text>
           <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(schedule?.end?.toDate()).format("HH:mm")}
+            {moment(schedule?.start?.toDate()).format("HH:mm")} - {moment(schedule?.end?.toDate()).format("HH:mm")}
           </Text>
         </View>
       </View>
@@ -110,15 +113,15 @@ export default function HistoryLogsDetails({
       <Text style={[textStyles.heading4, { marginTop: 24, marginBottom: 16 }]}>Sesi Kelas</Text>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Dibuka</Text>
-          <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(logsCounts?.openedAt?.toDate()).format("HH:mm")}
-          </Text>
-        </View>
+          <Text style={textStyles.body2}>Tanggal</Text>
+            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+              {moment(logs[0].time.toDate()).format("LL")}
+            </Text>
+          </View>
         <View style={{ flex: 1 }}>
-          <Text style={textStyles.body2}>Jam Ditutup</Text>
+          <Text style={textStyles.body2}>Jam Dibuka - Ditutup</Text>
           <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
-            {moment(logsCounts?.closedAt?.toDate()).format("HH:mm")}
+            {moment(logsCounts?.openedAt?.toDate()).format("HH:mm")} - {moment(logsCounts?.closedAt?.toDate()).format("HH:mm")}
           </Text>
         </View>
       </View>
@@ -138,13 +141,18 @@ export default function HistoryLogsDetails({
       {
         isLoading ? (
           <MESpinner/>
-        ) : students?.map((s, sIdx) => (
-          <StudentCard
-            student={s}
-            log={logs.find((l) => l.studentId === s.id)}
-            key={sIdx}
-          />
-        ))
+        ) : students?.map((s, sIdx) => {
+          const log = logs.find((l) => l.studentId === s.id);
+          return (
+            <StudentCard
+              student={s}
+              log={log}
+              key={sIdx}
+              onPress={() => setSelectedLogId(log?.id)}
+            />
+          )
+        }
+        )
       }
     </MEContainer>
   )

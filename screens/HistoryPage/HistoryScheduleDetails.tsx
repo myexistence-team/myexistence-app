@@ -61,6 +61,7 @@ export default function HistoryScheduleDetails({
       )).then((docSnaps) => {
         const groupedLogs = docSnaps.docs.map((doc) => ({
           ...doc.data(),
+          id: doc.id,
           dateStr: moment(doc.data().time.toDate()).format('dddd, LL'),
         }));
         const groupedByDate = Object.entries(groupBy(groupedLogs, 'dateStr')).map((a) => ({
