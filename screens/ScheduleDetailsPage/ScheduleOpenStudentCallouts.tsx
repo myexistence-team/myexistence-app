@@ -101,6 +101,7 @@ export default function ScheduleOpenStudentCallouts({
     <View 
       style={{
         alignItems: 'center',
+        marginBottom: 16
       }}
     >
       {
@@ -285,7 +286,7 @@ export default function ScheduleOpenStudentCallouts({
           </>
         )
       }
-      <MEButton
+      {/* <MEButton
         onPress={() => {
           navigation.navigate('Root', {
             screen: 'SchedulesPage',
@@ -302,7 +303,7 @@ export default function ScheduleOpenStudentCallouts({
         style={{ marginTop: 16 }}
       >
         Lihat Pelajar ({waitingForPresences.length}/{students.length})
-      </MEButton>
+      </MEButton> */}
     </View>
   )
 }

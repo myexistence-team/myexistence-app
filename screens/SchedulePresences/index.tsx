@@ -6,7 +6,7 @@ import MEContainer from '../../components/MEContainer'
 import MEHeader from '../../components/MEHeader'
 import { collection, documentId, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { firestore } from '../../firebase'
-import { ClassesContext, ProfileContext, UsersContext } from '../../contexts'
+import { AuthContext, ClassesContext, ProfileContext, UsersContext } from '../../contexts'
 import MESpinner from '../../components/MESpinner'
 import StudentCard from '../../components/StudentCard'
 import { textStyles } from '../../constants/Styles'
@@ -17,15 +17,17 @@ export default function SchedulePresences({
   route: {
     params: {
       classId,
-      scheduleId
+      scheduleId,
+      schedule
     }
   },
   navigation
-}: NativeStackScreenProps<ScheduleParamList, "ScheduleDetails">) {
+}: NativeStackScreenProps<ScheduleParamList, "SchedulePresences">) {
   const [isLoading, setIsLoading] = useState(false);
   const [studentLogs, setStudentLogs] = useState<{[key: string]: Log}>({});
   
   const {profile} = useContext(ProfileContext);
+  const {auth} = useContext(AuthContext);
   const {users, setUsers} = useContext(UsersContext);
   const {classes} = useContext(ClassesContext);
   const classroom = classes?.find((c) => c.id === classId);
@@ -130,12 +132,25 @@ export default function SchedulePresences({
                   log={studentLogs[s.id]}
                   onPress={() => {
                     navigation.navigate('SchedulePresenceDetails', {
-                      logId: studentLogs[s.id].id,
+                      logId: studentLogs[s.id]?.id,
                       isStudentLog: true,
                       scheduleId,
                       classId,
                       studentId: s.id,
-                      log: studentLogs[s.id]
+                      log: studentLogs[s.id] || {
+                        scheduleId,
+                        schedule: {
+                          start: schedule.start,
+                          end: schedule.end,
+                          tolerance: schedule.tolerance,
+                          openedAt: schedule.openedAt,
+                          closedAt: schedule.closedAt,
+                        },
+                        classId,
+                        studentId: s.id,
+                        status: AbsentStasuses.ABSENT,
+                        teacherId: auth.uid,
+                      }
                     })
                   }}
                 />

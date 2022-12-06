@@ -43,7 +43,7 @@ export default function ScheduleOpenGeolocation({
   }, [])
   return (
     <View>
-      <MEButton
+      {/* <MEButton
         onPress={() => {
           navigation.navigate('Root', {
             screen: 'SchedulesPage',
@@ -59,7 +59,7 @@ export default function ScheduleOpenGeolocation({
         variant='outline'
       >
         {`Lihat Pelajar (${studentLogs.length}/${studentIds.length})`}
-      </MEButton>
+      </MEButton> */}
     </View>
   )
 }

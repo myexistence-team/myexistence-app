@@ -30,7 +30,7 @@ export default function ScheduleOpenQRCode({
           </View>
         ) : null
       }
-      {
+      {/* {
         studentCount > 0 && absentCount > 0 && (
           <MEButton
             onPress={() => {
@@ -51,7 +51,7 @@ export default function ScheduleOpenQRCode({
             {`Lihat Pelajar (${studentCount - absentCount}/${studentCount})`}
           </MEButton>
         )
-      }
+      } */}
     </>
   )
 }

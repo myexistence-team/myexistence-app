@@ -54,7 +54,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         const scheduleRef = scheduleSnaps.docs[0].ref;
         const classObj = classes?.find((c) => c.id === scheduleData.classId)
         const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
-        const studentLogsQuery = query(studentLogsRef, where('studentId', '==', auth.uid));
+        const studentLogsQuery = query(studentLogsRef);
         unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
           if (!docs.empty) {
             setStudentLogs(docs.docs.map((doc) => ({ 
@@ -62,6 +62,8 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
               id: doc.id,
               isCurrent: true
             })));
+          } else {
+            setStudentLogs([]);
           }
         });
         if (classObj) {
@@ -450,19 +452,39 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                               </MEButton>
                             </>
                           ) : (
-                            <MEButton
-                              size='lg'
-                              style={{
-                                marginVertical: 8
-                              }}
-                              onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
-                              isLoading={changingStatus !== null}
-                              variant='outline'
-                              color='danger'
-                              iconStart='window-close'
-                            >
-                              Tutup Sesi
-                            </MEButton>
+                            <>
+                              <MEButton
+                                onPress={() => {
+                                  navigation.navigate('Root', {
+                                    screen: 'SchedulesPage',
+                                    params: {
+                                      screen: 'SchedulePresences',
+                                      params: {
+                                        classId,
+                                        schedule,
+                                        scheduleId
+                                      }
+                                    }
+                                  })
+                                }}
+                                variant='outline'
+                              >
+                                {`Lihat Pelajar (${studentLogs.length}/${studentIds.length})`}
+                              </MEButton>
+                              <MEButton
+                                size='lg'
+                                style={{
+                                  marginVertical: 8
+                                }}
+                                onPress={() => handleOpenOrCloseClassConfirm(ScheduleOpenMethods.QR_CODE)}
+                                isLoading={changingStatus !== null}
+                                variant='outline'
+                                color='danger'
+                                iconStart='window-close'
+                              >
+                                Tutup Sesi
+                              </MEButton>
+                            </>
                           )
                         }
                       </>

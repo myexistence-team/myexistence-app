@@ -16,6 +16,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import Colors from '../../constants/Colors';
 import { Log } from '../../types';
+import { useNavigation } from '@react-navigation/native';
 
 export default function SchedulePresenceDetails({
   route: {
@@ -29,6 +30,7 @@ export default function SchedulePresenceDetails({
     }
   }
 }: NativeStackScreenProps<ScheduleParamList, "SchedulePresenceDetails">) {
+  const navigation = useNavigation();
   const { profile } = useContext(ProfileContext);
   const { classes } = useContext(ClassesContext);
   const { users } = useContext(UsersContext);
@@ -37,18 +39,18 @@ export default function SchedulePresenceDetails({
   const [log, setLog] = useState<Log | undefined>(logProp);
   
   function loadData() {
-    const studentLogRef = doc(
-      firestore, 
-      'schools',
-      profile.schoolId,
-      'classes',
-      classId,
-      'schedules',
-      scheduleId,
-      'studentLogs',
-      logId
-    );
     if (logId) {
+      const studentLogRef = doc(
+        firestore, 
+        'schools',
+        profile.schoolId,
+        'classes',
+        classId,
+        'schedules',
+        scheduleId,
+        'studentLogs',
+        logId
+      );
       const unsubLog = onSnapshot(studentLogRef, (doc) => {
         setLog((prev: any) => ({ ...prev, ...doc.data(), id: doc.id }));
       })
@@ -87,6 +89,9 @@ export default function SchedulePresenceDetails({
       studentLogId: logId
     })
     setPresenceLoading(null);
+    if (!logId) {
+      navigation.goBack();
+    }
   }
 
   return (

@@ -69,7 +69,8 @@ export type ScheduleParamList = {
   },
   SchedulePresences: { 
     classId: string,
-    scheduleId: string 
+    scheduleId: string,
+    schedule: Schedule
   },
   SchedulePresenceDetails: {
     isStudentLog?: boolean,

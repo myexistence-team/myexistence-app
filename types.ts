@@ -49,6 +49,8 @@ export type Schedule = BaseType & {
   status: ScheduleStasuses,
   openMethod?: ScheduleOpenMethods,
   location?: GeoPoint,
+  openedAt?: Timestamp,
+  closedAt?: Timestamp,
 }
 
 export type Class = BaseType & {
