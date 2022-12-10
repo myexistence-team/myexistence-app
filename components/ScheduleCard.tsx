@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native'
-import React, { useContext } from 'react'
+import { View, Text, Alert } from 'react-native'
+import React, { useContext, useState } from 'react'
 import MECard from './MECard';
 import { textStyles } from '../constants/Styles';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -8,8 +8,10 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import useCurrentScheduleTime from '../hooks/useCurrentScheduleTime';
-import { ProfileContext } from '../contexts';
-import { ProfileRoles, ScheduleOpenMethods, ScheduleStasuses } from '../constants/constants';
+import { AuthContext, LocationContext, ProfileContext } from '../contexts';
+import { AbsentStasuses, MAX_DISTACE, ProfileRoles, ScheduleOpenMethods } from '../constants/constants';
+import { createUpdateStudentPresenceFromCallout } from '../actions/scheduleActions';
+import { getLocationDistance } from '../utils/utilFunctions';
 
 export default function ScheduleCard({
   schedule,
@@ -23,6 +25,8 @@ export default function ScheduleCard({
   disableCountdown?: boolean,
 }) {
   const { profile } = useContext(ProfileContext);
+  const { auth } = useContext(AuthContext);
+  const { getLocation } = useContext(LocationContext);
   const navigation = useNavigation();
 
   const now: Date = useCurrentScheduleTime();
@@ -30,6 +34,35 @@ export default function ScheduleCard({
 
   const diffToNowInMins = Math.abs(Math.floor(diffInMs/60000));
   const diffToNowInHours = Math.floor(diffToNowInMins/60);
+
+  const [geoPresenceLoading, setGeoPresenceLoading] = useState(false);
+  async function handleGeolocationPresence() {
+    if (schedule.location) {
+      setGeoPresenceLoading(true);
+      const location = await getLocation();
+      const distance = getLocationDistance(schedule?.location, location);
+      if (distance < MAX_DISTACE) {
+        await createUpdateStudentPresenceFromCallout({
+          classId: schedule.classId,
+          scheduleId: schedule.id,
+          schoolId: profile.schoolId,
+          status: AbsentStasuses.PRESENT,
+          studentId: auth.uid,
+        });
+      } else {
+        Alert.alert(
+          'Anda Terlalu Jauh', 
+          'Lokasi Anda terlalu jauh dari lokasi kelas. Jika ini adalah sebuah kesalahan, mohon hubungi pengajar.',
+          [
+            {
+              text: 'OK'
+            }
+          ]
+        )
+      }
+      setGeoPresenceLoading(false);
+    }
+  }
 
   return (
     <MECard
@@ -143,20 +176,32 @@ export default function ScheduleCard({
                             }
                           ]}
                         >
-                          <MEButton
-                          iconStart="qrcode"
-                          style={[
-                            { 
-                              marginLeft: 4
-                            }
-                          ]}
-                          onPress={() => navigation.navigate('Scanner', {
-                            scheduleId: schedule.id,
-                            schedule
-                          })}
-                          >
-                            Pindai QR Code
-                          </MEButton>
+                          {
+                            schedule.openMethod === ScheduleOpenMethods.QR_CODE ? (
+                              <MEButton
+                              iconStart="qrcode"
+                              style={[
+                                { 
+                                  marginLeft: 4
+                                }
+                              ]}
+                              onPress={() => navigation.navigate('Scanner', {
+                                scheduleId: schedule.id,
+                                schedule
+                              })}
+                              >
+                                Pindai QR Code
+                              </MEButton>
+                            ) : (
+                              <MEButton
+                                iconStart="check"
+                                isLoading={geoPresenceLoading}
+                                onPress={handleGeolocationPresence}
+                              >
+                                Hadir
+                              </MEButton>
+                            )
+                          }
                         </View>
                       </View>
                     ) : null

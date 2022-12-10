@@ -72,7 +72,7 @@ function Schedules({ }: NativeStackScreenProps<ScheduleParamList, "Schedules">) 
   const schedulesQuery = query(
     collectionGroup(firestore, 'schedules'), 
     ...profile.classIds?.length ? [where('classId', 'in', profile.classIds)] : [],
-    where('day', '>=', todayInt),
+    // where('day', '>=', todayInt),
     orderBy('day', 'asc'),
     orderBy('start', 'asc'),
   );

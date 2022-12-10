@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, Alert } from 'react-native'
 import React, { useContext, useState } from 'react'
 import MECard from './MECard';
 import { textStyles } from '../constants/Styles';
@@ -8,9 +8,10 @@ import moment from 'moment';
 import MEButton from './MEButton';
 import { useNavigation } from '@react-navigation/native';
 import { AbsentStasuses, DAYS_ARRAY, MAX_DISTACE, ScheduleOpenMethods, ScheduleStasuses } from '../constants/constants';
-import { AuthContext, ProfileContext } from '../contexts';
+import { AuthContext, LocationContext, ProfileContext } from '../contexts';
 import useGetDistance from '../hooks/useGetDistance';
 import { createUpdateStudentPresenceFromCallout } from '../actions/scheduleActions';
+import { getLocationDistance } from '../utils/utilFunctions';
 
 export default function ClassScheduleCard({
   schedule,
@@ -26,18 +27,32 @@ export default function ClassScheduleCard({
   const { profile } = useContext(ProfileContext);
   const { auth } = useContext(AuthContext);
   const navigation = useNavigation();
-  const distance: number = useGetDistance(schedule?.location);
+  const { getLocation } = useContext(LocationContext);
 
   const [geoPresenceLoading, setGeoPresenceLoading] = useState(false);
   async function handleGeolocationPresence() {
     setGeoPresenceLoading(true);
-    await createUpdateStudentPresenceFromCallout({
-      classId,
-      scheduleId: schedule.id,
-      schoolId: profile.schoolId,
-      status: AbsentStasuses.PRESENT,
-      studentId: auth.uid,
-    });
+    const location = await getLocation();
+    const distance = getLocationDistance(schedule?.location, location);
+    if (distance < MAX_DISTACE) {
+      await createUpdateStudentPresenceFromCallout({
+        classId,
+        scheduleId: schedule.id,
+        schoolId: profile.schoolId,
+        status: AbsentStasuses.PRESENT,
+        studentId: auth.uid,
+      });
+    } else {
+      Alert.alert(
+        'Anda Terlalu Jauh', 
+        'Lokasi Anda terlalu jauh dari lokasi kelas. Jika ini adalah sebuah kesalahan, mohon hubungi pengajar.',
+        [
+          {
+            text: 'OK'
+          }
+        ]
+      )
+    }
     setGeoPresenceLoading(false);
   }
 

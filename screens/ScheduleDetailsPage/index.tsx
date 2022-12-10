@@ -156,7 +156,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
       setGeoPresenceLoading(true);
       const location = await getLocation();
       const distance = getLocationDistance(schedule?.location, location);
-      if (distance < 1) {
+      if (distance < MAX_DISTACE) {
         await createUpdateStudentPresenceFromCallout({
           classId,
           scheduleId,

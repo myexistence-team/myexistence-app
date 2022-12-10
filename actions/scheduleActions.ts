@@ -417,7 +417,7 @@ export async function createUpdateStudentPresenceFromCallout({
   const scheduleSnap = await getDoc(scheduleRef);
   const schedule = scheduleSnap.data();
 
-  if (schedule) {
+  if (schedule && schedule.status === ScheduleStasuses.OPENED) {
     const newLog = {
       schedule: {
         start: schedule.start,
@@ -444,8 +444,9 @@ export async function createUpdateStudentPresenceFromCallout({
     await updateDoc(studentRef, {
       currentScheduleId: schedule.id
     })
+  } else {
+    Alert.alert('Sesi Kelas Sudah Ditutup', 'Sesi kelas sudah ditutup. Mohon pilih sesi lainnya.')
   }
-
 }
 
 export async function studentExcuseStatusChange({
