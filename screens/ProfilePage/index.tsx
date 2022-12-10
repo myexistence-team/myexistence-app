@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ProfileParamList } from '../../navTypes';
 import EditProfile from './EditProfile';
+import { Alert } from 'react-native';
 
 const Stack = createNativeStackNavigator<ProfileParamList>();
 
@@ -43,11 +44,25 @@ export function ProfileScreen() {
   const { profile }: { profile: Profile } = useContext(ProfileContext);
   const { school }: { school: School } = useContext(SchoolContext);
   const navigation = useNavigation();
-  const [isSigningOut, setIsSigningOut] = useState(false);
 
   function handleLogOut() {
-    setIsSigningOut(true);
-    signOut()
+    Alert.alert(
+      'Log Out', 
+      'Apakah Anda yakin ingin keluar dari akun?',
+      [
+        {
+          text: 'Batal',
+          style: 'default'
+        },
+        {
+          text: 'Ya',
+          style: 'destructive',
+          onPress: () => {
+            signOut();
+          }
+        },
+      ]
+    );
   }
 
   return (
@@ -116,7 +131,7 @@ export function ProfileScreen() {
             params: {
               screen: 'EditProfile',
               initial: false
-            }
+            },
           })
         }}
         // isLoading={true} 
@@ -125,15 +140,17 @@ export function ProfileScreen() {
       >
         Pengaturan
       </MEButton>
-      <MEButton
-        // size='sm'
-        onPress={handleLogOut}
-        // isLoading={true} 
-        color='danger'
-        variant='outline'
-      >
-        Keluar
-      </MEButton>
+      {
+        !profile.currentScheduleId && (
+          <MEButton
+            onPress={handleLogOut}
+            color='danger'
+            variant='outline'
+          >
+            Keluar
+          </MEButton>
+        )
+      }
     </MEContainer>
   )
 }

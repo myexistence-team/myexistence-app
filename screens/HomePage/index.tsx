@@ -1,4 +1,4 @@
-import { Image, ImageBackground, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from 'react-native'
+import { Alert, Image, ImageBackground, Platform, RefreshControl, ScrollView, StatusBar, Text, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import { textStyles } from '../../constants/Styles'
 import MECard from '../../components/MECard'
@@ -99,6 +99,26 @@ export function Home({
     loadHomePageData();
   }, [profile])
 
+  function handleLogOut() {
+    Alert.alert(
+      'Log Out', 
+      'Apakah Anda yakin ingin keluar dari akun?',
+      [
+        {
+          text: 'Batal',
+          style: 'default'
+        },
+        {
+          text: 'Ya',
+          style: 'destructive',
+          onPress: () => {
+            signOut();
+          }
+        },
+      ]
+    );
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -168,19 +188,21 @@ export function Home({
             flexDirection: 'row',  
             marginTop: 12,        
           }}>
-            <View style={{
-              flex: 1,
-              marginRight: 12
-            }}>
-              <MEButton 
-                variant="outline"
-                onPress={() => {
-                  signOut()
-                } }
-              >
-                Keluar
-              </MEButton>
-            </View>
+            {
+              !profile.currentScheduleId && (
+                <View style={{
+                  flex: 1,
+                  marginRight: 12
+                }}>
+                  <MEButton 
+                    variant="outline"
+                    onPress={handleLogOut}
+                  >
+                    Keluar
+                  </MEButton>
+                </View>
+              )
+            }
             <View style={{
               flex: 1,
             }}>
@@ -189,7 +211,8 @@ export function Home({
                 navigation.navigate('Root', {
                   screen: 'ProfilePage',
                   params: {
-                    screen: 'EditProfile'
+                    screen: 'EditProfile',
+                    initial: false
                   }
                 })
               }}
