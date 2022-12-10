@@ -94,8 +94,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   const [school, setSchool] = React.useState<any>(null);
   const [classes, setClasses] = React.useState<any[]>([]);
   const [users, setUsers] = React.useState<{[key: string]: any}>({});
-  const [backgroundStatus, requestBackgroundPermission] = Location.useBackgroundPermissions();
-  const [foregroundStatus, requestForegroundPermission] = Location.useForegroundPermissions();
   const [location, setLocation] = React.useState<any>(null);
   
   // Subscribe to auth changes
@@ -167,19 +165,18 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     }
   }, [profile])
 
-  React.useEffect(() => {
-    const requestPermissions = async () => {
-      const foreground = await Location.requestForegroundPermissionsAsync();
-      if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
-    }
-    requestPermissions();
-  }, [])
+  async function requestLocationPermissions() {
+    const foreground = await Location.requestForegroundPermissionsAsync();
+    if (foreground.granted) await Location.requestBackgroundPermissionsAsync();
+  }
 
   async function startForegroundLocation() {
     const { granted } = await Location.getForegroundPermissionsAsync();
     if (!granted) {
-      console.log("Location tracking denied!");
-      return;
+      const foreground = await Location.requestForegroundPermissionsAsync();
+      if (!foreground.granted) {
+        return;
+      }
     }
     if (foregroundSubscription) stopForegroundLocation();
     foregroundSubscription = await Location.watchPositionAsync(
@@ -203,7 +200,6 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     // Don't track position if permission is not granted
     const { granted } = await Location.getBackgroundPermissionsAsync()
     if (!granted) {
-      console.log("Location tracking denied");
       const newBackgroundPermission = await Location.requestBackgroundPermissionsAsync();
       if (newBackgroundPermission.status !== 'granted') {
         return;
@@ -240,11 +236,17 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     const hasStarted = await Location.hasStartedLocationUpdatesAsync(TASK_NAME);
     if (hasStarted) {
       await Location.stopLocationUpdatesAsync(TASK_NAME);
-      console.log("Location tracking stopped");
     }
   }
 
   async function getLocation() {
+    const { granted } = await Location.getForegroundPermissionsAsync();
+    if (!granted) {
+      const foreground = await Location.requestForegroundPermissionsAsync();
+      if (!foreground.granted) {
+        return;
+      }
+    }
     const loc = await Location.getCurrentPositionAsync();
     const newLoc = { 
       latitude: loc.coords.latitude, 
