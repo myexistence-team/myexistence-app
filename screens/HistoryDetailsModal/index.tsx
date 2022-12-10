@@ -95,7 +95,8 @@ export default function HistoryDetailsModal({
                       },
                       initial: false
                     }
-                  })
+                  });
+                  setSelectedLogId(null);
                 }}
               >
                 {classroom?.name}

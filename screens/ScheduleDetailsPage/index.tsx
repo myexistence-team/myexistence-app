@@ -22,6 +22,7 @@ import Colors from '../../constants/Colors'
 import useGetDistance from '../../hooks/useGetDistance'
 import { FontAwesome5 } from '@expo/vector-icons'
 import HistoryDetailsModal from '../HistoryDetailsModal'
+import { getLocationDistance } from '../../utils/utilFunctions'
 
 export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
   const { scheduleId, classId, toggleOpen } = route.params;
@@ -52,8 +53,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         const scheduleRef = scheduleSnaps.docs[0].ref;
         const classObj = classes?.find((c) => c.id === scheduleData.classId)
         const studentLogsRef = collection(firestore, scheduleRef.path, 'studentLogs');
-        const studentLogsQuery = query(studentLogsRef);
-        unsubStudentLogs = onSnapshot(studentLogsQuery, (docs) => {
+        unsubStudentLogs = onSnapshot(studentLogsRef, (docs) => {
           if (!docs.empty) {
             setStudentLogs(docs.docs.map((doc) => ({ 
               ...doc.data(), 
@@ -152,15 +152,31 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   const [geoPresenceLoading, setGeoPresenceLoading] = useState(false);
   async function handleGeolocationPresence() {
-    setGeoPresenceLoading(true);
-    await createUpdateStudentPresenceFromCallout({
-      classId,
-      scheduleId,
-      schoolId: profile.schoolId,
-      status: AbsentStasuses.PRESENT,
-      studentId: auth.uid,
-    });
-    setGeoPresenceLoading(false);
+    if (schedule?.location) {
+      setGeoPresenceLoading(true);
+      const location = await getLocation();
+      const distance = getLocationDistance(schedule?.location, location);
+      if (distance < 1) {
+        await createUpdateStudentPresenceFromCallout({
+          classId,
+          scheduleId,
+          schoolId: profile.schoolId,
+          status: AbsentStasuses.PRESENT,
+          studentId: auth.uid,
+        });
+      } else {
+        Alert.alert(
+          'Anda Terlalu Jauh', 
+          'Lokasi Anda terlalu jauh dari lokasi kelas. Jika ini adalah sebuah kesalahan, mohon hubungi pengajar.',
+          [
+            {
+              text: 'OK'
+            }
+          ]
+        )
+      }
+      setGeoPresenceLoading(false);
+    }
   }
 
   function handleOpenOrCloseClassConfirm(openMethod: ScheduleOpenMethods) {
@@ -195,6 +211,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
 
   const [selectedLogId, setSelectedLogId] = useState(null);
   const selectedLog = studentLogs?.find((l) => l.id === selectedLogId);
+  const studentLog = studentLogs?.find((sl) => sl.studentId === auth.uid);
 
   return (
     <MEContainer
@@ -272,13 +289,12 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                     profile.role === ProfileRoles.STUDENT ? (
                       <>
                         {
-                          studentLogs.length > 0 ? studentLogs.map((studentLog, slIdx) => (
+                          studentLog ? (
                             <HistoryCard
                               history={studentLog}
-                              key={slIdx}
                               onPress={() => setSelectedLogId(studentLog.id)}
                             />
-                          )) : (
+                          ) : (
                             <>                      
                               {
                                 schedule.status === ScheduleStasuses.OPENED ? 
@@ -304,25 +320,11 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                       style={{
                                         marginTop: 8
                                       }}
-                                      disabled={distance > MAX_DISTACE}
                                       onPress={handleGeolocationPresence}
                                       isLoading={geoPresenceLoading}
                                     >
                                       Hadir
                                     </MEButton>
-                                    {
-                                      distance > MAX_DISTACE && (
-                                        <Text 
-                                          style={[textStyles.body2, { 
-                                            textAlign: 'center', 
-                                            marginVertical: 8, 
-                                            color: Colors.light.red 
-                                          }]}
-                                        >
-                                          Anda sedang tidak ada di sekitar lokasi kelas!
-                                        </Text>
-                                      )
-                                    }
                                   </>
                                 ) : null
                               }
