@@ -49,7 +49,7 @@ export const LocationContext: Context<{
   stopForegroundLocation: (a?: any) => any,
   startBackgroundLocation: (a?: any) => any,
   stopBackgroundLocation: (a?: any) => any,
-  getLocation: () => any
+  getLocation: () => { latitude: number, longitude: number }
 }> = createContext({
   location: null,
   setLocation: () => {},
@@ -57,5 +57,5 @@ export const LocationContext: Context<{
   stopForegroundLocation: () => {},
   startBackgroundLocation: () => {},
   stopBackgroundLocation: () => {},
-  getLocation: () => {}
+  getLocation: () => ({ latitude: 0, longitude: 0 })
 })
