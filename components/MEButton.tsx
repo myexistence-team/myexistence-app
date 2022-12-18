@@ -47,17 +47,17 @@ function getButtonStyleBySize(size: string) {
   switch (size) {
     case 'lg':
       return {
-        paddingHorizontal: 24,
+        paddingHorizontal: 8,
         paddingVertical: 8,
       }
     case 'sm':
       return {
-        paddingHorizontal: 16,
+        paddingHorizontal: 8,
         paddingVertical: 8,
       }
     default:
       return {
-        paddingHorizontal: 20,
+        paddingHorizontal: 8,
         paddingVertical: 8,
       }
   }
