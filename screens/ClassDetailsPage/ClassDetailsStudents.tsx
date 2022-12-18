@@ -26,7 +26,7 @@ export default function ClassDetailsStudents({
 }: NativeStackScreenProps<ClassParamList, "ClassDetailsStudents">) {
   const { users } = useContext(UsersContext);
   const { profile } = useContext(ProfileContext);
-  const students: Profile[] = studentIds.map((sId) => (users?.[sId]));
+  const students: Profile[] = studentIds.map((sId) => (users?.[sId])).filter((s) => s !== undefined);
   const [dateStart, setDateStart] = useState(getStartOfWeek());
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<Log[]>([]);
