@@ -172,7 +172,7 @@ export default function ScheduleCard({
                         <View
                           style={[
                             { 
-                              flex: 3
+                              flex: schedule.openMethod === ScheduleOpenMethods.CALLOUT ? 0 : 3
                             }
                           ]}
                         >
@@ -192,7 +192,7 @@ export default function ScheduleCard({
                               >
                                 Pindai QR Code
                               </MEButton>
-                            ) : (
+                            ) : schedule.openMethod === ScheduleOpenMethods.GEOLOCATION? (
                               <MEButton
                                 iconStart="check"
                                 isLoading={geoPresenceLoading}
@@ -200,7 +200,7 @@ export default function ScheduleCard({
                               >
                                 Hadir
                               </MEButton>
-                            )
+                            ) : null
                           }
                         </View>
                       </View>
