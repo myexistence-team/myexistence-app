@@ -63,7 +63,7 @@ export enum ProfileRoles {
   STUDENT = 'STUDENT',
 }
 
-export const MAX_DISTACE = 1;
+export const MAX_DISTACE = 0.5;
 
 export const GEOLOCATION_TUTORIAL = `Pelajar hanya bisa mencatat kehadiran diri jika berada di sekitar lokasi pembukaan sesi atau lokasi sekolah. Metode ini adalah yang paling praktis untuk pengajar.`
 
