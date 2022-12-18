@@ -231,9 +231,22 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
         ) : (
           <>
             <Text style={textStyles.body2}>Nama Kelas</Text>
-            <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
+            <MEPressableText 
+              onPress={() => {
+                navigation.navigate('Root', {
+                  screen: 'ClassPage',
+                  params: {
+                    screen: 'ClassDetails',
+                    params: {
+                      classId: schedule.classId
+                    }
+                  }
+                })
+              }}
+              style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}
+            >
               {schedule.className}
-            </Text>
+            </MEPressableText>
 
             <Text style={textStyles.body2}>Deskripsi</Text>
             <Text style={[textStyles.body1, { fontFamily: 'manrope-bold', marginBottom: 16 }]}>
@@ -290,10 +303,13 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                       <>
                         {
                           studentLog ? (
-                            <HistoryCard
-                              history={studentLog}
-                              onPress={() => setSelectedLogId(studentLog.id)}
-                            />
+                            <>
+                              <Text style={[textStyles.body3, { marginBottom: 8 }]}>Kehadiran Anda</Text>
+                              <HistoryCard
+                                history={studentLog}
+                                onPress={() => setSelectedLogId(studentLog.id)}
+                              />
+                            </>
                           ) : (
                             <>                      
                               {
@@ -312,7 +328,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                   >
                                     Pindai QR Code
                                   </MEButton>
-                                ) : (
+                                ) : schedule.openMethod === ScheduleOpenMethods.GEOLOCATION ? (
                                   <>
                                     <MEButton
                                       iconStart="check"
@@ -326,7 +342,9 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                                       Hadir
                                     </MEButton>
                                   </>
-                                ) : null
+                                ) : <>
+                                  <Text style={[textStyles.body2, { marginBottom: 16, textAlign: 'center', marginHorizontal: 24 }]}>Sesi kelas sedang berlangsung. Mohon menunggu giliran Anda dipanggil.</Text>
+                                </> : null
                               }
                               <MEButton
                                 variant='outline'
@@ -387,7 +405,7 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
                           </View>
                         </Modal>
                         {
-                          (schedule.status === ScheduleStasuses.OPENED)
+                          (schedule.status === ScheduleStasuses.OPENED) && studentIds.length
                           ? schedule.openMethod === ScheduleOpenMethods.QR_CODE 
                           ? <ScheduleOpenQRCode
                             qrCode={qrCode}
