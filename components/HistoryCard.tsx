@@ -23,7 +23,7 @@ function getExcuseStatusIconName(excuseStatus: ExcuseStatuses) {
   }
 }
 
-export default function HistoryCard(props: { history: Log, clickable?: boolean, onPress: Function }) {
+export default function HistoryCard(props: { history: Log, clickable?: boolean, onPress: Function, hasPassed?: boolean}) {
   const { history, clickable = true, onPress } = props;
   const navigation = useNavigation();
   const { profile }: { profile: Profile } = useContext(ProfileContext);
