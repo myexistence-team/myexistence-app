@@ -92,7 +92,7 @@ export default function WeeklySummary() {
                 }
               }}
             >
-              Tampilkan {profile.role === ProfileRoles.STUDENT ? 'Detil' : 'Riwayat'}
+              Tampilkan {profile.role === ProfileRoles.STUDENT ? 'Detail' : 'Riwayat'}
             </MEButton>
           </>
         )
