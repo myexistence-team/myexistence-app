@@ -205,8 +205,6 @@ export default function ScheduleDetailsPage({ route }: ScheduleScreenProps) {
     }
   }, [toggleOpen])
 
-  const distance: number = useGetDistance(schedule?.location);
-
   const [showInfo, setShowInfo] = useState(false);
 
   const [selectedLogId, setSelectedLogId] = useState(null);

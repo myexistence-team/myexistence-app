@@ -1,7 +1,7 @@
 import { FirebaseError } from "firebase/app"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as fbSignOut, UserCredential } from "firebase/auth"
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where, writeBatch } from "firebase/firestore"
-import { Profile } from "../types"
+import { Profile } from "../types" 
 import { auth, firestore } from "../firebase"
 import { ProfileRoles } from "../constants/constants"
 import { AuthError } from "../errors"
