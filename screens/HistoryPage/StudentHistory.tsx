@@ -183,6 +183,7 @@ export default function StudentHistory({
         ) : (
           logs.map((l, idx) => (
             <HistoryCard 
+              hasPassed={true} 
               key={idx} 
               history={l}
               onPress={() => setSelectedLogId(l.id)}

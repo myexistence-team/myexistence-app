@@ -46,6 +46,14 @@ export async function createPresenceInSchedule(
   const scheduleSnap = await getDoc(scheduleRef);
   if (scheduleSnap.exists()) {
     const schedule: Schedule | any = scheduleSnap.data();
+    const now = new Date();
+    const tolSchedule = schedule.start.toDate();
+    const scheduleNow = new Date();
+    scheduleNow.setHours(tolSchedule.getHours());
+    scheduleNow.setMinutes(tolSchedule.getMinutes());
+    scheduleNow.setSeconds(tolSchedule.getSeconds());
+    const milliTolerance = schedule.tolerance * 1000 * 60
+    const scheduleNowDate = new Date(scheduleNow.getTime() + milliTolerance)
     const studentLogPayload = {
       schedule: {
         start: schedule.start,
@@ -58,7 +66,7 @@ export async function createPresenceInSchedule(
       schoolId,
       classId,
       teacherId: schedule.openedBy,
-      status: AbsentStasuses.PRESENT,
+      status: now > scheduleNowDate?AbsentStasuses.LATE : AbsentStasuses.PRESENT,
       time: new Date(),
     }
     if (schedule.status !== ScheduleStasuses.OPENED) {
@@ -418,6 +426,14 @@ export async function createUpdateStudentPresenceFromCallout({
   const schedule = scheduleSnap.data();
 
   if (schedule && schedule.status === ScheduleStasuses.OPENED) {
+    const now = new Date();
+    const tolSchedule = schedule.start.toDate();
+    const scheduleNow = new Date();
+    scheduleNow.setHours(tolSchedule.getHours());
+    scheduleNow.setMinutes(tolSchedule.getMinutes());
+    scheduleNow.setSeconds(tolSchedule.getSeconds());
+    const milliTolerance = schedule.tolerance * 1000 * 60
+    const scheduleNowDate = new Date(scheduleNow.getTime() + milliTolerance)
     const newLog = {
       schedule: {
         start: schedule.start,
@@ -430,7 +446,7 @@ export async function createUpdateStudentPresenceFromCallout({
       studentId,
       classId,
       teacherId: schedule.openedBy,
-      status,
+      status: status === AbsentStasuses.PRESENT? now > scheduleNowDate? AbsentStasuses.LATE : AbsentStasuses.PRESENT : AbsentStasuses.ABSENT,
       time: new Date(),
     }
 

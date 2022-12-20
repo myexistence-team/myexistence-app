@@ -22,7 +22,7 @@ export default function NextSchedules() {
     const schedulesQuery = query(
       collectionGroup(firestore, 'schedules'), 
       where('classId', 'in', profile.classIds),
-      where('day', '>=', todayInt),
+      where('day', '==', todayInt),
       orderBy('day', 'asc'),
       orderBy('start', 'asc'),
       limit(profile.currentScheduleId ? 5 : 5),
@@ -66,6 +66,11 @@ export default function NextSchedules() {
               Berikutnya
             </Text>
             {
+              schedules.length === 0? (<Text
+                style={[textStyles.body2, { marginBottom: 16 }]}
+              >
+                Sudah tidak ada sesi kelas hari ini
+              </Text>) :
               schedules.map((s, idx) => (
                 <ScheduleCard schedule={s} key={idx}/>
               ))
