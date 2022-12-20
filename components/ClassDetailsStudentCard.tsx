@@ -50,6 +50,7 @@ export default function ClassDetailsStudentCard({
     >
       <View style={{ flex: 1 }}>
         <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>{student?.displayName}</Text>
+        { student?.idNumber ? <Text style={[textStyles.body3, { fontFamily: 'manrope-bold' }]}>{student?.idNumber}</Text> : null}
         {
           logs && (
             <Text style={[textStyles.body2, { marginTop: 8 }]}>{percentage(logs.filter((l) => l.status === AbsentStasuses.PRESENT)?.length, logs?.length)}% Hadir</Text>
