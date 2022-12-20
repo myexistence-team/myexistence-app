@@ -11,7 +11,7 @@ import { PresenceStatusEnum } from '../../enums';
 import { AbsentStasuses, ExcuseStatuses, ProfileRoles } from '../../constants/constants';
 import MEButton from '../../components/MEButton';
 import { createUpdateStudentPresenceFromCallout, studentExcuseStatusChange } from '../../actions/scheduleActions';
-import { ClassesContext, ProfileContext, UsersContext } from '../../contexts';
+import { AuthContext, ClassesContext, ProfileContext, UsersContext } from '../../contexts';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../../firebase';
 import Colors from '../../constants/Colors';
@@ -65,6 +65,7 @@ export default function SchedulePresenceDetails({
 
   const [excuseStatusLoading, setExcuseStatusLoading] = useState<any>(null);
   const [presenceLoading, setPresenceLoading] = useState<any>(null);
+  const { auth } = useContext(AuthContext);
 
   async function handleExcuseStatusChange(excuseStatus: ExcuseStatuses) {
     setExcuseStatusLoading(excuseStatus);
@@ -74,6 +75,7 @@ export default function SchedulePresenceDetails({
       schoolId: profile.schoolId,
       studentLogId: logId,
       excuseStatus,
+      updatedById: auth.uid,
     })
     setExcuseStatusLoading(null);
   }

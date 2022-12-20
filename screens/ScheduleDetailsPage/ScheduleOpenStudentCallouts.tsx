@@ -10,7 +10,7 @@ import MESpinner from '../../components/MESpinner';
 import Colors from '../../constants/Colors';
 import { AbsentStasuses, ExcuseStatuses } from '../../constants/constants';
 import { textStyles } from '../../constants/Styles';
-import { ProfileContext } from '../../contexts';
+import { AuthContext, ProfileContext } from '../../contexts';
 import { firestore } from '../../firebase';
 
 export default function ScheduleOpenStudentCallouts({
@@ -82,6 +82,7 @@ export default function ScheduleOpenStudentCallouts({
 
   const [showExcuse, setShowExcuse] = useState(false);
   const [excuseStatusLoading, setExcuseStatusLoading] = useState<any>(null);
+  const { auth } = useContext(AuthContext);
 
   async function handleExcuseStatusChange(excuseStatus: ExcuseStatuses) {
     setExcuseStatusLoading(excuseStatus);
@@ -91,6 +92,7 @@ export default function ScheduleOpenStudentCallouts({
       schoolId: profile.schoolId,
       studentLogId: studentExcuse.id,
       excuseStatus,
+      updatedById: auth.uid,
     })
     setCurrentIdx((idx) => idx + 1)
     setShowExcuse(false);
