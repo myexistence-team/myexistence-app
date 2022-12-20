@@ -81,6 +81,7 @@ export type Log = {
   excuseStatus?: ExcuseStatuses,
   studentId: string,
   teacherId: string,
+  updatedBy: string,
   scheduleId: string,
   classId: string,
   status: AbsentStasuses,

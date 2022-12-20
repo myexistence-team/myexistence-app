@@ -470,12 +470,14 @@ export async function studentExcuseStatusChange({
   classId,
   schoolId,
   studentLogId,
-  excuseStatus
+  excuseStatus,
+  updatedById,
 }: {
   scheduleId: string,
   classId: string,
   schoolId: string,
   studentLogId: string,
+  updatedById: string,
   excuseStatus: ExcuseStatuses
 }) {
   const studentLogRef = doc(
@@ -492,7 +494,7 @@ export async function studentExcuseStatusChange({
 
   const studentLogSnap = await getDoc(studentLogRef);
   const studentLog = studentLogSnap.data();
-  const newStudentLog = { ...studentLog, excuseStatus };
+  const newStudentLog = { ...studentLog, excuseStatus, updatedBy: updatedById, updatedAt: new Date() };
   await updateDoc(studentLogRef, newStudentLog);
 }
 
