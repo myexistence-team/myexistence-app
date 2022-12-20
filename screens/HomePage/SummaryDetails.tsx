@@ -33,7 +33,7 @@ export default function SummaryDetails() {
   const [logsCountByDate, setLogsCountsByDate] = useState<{ [key: string]: any[] }>({});
   const [quickDate, setQuickDate] = useState<'WEEK' | 'MONTH' | 'YEAR' | null>('WEEK');
 
-  const { control, getValues, reset } = useForm();
+  const { control, getValues, reset, watch } = useForm();
 
   function loadData() {
     setIsLoading(true);
@@ -75,7 +75,7 @@ export default function SummaryDetails() {
 
   useEffect(() => {
     loadData();
-  }, [])
+  }, [dateStart, watch('classId'), dateEnd])
 
   function handleQuickDateChange(qDate: 'WEEK' | 'MONTH' | 'YEAR') {
     setQuickDate(qDate);
@@ -239,7 +239,7 @@ export default function SummaryDetails() {
             )
           }
         </View>
-        <View style={{ flex: 2, paddingLeft: 8 }}>
+        {/* <View style={{ flex: 2, paddingLeft: 8 }}>
           <Text style={[textStyles.body3, { marginLeft: 8, marginBottom: 8 }]}></Text>
           <MEButton
             size='sm'
@@ -248,7 +248,7 @@ export default function SummaryDetails() {
           >
             Cari
           </MEButton>
-        </View>
+        </View> */}
       </View>
       {
         isLoading ? (
