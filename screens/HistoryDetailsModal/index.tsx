@@ -14,10 +14,12 @@ import MEButton from '../../components/MEButton'
 
 export default function HistoryDetailsModal({
   log,
-  setSelectedLogId
+  setSelectedLogId,
+  isStudentLog=false,
 }: {
   log?: Log,
   setSelectedLogId: Function,
+  isStudentLog?: boolean,
 }) {
   const navigation = useNavigation();
   const { profile } = useContext(ProfileContext);
@@ -208,7 +210,7 @@ export default function HistoryDetailsModal({
                     </Text>
 
                     {
-                      profile.role === ProfileRoles.STUDENT && log.excuseStatus === ExcuseStatuses.WAITING && (
+                      profile.role === ProfileRoles.STUDENT && log.excuseStatus === ExcuseStatuses.WAITING && isStudentLog === true &&(
                         <MEButton
                           color='danger'
                           variant='outline'
