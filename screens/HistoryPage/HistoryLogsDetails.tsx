@@ -143,14 +143,16 @@ export default function HistoryLogsDetails({
           <MESpinner/>
         ) : students?.map((s, sIdx) => {
           const log = logs.find((l) => l.studentId === s.id);
-          return (
-            <StudentCard
-              student={s}
-              log={log}
-              key={sIdx}
-              onPress={() => setSelectedLogId(log?.id)}
-            />
-          )
+          if (log) {           
+            return (
+              <StudentCard
+                student={s}
+                log={log}
+                key={sIdx}
+                onPress={() => setSelectedLogId(log?.id)}
+              />
+            )
+          } 
         }
         )
       }
