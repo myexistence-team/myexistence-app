@@ -24,6 +24,8 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
   const [schedules, setSchedules] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isTeachersLoading, setIsTeachersLoading] = useState(false);
+  const [isSchedulesLoading, setIsSchedulesLoading] = useState(true);
 
   const scheduleQuery = query(collection(
     firestore, 
@@ -66,18 +68,22 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
           }
   
           // Get Teacher
-          if (classroom.teacherIds.length) {      
+          if (classroom.teacherIds.length) {     
             const notStoredIds: string[] = classroom.teacherIds.filter((tId: string) => !Object.keys(users).includes(tId));
             if (notStoredIds.length) {
+              setIsTeachersLoading(true)
               const teacherSnaps = await getDocs(
                 query(collection(firestore, `users`),
-                where(documentId(), 'in', classroom.teacherIds)
+                where(documentId(), 'in', notStoredIds)
               ))
+              setIsTeachersLoading(false)
               const userObjs = teacherSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
               setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
             }
           }
+          setIsSchedulesLoading(true)
           const scheduleSnaps = await getDocs(scheduleQuery)
+          setIsSchedulesLoading(false)
           const docsArr: any[] = [];
           scheduleSnaps.forEach((doc) => {
             docsArr.push({ 
@@ -128,6 +134,7 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
 
               <Text style={[textStyles.body2, {marginTop: 16, marginBottom: 4}]}>Pengajar</Text>
                 { classRoom.teacherIds.length ? 
+                    isTeachersLoading? <MESpinner/> :
                     classRoom.teacherIds.map((tId: string) => {
                       const teacher = users[tId];
                       return (
@@ -136,7 +143,8 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
                         </Text>
                       )
                     }
-                  ) : (
+                  ) : 
+                  (
                     <Text style={[textStyles.body1, { fontFamily: 'manrope-bold' }]}>
                       - 
                     </Text>
@@ -157,6 +165,7 @@ export default function ClassDetailsPage({ route, navigation }: NativeStackScree
 
               <Text style={[textStyles.body2, { marginTop: 16, marginBottom: 4, }]}>Sesi</Text>
                 {
+                  isSchedulesLoading? <MESpinner/> : 
                   schedules.map((s: any, idx: number) => (
                     <ClassScheduleCard 
                       schedule={s} 

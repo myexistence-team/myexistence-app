@@ -11,6 +11,9 @@ import { getStatusColor } from '../../utils/utilFunctions'
 import moment from 'moment'
 import { deleteStudentExcuse } from '../../actions/scheduleActions'
 import MEButton from '../../components/MEButton'
+import { collection, documentId, getDocs, query, where } from 'firebase/firestore'
+import { firestore } from '../../firebase'
+import { useEffect } from 'react'
 
 export default function HistoryDetailsModal({
   log,
@@ -24,7 +27,7 @@ export default function HistoryDetailsModal({
   const navigation = useNavigation();
   const { profile } = useContext(ProfileContext);
   const { classes } = useContext(ClassesContext);
-  const { users } = useContext(UsersContext);
+  const { users, setUsers } = useContext(UsersContext);
   const classroom = classes.find((c) => c.id === log?.classId);
 
   const teacher = users?.[log?.teacherId];
@@ -64,6 +67,27 @@ export default function HistoryDetailsModal({
       );
     }
   }
+
+  async function loadData() {
+    const arrayIds = [log?.teacherId, log?.studentId, log?.updatedBy].filter((id) => id !== undefined && !Object.keys(users).includes(id))
+    console.log(arrayIds)
+    const usersQuery = query(
+      collection(firestore, 'users'),
+      where(documentId(), 'in', arrayIds)
+    )
+    const userSnaps = await getDocs(usersQuery)
+
+    if (!userSnaps.empty) {
+      const userObjs = userSnaps.docs.reduce((a, b) => ({ ...a, [b.id]: { ...b.data(), id: b.id } }), {});
+      setUsers((prevUsers: any) => ({ ...prevUsers, ...userObjs }));
+    }
+  }
+
+  useEffect(() => {
+    if(log) {
+      loadData();
+    }    
+  }, [log])
 
   return (
     <Modal
@@ -207,6 +231,13 @@ export default function HistoryDetailsModal({
                       marginBottom: 16,
                     }]}>
                       {ExcuseStatusesEnum[log.excuseStatus]}
+                    </Text>
+                    <Text style={textStyles.body2}>Oleh</Text>
+                    <Text style={[textStyles.body1, { 
+                      fontFamily: 'manrope-bold', 
+                      marginBottom: 16,
+                    }]}>
+                      {users[log.updatedBy]?.displayName}
                     </Text>
 
                     {
