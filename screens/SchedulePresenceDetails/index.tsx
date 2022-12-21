@@ -88,7 +88,8 @@ export default function SchedulePresenceDetails({
       classId, 
       schoolId: profile.schoolId,
       status,
-      studentLogId: logId
+      studentLogId: logId,
+      forceStatus: true
     })
     setPresenceLoading(null);
     if (!logId) {

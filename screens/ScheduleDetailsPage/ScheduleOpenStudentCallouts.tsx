@@ -73,7 +73,8 @@ export default function ScheduleOpenStudentCallouts({
       classId, 
       schoolId: profile.schoolId,
       status,
-      studentLogId: currentStudentLog?.id
+      studentLogId: currentStudentLog?.id,
+      forceStatus: true
     })
     setCurrentIdx((idx) => idx + 1)
     setShowExcuse(false);

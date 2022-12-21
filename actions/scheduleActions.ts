@@ -408,7 +408,8 @@ export async function createUpdateStudentPresenceFromCallout({
   classId,
   schoolId,
   status,
-  studentLogId
+  studentLogId,
+  forceStatus = false,
 }: {
   scheduleId: string,
   studentId: string,
@@ -416,6 +417,7 @@ export async function createUpdateStudentPresenceFromCallout({
   schoolId: string,
   status: AbsentStasuses,
   studentLogId?: string,
+  forceStatus?: boolean
 }
 ) {
   const studentRef = doc(firestore, 'users', studentId);
@@ -446,7 +448,9 @@ export async function createUpdateStudentPresenceFromCallout({
       studentId,
       classId,
       teacherId: schedule.openedBy,
-      status: status === AbsentStasuses.PRESENT? now > scheduleNowDate? AbsentStasuses.LATE : AbsentStasuses.PRESENT : AbsentStasuses.ABSENT,
+      status: forceStatus ? status : status === AbsentStasuses.PRESENT ? 
+        now > scheduleNowDate? AbsentStasuses.LATE : 
+        AbsentStasuses.PRESENT : AbsentStasuses.ABSENT,
       time: new Date(),
     }
 
